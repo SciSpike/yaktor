@@ -1,0 +1,11 @@
+/actions
+/config
+/conversations
+/doc
+/public
+/routes
+/servers
+/simulator
+/src-gen
+/test/dsls
+/test/*.test.js
