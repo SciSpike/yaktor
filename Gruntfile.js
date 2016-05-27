@@ -12,6 +12,7 @@ module.exports = function (grunt) {
   var packageJson = require(path.resolve('package.json'))
   var tag = grunt.option('tag')
   var newTag = tag && tag.replace(/\.\d*$/, '.x')
+  var master = grunt.option('source-branch') || 'master'
 
   var config = {
     'basePath': basePath,
@@ -41,30 +42,38 @@ module.exports = function (grunt) {
       },
       'release-minor': {
         'command': [
-          "[ $(git status | head -n 1 | awk '{ print $3 }') == 'master' ]",
+          "[ $(git status | head -n 1 | awk '{ print $3 }') == '" + master + "' ]", // minors only from master branch
+          '[ -z "$(git status -s)" ]', // no untracked files
+          'git diff --cached --exit-code --no-patch', // no modified files
           'grunt bump:minor',
           'grunt shell:publish',
+          'git checkout -b ' + newTag + ' ' + tag,
+          'grunt bump:prepatch --no-tag',
+          'git checkout master',
           'grunt bump:preminor --no-tag'
         ].join('&&'),
-        'help': 'make a new release. This must be done from the master branch.'
+        help: 'Make a new release. You must do this in a clean working directory from the ' + master + ' branch.'
       },
       'release-patch': {
         'command': [
-          "[[ $(git status | head -n 1 | awk '{ print $3 }') =~ ^v[0-9]+\.[0-9]+\.x$ ]]",
+          "[[ $(git status | head -n 1 | awk '{ print $3 }') =~ ^v[0-9]+\.[0-9]+\.x$ ]]", // patches only from vM.m.x branches
+          '[ -z "$(git status -s)" ]', // no untracked files
+          'git diff --cached --exit-code --no-patch', // no modified files
           'grunt bump:patch',
           'grunt shell:publish',
           'grunt bump:prepatch --no-tag'
         ].join('&&'),
-        help: 'hotfix a release. You must do this from a branch named after the minor release tag like: v0.1'
+        help: 'Release a patch. You must do this in a clean working directory from a release branch, like \'v0.1.x\'.'
       },
-      'create-patch': {
+      'release-pre': {
         'command': [
-          'git diff --exit-code',
-          " [[ '" + tag + "' =~ ^v[0-9]*\.[0-9]*\.0$ ]] ",
-          'git checkout -b ' + newTag + ' ' + tag,
-          'grunt bump:prepatch --no-tag'
+          '[ -z "$(git status -s)" ]', // no untracked files
+          'git diff --cached --exit-code --no-patch', // no modified files
+          'git tag v' + packageJson.version,
+          'grunt shell:publish',
+          'grunt bump:prerelease --no-tag'
         ].join('&&'),
-        help: 'create a branch to hotfix a release. You must do this in a clean working directory.'
+        help: 'Release a preview. You must do this in a clean working directory in any branch.'
       }
     }
   }
@@ -74,5 +83,5 @@ module.exports = function (grunt) {
   grunt.registerTask('add-owner', [ 'shell:add-owner' ])
   grunt.registerTask('release-patch', [ 'shell:pull', 'shell:release-patch' ])
   grunt.registerTask('release-minor', [ 'shell:pull', 'shell:release-minor' ])
-  grunt.registerTask('create-patch', [ 'shell:create-patch' ])
+  grunt.registerTask('release-pre', [ 'shell:pull', 'shell:release-pre' ])
 }
