@@ -71,6 +71,7 @@ module.exports = function (grunt) {
           'git diff --cached --exit-code --no-patch', // no modified files
           'git tag v' + packageJson.version,
           'grunt shell:publish',
+          'git push --tags',
           'grunt bump:prerelease --no-tag'
         ].join('&&'),
         help: 'Release a preview. You must do this in a clean working directory in any branch.'
