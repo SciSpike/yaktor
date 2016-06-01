@@ -51,7 +51,7 @@
     "standard-format": "^2.1.1"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "sudo -E node app.js",
     "format": "standard-format -w $(git diff --name-only HEAD | grep -e '\\.js$')",
     "lint": "standard $(git diff --name-only HEAD | grep -e '\\.js$')",
     "lint-staged": "standard $(git diff --name-only --cached | grep -e '\\.js$')",

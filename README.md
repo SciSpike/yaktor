@@ -4,7 +4,7 @@ This module supports the conversation DSL to produce a event-driven asynchronous
 ## create docker image
 
 ```
-docker build -t yaktor4-app --build-arg UID=$(id -u) --build-arg USER=$(id -un) docker
+docker build -t yaktor:$(node -e 'console.log(require("./package.json").version.replace(/-pre.*/,""));') --build-arg UID=$(id -u) --build-arg USER=$(id -un) docker
 ```
 
 ## Build and Test
