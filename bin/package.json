@@ -47,8 +47,9 @@
     "mocha-text-cov": "0.1.1",
     "plato": "1.2.0",
     "request": "2.29.0",
-    "standard": "^6.0.8",
-    "standard-format": "^2.1.1"
+    "standard": "6.0.8",
+    "standard-format": "2.1.1",
+    "swagger-ui": "2.1.4"
   },
   "scripts": {
     "start": "node app.js",

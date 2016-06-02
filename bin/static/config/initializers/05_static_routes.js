@@ -58,11 +58,15 @@ module.exports = function () {
   app.engine('json', require('consolidate').underscore)
   app.engine('ejs', require('consolidate').underscore)
 
-  app.get('/swagger_api', function (req, res) {
-    res.render(path.resolve('public/swagger_api/' + req.query.spec + '/api.json'), {
-      proto: req.protocol,
-      host: req.get('host')
+  app.use('/swagger-ui/index.html', function (req, res) {
+    fs.readFile(path.resolve('node_modules', 'swagger-ui', 'dist', 'index.html'), function (err, f) {
+      f = f.toString().replace('"your-client-id"', '"1"')
+      res.end(f)
     })
+  })
+  app.use('/swagger-ui', serveStatic(path.resolve('node_modules', 'swagger-ui', 'dist')))
+  app.get('/swagger-api/:id', function (req, res, next) {
+    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), {proto: req.protocol,host: req.get('host')})
   })
   app.get('/', function (req, res) {
     res.render(path.resolve('views/index.html'), {
