@@ -44,7 +44,8 @@ module.exports = function (grunt) {
       'install-views': {
         options: {
           execOptions: {
-            cwd: './views'
+            cwd: './views',
+            maxBuffer: Infinity
           }
         },
         command: [ 'npm install', '$(npm bin)/bower install' ].join(';')
@@ -53,12 +54,18 @@ module.exports = function (grunt) {
         command: 'npm run gen-src'
       },
       'generate-views': {
-        command: '$(npm bin)/engine-ui generate'
+        command: '$(npm bin)/engine-ui generate',
+        'options': {
+          execOptions: {
+            maxBuffer: Infinity
+          }
+        }
       },
       'grunt-views': {
         options: {
           execOptions: {
-            cwd: './views'
+            cwd: './views',
+            maxBuffer: Infinity
           }
         },
         command: '$(npm bin)/grunt'

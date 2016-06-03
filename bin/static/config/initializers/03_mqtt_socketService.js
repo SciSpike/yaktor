@@ -193,9 +193,9 @@ module.exports = function () {
        * A valid MQTT request begin with 0x10 and a HTTP request must not
        */
       if(d[0]===0x10||d[0]===String.fromCharCode(0x10)){
-        fn.call(that,stream)
+        mqttListener.call(that,stream)
       } else {
-        httpHandler.call(that,stream)
+        httpListener.call(that,stream)
       }
       stream.resume()
     })

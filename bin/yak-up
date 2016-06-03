@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [ -z "$APP_NAME" ]; then
+  export APP_NAME=${PWD##*/} # (basename of the current directory)
+fi
+
+if [ -d .git ]; then
+  export APP_TAG=$(git status | head -n 1 | awk '{ print $3 }')
+else
+  export APP_TAG=master
+fi
+echo APP_TAG $APP_TAG
+docker-compose up -d

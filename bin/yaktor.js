@@ -96,7 +96,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
 
   if (packageJson._resolved && packageJson._resolved.indexOf('file:') === 0) { // then you're developing yaktor itself
     async.series([
-      async.apply(exec, 'npm', [ 'install', packageJson._resolved || path.resolve(__dirname, '..') ]),
+      async.apply(exec, 'npm', [ 'install', path.resolve(__dirname, '..') ]),
       async.apply(processFiles),
       async.apply(exec, 'npm', [ 'install' ])
     ], function (err) {
