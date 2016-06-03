@@ -1,3 +1,5 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var ShortId = require('mongoose-shortid')
 var extend = require('util')._extend
 

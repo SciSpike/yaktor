@@ -1,8 +1,7 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var path = require('path')
 var fs = require('fs')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
-
-logger.silly(__filename)
 
 // change this to your path to modelAll.
 var modelAll = path.resolve(path.join('src-gen', 'modelAll'))

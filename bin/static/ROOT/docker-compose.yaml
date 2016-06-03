@@ -4,31 +4,42 @@ services:
     build:
       context: ./docker
       args:
-        UID: ${APP_UID}
         USER: docker
-    image: yaktor:4.0.0
+    image: ${APP_NAME}:${APP_TAG}
     environment:
       FORCE_AMQP: 1
-      AMQP_HOST: rabbit
+      AMQP_HOST: ${APP_NAME}-amqp
       PORT: 80
-      FAKE_CASSANDRA: 1
-      MONGO_HOST: mongo
+      MONGO_HOST: ${APP_NAME}-mongo
     depends_on:
-      - rabbit
+      - amqp
       - mongo
-    hostname: ct
-    command: 'sleep infinity'
+    hostname: ${APP_NAME}-app
+    container_name: ${APP_NAME}-app
     volumes:
       - ./:/app
       - ~/.npmrc:/home/docker/.npmrc
       - ~/.npm:/home/docker/.npm
-  rabbit:
-    container_name: rabbit
+    networks:
+      network:
+        aliases:
+          - ${APP_NAME}.yaktor
+    working_dir: /app
+  amqp:
+    hostname: ${APP_NAME}-amqp
+    container_name: ${APP_NAME}-amqp
     image: rabbitmq
+    networks:
+      - network
   mongo:
-    container_name: mongo
+    hostname: ${APP_NAME}-mongo
+    container_name: ${APP_NAME}-mongo
     image: mongo:3.0.4
+    networks:
+      - network
   dns:
+    hostname: ${APP_NAME}-dns
+    container_name: ${APP_NAME}-dns
     image: andyshinn/dnsmasq
     cap_add:
       - NET_ADMIN
@@ -36,6 +47,8 @@ services:
       - 53:53/udp
       - 53:53/tcp
     command: --max-cache-ttl=30 --max-ttl=30
+    networks:
+      - network
 networks:
-  default:
+  network:
     driver: bridge

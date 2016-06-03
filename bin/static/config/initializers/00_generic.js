@@ -1,6 +1,6 @@
-var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
+var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
+
 module.exports = function () {
   // Any files in this directory will be `require()`'ed when the application
   // starts, and the exported function will be invoked with a `this` context of

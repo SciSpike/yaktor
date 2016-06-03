@@ -1,12 +1,13 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger')) // eslint-disable-line no-unused-vars
 var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 
 module.exports = function () {
   var ws = require('websocket-stream')
   var Connection = require('mqtt-connection')
-  var socketService = require(path.resolve('node_modules/conversation/app/services/socketService.js'))
+  var socketService = require('yaktor/app/services/socketService.js')
   var app = this
   var nextId = 0
   var newId = function () {
@@ -86,7 +87,7 @@ module.exports = function () {
         }
         conn[ packet.topic ] = conn[ packet.topic ] || 0
         // only .on the first time
-        if (conn[packet.topic]++ < 1) {
+        if (conn[ packet.topic ]++ < 1) {
           semitter.on(topic, function (data) {
             var sendTopic = this.event
             // Client sent / so send /
@@ -145,7 +146,7 @@ module.exports = function () {
           })
         }
         // only .off the last time
-        if (--conn[packet.topic] < 1) {
+        if (--conn[ packet.topic ] < 1) {
           semitter.removeAllListeners(topic)
         }
       })

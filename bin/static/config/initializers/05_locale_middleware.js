@@ -1,10 +1,10 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var locale = require('locale')
 var path = require('path')
 var async = require('async')
 var fs = require('fs')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
 
-logger.silly(__filename)
 module.exports = function (done) {
   var app = this
   if (fs.existsSync(path.resolve('views', 'locale'))) {

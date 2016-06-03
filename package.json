@@ -5,6 +5,7 @@
   "dependencies": {
     "async": "1.5.2",
     "commander": "2.0.0",
+    "fs-extra": "0.30.0",
     "which": "1.0.5"
   },
   "devDependencies": {

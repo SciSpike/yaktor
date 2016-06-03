@@ -1,9 +1,11 @@
 // Here is where you setupup your requires
-var conversation = require('conversation')
-var logger = conversation.logger
+var yaktor = require('yaktor')
+var logger = yaktor.logger
 
-conversation.start(function (err, ports) {
+yaktor.start(function (err, ports) {
   if (!err) {
-    logger.info('Conversation Engine Started. Listening on port(s) ' + ports.join(','))
+    require('dns').lookup(require('os').hostname(), function (err, ip) {
+      err || logger.info('Yaktor started. Listening on IP address ', ip, 'on port(s) ', ports.join(','))
+    })
   }
 })
