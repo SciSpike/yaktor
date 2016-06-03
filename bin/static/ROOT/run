@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+export APP_NAME=${PWD##*/} # (basename of the current directory)
+
+if [ "$(uname)" == "Darwin" ]; then
+  eval $(docker-machine env default)
+fi
+
+./up
+
+if [ "$#" -eq 0 ]; then
+  CMD=bash
+else
+  CMD="$@"
+fi
+
+docker exec -it ${APP_NAME}-app $CMD

@@ -1,7 +1,7 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var mongoose = require('mongoose')
 var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
-logger.silly(__filename)
 require('mongoose-shortid')
 var GridFs
 try {
@@ -13,6 +13,7 @@ try {
 /* jshint eqnull:true */
 module.exports = function (cb) {
   logger.init(this)
+  var mongoHost = process.env.MONGO_HOST || 'localhost'
   require('mongoose-pagination')
   var f1nU = mongoose.Model.findOneAndUpdate
   // Monkey Patch for update existing doc.
@@ -48,7 +49,7 @@ module.exports = function (cb) {
       }
       cb(err)
     })
-    mongoose.connect('mongodb://localhost/engine', { server: { auto_reconnect: true, numberOfRetries: 1000000 } })
+    mongoose.connect('mongodb://' + mongoHost + '/engine', { server: { auto_reconnect: true, numberOfRetries: 1000000 } })
   } else {
     cb()
   }

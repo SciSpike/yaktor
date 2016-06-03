@@ -7,7 +7,7 @@ var argv = require('commander')
 var path = require('path')
 var async = require('async')
 var util = require('util')
-var fs = require('fs')
+var fs = require('fs-extra')
 var cp = require('child_process')
 var os = require('os')
 var which = require('which')
@@ -16,23 +16,15 @@ var dir = process.cwd()
 var oldFiles = []
 
 var cpFiles = function (dir, destDir, force, cb) {
-  async.each(fs.readdirSync(dir), function (file, done) {
-    var destPath = path.join(destDir, file)
-    if (!fs.existsSync(destPath) || force) {
-      console.log('########### writing %s', file)
-      var rs = fs.createReadStream(path.join(dir, file))
-      var dest = fs.createWriteStream(destPath)
-      rs.pipe(dest, { end: true })
-      rs.on('end', done)
-    }
-  }, cb)
+  console.log('dir %s -> %s', dir, destDir)
+  fs.copy(dir, destDir, { clobber: force }, cb);
 }
+
 var packageFile = path.join(__dirname, '../package.json')
 var packageJson = require(packageFile)
 
-var shared = function (appDir, force, developerRole, version) {
+var shared = function (appDir, force, developerRole, yaktorVersion) {
   var processFiles = function (cb) {
-    var cModuleDef = packageJson.version
     var currentPackageJson = require('./package.json')
 
     var configSubPath = 'config'
@@ -43,7 +35,8 @@ var shared = function (appDir, force, developerRole, version) {
     // purpose).
     var theirPackageJson = require(path.join(appDir, 'package.json'))
 
-    ;[ 'lib', 'public', 'build', configSubPath, configInitSubPath ].forEach(function (dir) {
+      ;
+    [ 'lib', 'public', 'build', 'docker', configSubPath, configInitSubPath ].forEach(function (dir) {
       if (!fs.existsSync(path.join(appDir, dir))) {
         fs.mkdirSync(path.join(appDir, dir))
       }
@@ -54,7 +47,8 @@ var shared = function (appDir, force, developerRole, version) {
     // Update dependencies
     // merge taking theirs
 
-    ;[ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
+      ;
+    [ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
       // merge taking theirs
       theirPackageJson[ m ] = theirPackageJson[ m ] || {}
       if (!force) {
@@ -65,12 +59,13 @@ var shared = function (appDir, force, developerRole, version) {
 
     // pwn subsection
 
-    ;[ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
+    ;
+    [ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
     })
 
-    if (cModuleDef) {
-      theirPackageJson.dependencies.conversation = cModuleDef
+    if (yaktorVersion) {
+      theirPackageJson.dependencies.yaktor = yaktorVersion
     }
 
     fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
@@ -91,41 +86,49 @@ var shared = function (appDir, force, developerRole, version) {
     }, function (done) {
       cpFiles(path.join(staticPath, 'build'), path.join(appDir, 'build'), force, done)
     }, function (done) {
+      cpFiles(path.join(staticPath, 'docker'), path.join(appDir, 'docker'), force, done)
+    }, function (done) {
+      cpFiles(path.join(staticPath, 'test'), path.join(appDir, 'test'), force, done)
+    }, function (done) {
       cpFiles(path.join(staticPath, 'ROOT'), path.join(appDir), force, done)
     } ], cb)
   }
 
-  if (developerRole) {
+  if (packageJson._resolved && packageJson._resolved.indexOf('file:') === 0) { // then you're developing yaktor itself
     async.series([
-      async.apply(exec, 'npm', [ 'link', 'engine-ui' ]),
       async.apply(exec, 'npm', [ 'install', packageJson._resolved || path.resolve(__dirname, '..') ]),
       async.apply(processFiles),
       async.apply(exec, 'npm', [ 'install' ])
     ], function (err) {
       if (err) {
         console.log(err.stack)
+        process.exit(1)
+      } else {
+        process.exit(0)
       }
-      process.exit(0)
     })
   } else {
     async.series([
-      async.apply(exec, 'npm', [ 'install', 'yaktor@' + version ]),
+      async.apply(exec, 'npm', [ 'install', 'yaktor@' + yaktorVersion ]),
       async.apply(processFiles),
       async.apply(exec, 'npm', [ 'install' ])
     ], function (err) {
       if (err) {
         console.log(err.stack)
+        process.exit(1)
+      } else {
+        process.exit(0)
       }
-      process.exit(0)
     })
   }
 }
 
 argv.command('migrate [path]')
-  .description('migrate app at [path] to current version')
+  .description('migrate app at [path] to current yaktor version')
   // .option("-x, --install", "$ npm install")
   .option('-f, --force', 'resistance is futile')
-  .option('-V, --version <version>', 'the version to update to', '')
+  .option('-V, --version [version]', 'the yaktor version to update to (deprecated; use -y or --yaktor-version)', packageJson.version)
+  .option('-y, --yaktor-version [version]', 'version of yaktor to update to', packageJson.version)
   .option('-d, --developer-role', 'ensure npm link of engine-ui and conversation')
   .option('-F, --really-force', 'not implemented, just for giggles.')
   .action(function (appDir, options) {
@@ -135,7 +138,8 @@ argv.command('migrate [path]')
       process.chdir(appDir)
     }
     appDir = appDir || dir
-    shared(appDir, options.force, options.developerRole, options.version)
+    options.yaktorVersion = options.version || options.yaktorVersion
+    shared(appDir, options.force, options.developerRole, options.yaktorVersion)
   })
 argv.command('cassandra')
   .description('add cassandra support and logging')
@@ -165,10 +169,6 @@ argv.command('create <appName>')
       fs.mkdirSync(appDir)
     }
     process.chdir(appDir)
-
-    var packageFile = path.join(__dirname, '../package.json')
-    var packageJson = require(packageFile)
-    var cModuleDef = packageJson.version
 
     var version = options.initialVersion
     var theirPackageJson = {
@@ -254,9 +254,11 @@ argv.command('create <appName>')
     fs.writeFileSync(path.join(appDir, name + '.cl'), cl)
     fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
 
-    console.log('create %s %s using %s', name, version, cModuleDef)
+    fs.copySync(path.join(__dirname, 'static', 'ROOT', '_npmrc'), path.join(appDir, '.npmrc'), { clobber: options.force })
 
-    shared(appDir, options.force, options.developerRole, '')
+    console.log('create %s %s using yaktor@%s', name, version, packageJson.version)
+
+    shared(appDir, options.force, options.developerRole, packageJson.version)
   })
 argv.command('help [subCommand]')
   .description('alias to [subCommand] -h')

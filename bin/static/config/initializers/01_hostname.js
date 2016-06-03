@@ -1,13 +1,13 @@
-var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
+var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
+
+var path = require('path')
 module.exports = function () {
   /* global process */
   if (process.env.URL_PREFIX) {
     return this.set('urlPrefix', this.get('protocol') + '://' + process.env.URL_PREFIX)
   }
   var hostname = process.env.SUB_DOMAIN || 'localhost'
-  var port = this.get('port')
-  // eslint-disable-next-line eqeqeq
-  this.set('urlPrefix', this.get('protocol') + '://' + hostname + ((port == 80 || port == 443) ? '' : ':' + port))
+  var port = parseInt(this.get('port'))
+  this.set('urlPrefix', this.get('protocol') + '://' + hostname + ((port === 80 || port === 443) ? '' : ':' + port))
 }

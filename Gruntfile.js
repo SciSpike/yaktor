@@ -63,7 +63,7 @@ module.exports = function (grunt) {
           'grunt shell:publish',
           'grunt bump:prepatch --no-tag'
         ].join('&&'),
-        help: 'Release a patch. You must do this in a clean working directory from a release branch, like \'v0.1.x\'.'
+        help: "Release a patch. You must do this in a clean working directory from a release branch, like 'v0.1.x'."
       },
       'release-pre': {
         'command': [

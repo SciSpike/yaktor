@@ -1,17 +1,16 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var updateInterval = 60000
 var os = require('os')
 var dns = require('dns')
 var path = require('path')
 var async = require('async')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
 var Gossipmonger = require('gossipmonger')
 var ClusterSeed = require('mongoose').model('ClusterSeed')
 
-logger.silly(__filename)
-
 module.exports = function (done) {
   var app = this
-  var conversation = app.conversation
+  var yaktor = app.yaktor
   var gPort = (parseInt(app.get('port')) + 1000)
 
   dns.lookup(os.hostname(), function (err, gAddress) { // eslint-disable-line handle-callback-err
@@ -25,15 +24,15 @@ module.exports = function (done) {
         upsert: true
       }, function (err) {
         if (err) {
-          if (conversation.peers) {
+          if (yaktor.peers) {
             logger.error('failed to update kill gossip')
-            conversation.gossipmonger.transport.close()
-            delete conversation.peers
+            yaktor.gossipmonger.transport.close()
+            delete yaktor.peers
           }
           logger.error(err.stack)
         }
-        if (conversation.peers) {
-          var ps = conversation.peers.livePeers()
+        if (yaktor.peers) {
+          var ps = yaktor.peers.livePeers()
           var sp = {}
           for (var p in ps) {
             sp[ ps[ p ].id ] = true
@@ -65,8 +64,8 @@ module.exports = function (done) {
               }, {
                 seeds: gSeeds
               })
-              conversation.gossipmonger = gossipmonger
-              conversation.peers = gossipmonger.storage
+              yaktor.gossipmonger = gossipmonger
+              yaktor.peers = gossipmonger.storage
               gossipmonger.on('error', function (error) { // eslint-disable-line handle-callback-err
                 // XXX something :0
               })
@@ -93,7 +92,7 @@ module.exports = function (done) {
                 logger.warn('peer live %s', peer.id)
               })
               gossipmonger.transport.listen(done)
-              logger.silly('%s: gossiping to:', gPort, conversation.peers.livePeers())
+              logger.silly('%s: gossiping to:', gPort, yaktor.peers.livePeers())
             })
           })
         }

@@ -52,7 +52,7 @@
     "swagger-ui": "2.1.4"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "sudo -E node app.js",
     "format": "standard-format -w $(git diff --name-only HEAD | grep -e '\\.js$')",
     "lint": "standard $(git diff --name-only HEAD | grep -e '\\.js$')",
     "lint-staged": "standard $(git diff --name-only --cached | grep -e '\\.js$')",

@@ -1,7 +1,6 @@
-var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
-
+var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
+var path = require('path')
 
 var bodyParser = require('body-parser')
 var fs = require('fs')

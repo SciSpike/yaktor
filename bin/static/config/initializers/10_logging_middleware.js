@@ -1,7 +1,7 @@
-var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
-var auditLogger = require(path.resolve('node_modules/conversation/lib/auditLogger'))
+var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
+var path = require('path')
+var auditLogger = require('yaktor/lib/auditLogger')
 
 var log = function (req, res) {
   auditLogger.web(req._parsedUrl.pathname, req.user, new Date(), req.method, JSON

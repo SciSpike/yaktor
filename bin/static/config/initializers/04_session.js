@@ -1,7 +1,7 @@
+var logger = require('yaktor/lib/logger')
+logger.silly(__filename)
 var path = require('path')
 var session = require('express-session')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
-logger.silly(__filename)
 
 var maxSessionAge = 60 * 60 * 20 * 1000
 
@@ -89,8 +89,8 @@ var secret = 'a very unique secret that is hard to guess'
 
 module.exports = function () {
   var app = this
-  var conversation = app.conversation
-  conversation.sessionStore = mongooseSessionStore
+  var yaktor = app.yaktor
+  yaktor.sessionStore = mongooseSessionStore
   var sessionConfig = {
     resave: true,
     saveUninitialized: true,

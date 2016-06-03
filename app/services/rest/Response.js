@@ -16,10 +16,10 @@ var BadRequest = require('./BadRequest')
     NOT_AUTHENTICATED: 401,
     NOT_AUTHORIZED: 403,
 
-    get FAILURE () {
+    get FAILURE() {
       return 'FAILURE'
     },
-    get SUCCESS () {
+    get SUCCESS() {
       return 'SUCCESS'
     },
     status: function (err) {
