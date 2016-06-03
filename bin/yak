@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+if [ ! -f ~/.npmrc ]; then
+  touch ~/.npmrc
+fi
 if [ "$(uname)" == "Darwin" ]; then
   eval $(docker-machine env default)
 fi
