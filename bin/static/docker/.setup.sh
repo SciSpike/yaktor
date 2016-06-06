@@ -10,5 +10,5 @@ if [ ! $UID == $FILE_OWNER_UID ]; then
 fi
 
 # Keeps container running
-echo sleeping: use ./run.sh
+echo sleeping: use ./node_modules/.bin/yak to run commands
 sleep infinity

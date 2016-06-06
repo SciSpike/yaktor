@@ -47,8 +47,9 @@
   "bin": {
     "yaktor": "./bin/yaktor.js",
     "yaktor-repl": "./bin/repl.js",
-    "yak":"./bin/yak",
-    "yak-up":"./bin/yak-up"
+    "yak": "./bin/yak",
+    "yak-up": "./bin/yak-up",
+    "yak-down": "./bin/yak-down"
   },
   "repository": {
     "type": "git",
