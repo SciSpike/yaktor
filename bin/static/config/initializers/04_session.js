@@ -1,6 +1,5 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
-var path = require('path')
 var session = require('express-session')
 
 var maxSessionAge = 60 * 60 * 20 * 1000

@@ -1,6 +1,5 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
-var path = require('path')
 var messageService = require('yaktor/app/services/messageService')
 // add the missing methods
 var def = require('amqp-eventemitter/node_modules/amqp/lib/amqp-definitions-0-9-1.js')

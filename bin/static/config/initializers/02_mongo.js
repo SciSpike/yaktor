@@ -1,7 +1,6 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
 var mongoose = require('mongoose')
-var path = require('path')
 require('mongoose-shortid')
 var GridFs
 try {

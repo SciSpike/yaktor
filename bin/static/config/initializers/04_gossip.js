@@ -3,7 +3,6 @@ logger.silly(__filename)
 var updateInterval = 60000
 var os = require('os')
 var dns = require('dns')
-var path = require('path')
 var async = require('async')
 var Gossipmonger = require('gossipmonger')
 var ClusterSeed = require('mongoose').model('ClusterSeed')

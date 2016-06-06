@@ -17,7 +17,7 @@ var oldFiles = []
 
 var cpFiles = function (dir, destDir, force, cb) {
   console.log('dir %s -> %s', dir, destDir)
-  fs.copy(dir, destDir, { clobber: force }, cb);
+  fs.copy(dir, destDir, { clobber: force }, cb)
 }
 
 var packageFile = path.join(__dirname, '../package.json')
@@ -35,8 +35,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     // purpose).
     var theirPackageJson = require(path.join(appDir, 'package.json'))
 
-      ;
-    [ 'lib', 'public', 'build', 'docker', configSubPath, configInitSubPath ].forEach(function (dir) {
+    ;[ 'lib', 'public', 'build', 'docker', configSubPath, configInitSubPath ].forEach(function (dir) {
       if (!fs.existsSync(path.join(appDir, dir))) {
         fs.mkdirSync(path.join(appDir, dir))
       }
@@ -47,8 +46,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     // Update dependencies
     // merge taking theirs
 
-      ;
-    [ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
+    ;[ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
       // merge taking theirs
       theirPackageJson[ m ] = theirPackageJson[ m ] || {}
       if (!force) {
@@ -59,8 +57,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
 
     // pwn subsection
 
-    ;
-    [ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
+    ;[ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
     })
 

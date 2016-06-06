@@ -1,6 +1,5 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
-var path = require('path')
 var auditLogger = require('yaktor/lib/auditLogger')
 
 var log = function (req, res) {

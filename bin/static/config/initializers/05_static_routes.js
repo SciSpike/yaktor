@@ -58,7 +58,7 @@ module.exports = function () {
   app.engine('ejs', require('consolidate').underscore)
 
   var swaggerIndex = function (req, res) {
-    fs.readFile(path.resolve('node_modules', 'swagger-ui', 'dist', 'index.html'), function (err, f) {
+    fs.readFile(path.resolve('node_modules', 'swagger-ui', 'dist', 'index.html'), function (err, f) { // eslint-disable-line handle-callback-err
       f = f.toString().replace('"your-client-id"', '"1"')
       res.end(f)
     })
@@ -67,7 +67,7 @@ module.exports = function () {
   app.get('/swagger-ui', swaggerIndex)
   app.use('/swagger-ui', serveStatic(path.resolve('node_modules', 'swagger-ui', 'dist')))
   app.get('/swagger-api/:id', function (req, res, next) {
-    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), {proto: req.protocol,host: req.get('host')})
+    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), {proto: req.protocol, host: req.get('host')})
   })
   app.get('/', function (req, res) {
     res.render(path.resolve('views/index.html'), {

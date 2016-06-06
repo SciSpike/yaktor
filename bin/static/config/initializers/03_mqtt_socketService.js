@@ -1,6 +1,5 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
-var path = require('path')
 var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 
@@ -187,15 +186,15 @@ module.exports = function () {
       /*
        * Because:
        * In HTTP 1.0 and 1.1 Request-Line which begins with a method token (or a printable chars like [P]OST [G]ET). Also servers SHOULD ignore any empty line(s) received where a Request-Line is expected [rfc2616-sec4.1] [rfc2616-sec5.1]
-       * AND 
-       * In MQTT the first Packet sent from the Client to the Server MUST be a CONNECT Packet [MQTT-3.1.0-1]. 
+       * AND
+       * In MQTT the first Packet sent from the Client to the Server MUST be a CONNECT Packet [MQTT-3.1.0-1].
        * Therefore:
        * A valid MQTT request begin with 0x10 and a HTTP request must not
        */
-      if(d[0]===0x10||d[0]===String.fromCharCode(0x10)){
-        mqttListener.call(that,stream)
+      if (d[0] === 0x10 || d[0] === String.fromCharCode(0x10)) {
+        mqttListener.call(that, stream)
       } else {
-        httpListener.call(that,stream)
+        httpListener.call(that, stream)
       }
       stream.resume()
     })
