@@ -9,5 +9,5 @@ if [ -d .git ]; then
 else
   export APP_TAG=master
 fi
-echo APP_TAG $APP_TAG
+
 docker-compose up -d
