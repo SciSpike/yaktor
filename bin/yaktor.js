@@ -35,6 +35,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     // purpose).
     var theirPackageJson = require(path.join(appDir, 'package.json'))
 
+
     ;[ 'lib', 'public', 'build', 'docker', configSubPath, configInitSubPath ].forEach(function (dir) {
       if (!fs.existsSync(path.join(appDir, dir))) {
         fs.mkdirSync(path.join(appDir, dir))
@@ -46,6 +47,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     // Update dependencies
     // merge taking theirs
 
+
     ;[ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
       // merge taking theirs
       theirPackageJson[ m ] = theirPackageJson[ m ] || {}
@@ -56,6 +58,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     })
 
     // pwn subsection
+
 
     ;[ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
@@ -91,7 +94,8 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     } ], cb)
   }
 
-  if (packageJson._resolved && packageJson._resolved.indexOf('file:') === 0) { // then you're developing yaktor itself
+  if (packageJson._resolved && packageJson._resolved.indexOf('file:') === 0) { // then assume you're developing yaktor itself
+    console.log('NOTE: local development of yaktor detected; installing yaktor from ' + path.resolve(__dirname, '..'))
     async.series([
       async.apply(exec, 'npm', [ 'install', path.resolve(__dirname, '..') ]),
       async.apply(processFiles),
