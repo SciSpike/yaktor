@@ -6,6 +6,7 @@ require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
 mockgoose(mongoose)
+var proxyquire = require('proxyquire')
 var ObjectId = mongoose.Types.ObjectId // eslint-disable-line no-unused-vars
 var proxy = { // eslint-disable-line no-unused-vars
   'mongoose': Global(mongoose)
@@ -29,7 +30,11 @@ describe('shortId', function () {
     })
   })
   it('should create shortId of configured length', function (done) {
-    require(path.resolve('bin', 'static', 'config', 'initializers', '02_shortid'))
+    var logger = require(path.resolve('lib', 'logger'))
+    logger[ '@noCallThru' ] = true
+    proxyquire(path.resolve('bin', 'static', 'config', 'initializers', '02_shortid'), {
+      'yaktor/lib/logger': logger
+    })
     var DefaultShort = mongoose.model('DefaultShort')
     var ds = new DefaultShort({
       name: 'name'
