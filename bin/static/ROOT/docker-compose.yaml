@@ -41,6 +41,7 @@ services:
     hostname: ${APP_NAME}-dns
     container_name: ${APP_NAME}-dns
     image: andyshinn/dnsmasq
+    dns: 8.8.8.8
     cap_add:
       - NET_ADMIN
     ports:
