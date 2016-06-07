@@ -21,7 +21,7 @@ services:
       - ~/.npmrc:/home/docker/.npmrc
       - ~/.npm:/home/docker/.npm
     networks:
-      network:
+      default:
         aliases:
           - ${APP_NAME}.yaktor
     working_dir: /app
@@ -30,13 +30,13 @@ services:
     container_name: ${APP_NAME}-amqp
     image: rabbitmq
     networks:
-      - network
+      - default
   mongo:
     hostname: ${APP_NAME}-mongo
     container_name: ${APP_NAME}-mongo
     image: mongo:3.0.4
     networks:
-      - network
+      - default
   dns:
     hostname: ${APP_NAME}-dns
     container_name: ${APP_NAME}-dns
@@ -48,7 +48,7 @@ services:
       - 53:53/tcp
     command: --max-cache-ttl=30 --max-ttl=30
     networks:
-      - network
+      - default
 networks:
-  network:
+  default:
     driver: bridge
