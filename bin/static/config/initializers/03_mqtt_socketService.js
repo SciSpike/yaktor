@@ -44,8 +44,11 @@ module.exports = function () {
       }, function (err, session, user) { // eslint-disable-line handle-callback-err
         if (!user) {
           conn.connack({
-            returnCode: 5
+            // Connection Refused, not authorized
+            returnCode: 0x05
           })
+          // send an appropriate CONNACK response with a non-zero return code as described in section 3.2 and it MUST close the Network Connection [MQTT-3.1.4]
+          conn.end()
         } else {
           socketService.startListening(emitter, sessionId, session, user)
           conn.connack({
