@@ -8,7 +8,7 @@ var optional = function (module) {
 var path = require('path')
 var mongoose = require(path.resolve('node_modules', 'mongoose'))
 var bcrypt = optional(path.resolve('node_modules', 'bcrypt'))
-/* jshint eqnull:true */
+
 var compile = function (type) {
   var populate = type.populate = []
   type.hasNested = false

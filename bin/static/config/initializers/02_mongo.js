@@ -9,7 +9,7 @@ try {
 } catch (e) {
   logger.warn('gridfs not found, skipping.')
 }
-/* jshint eqnull:true */
+
 module.exports = function (cb) {
   logger.init(this)
   var mongoHost = process.env.MONGO_HOST || 'localhost'
@@ -20,10 +20,7 @@ module.exports = function (cb) {
     if (doc != null && doc.toObject != null) {
       var newDoc = doc.toObject()
       delete newDoc._id
-      // This line may cause JSHint warning. However, it is an optimization that is safe.
-      /* jshint ignore:start */
       arguments[ 1 ] = newDoc
-      /* jshint ignore:end */
       f1nU.apply(this, arguments)
     } else {
       f1nU.apply(this, arguments)

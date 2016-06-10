@@ -1,7 +1,0 @@
-{
-  "sub":       true,
-  "undef":     true,
-  "onecase":   true,
-  "indent":    2,
-  "node":      true
-}
