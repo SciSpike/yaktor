@@ -64,7 +64,7 @@
     "gen-src": "find . -name '*.cl' -o -name '*.dm' -follow | xargs yaktor-lang",
     "test": "LOG_LEVEL=warn multi='spec=- mocha-text-cov=coverage.txt' mocha --require ./build/blanket -R mocha-multi && cat coverage.txt",
     "report": "find conversations/js  -name '*.js' | xargs plato -x '.gen.js|.def.js|\/types\/' -d plato",
-    "envars": "cev --prefix $(node -e 'console.log(require(\"./package.json\").name)') > config/custom-environment-variables.json",
+    "envars": "cev --prefix @ > config/custom-environment-variables.json",
     "envars-default": "node -e 'var g = require(\"config-cev-generator\"); console.log(JSON.stringify(g({yaktor:require(\"./node_modules/yaktor/config-defaults.js\")},{prefix:require(\"./package.json\").name,empties:true}),0,2));' > config/custom-environment-variables.json"
   },
   "config": {
