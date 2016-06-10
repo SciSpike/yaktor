@@ -3,7 +3,7 @@
 if [ ! -f ~/.npmrc ]; then
   touch ~/.npmrc
 fi
-if [ "$(uname)" == "Darwin" ]; then
+if [ "$(uname)" == "Darwin" ] && [ -n $(which docker-machine) ]; then
   eval $(docker-machine env default)
 fi
 
