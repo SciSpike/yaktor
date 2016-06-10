@@ -1,9 +1,9 @@
+var logger = require(path.resolve('yaktor/lib/logger'))
+logger.silly(__filename)
 var cql = require('cassandra-driver')
 var async = require('async')
 var path = require('path')
-var logger = require(path.resolve('node_modules/conversation/lib/logger'))
-var auditLogger = require(path.resolve('node_modules/conversation/lib/auditLogger'))
-logger.silly(__filename)
+var auditLogger = require(path.resolve('node_modules/yaktor/lib/auditLogger'))
 
 var logError = function (error) {
   if (error) {
@@ -16,21 +16,24 @@ var getUserName = function (user) {
 }
 
 module.exports = function (cb) {
-  if (process.env.FAKE_CASSANDRA) {
+  var app = this
+  var cfg = app.get('serverConfig')
+
+  if (!cfg.cassandra.enable) {
     cql.client = {
       execute: function (query, data, options, cb) {
         (cb || options || data)()
       }
     }
     cb()
-  } else {
-    var hostString = process.env.CASSANDRA_HOSTS || 'localhost'
-    var keyspace = process.env.CASSANDRA_KEYSPACE || 'engine'
-    var hosts = hostString.split(',')
-    var hostPort = 9042
+  }
+  else {
+    var hosts = cfg.cassandra.hosts.split(',')
+    var keyspace = cfg.cassandra.keyspace
+    var hostPort = parseInt(cfg.cassandra.port)
     // this will break if you have differing ports across servers :)
     hosts = hosts.map(function (host) {
-      return host.replace(/([^:]*)(:(\d+))?/, function (a, host, c, port) {
+      return host.replace(/([^:]*)(:(\d+))?/, function (all, host, colon, port) {
         if (port) hostPort = port
         return host
       })

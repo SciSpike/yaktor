@@ -1,20 +1,22 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
 var path = require('path')
-
 var bodyParser = require('body-parser')
 var fs = require('fs')
+var url = require('url')
 
 // ///Endpoints
 module.exports = function () {
   var app = this
-  var favicon = path.resolve(path.join('public', 'favicon.png'))
-  var url = require('url')
+  var cfg = app.get('serverConfig')
+
+  var favicon = path.resolve(path.join(cfg.favicon.basedir, cfg.favicon.filename))
   fs.exists(favicon, function (exists) {
     if (exists) {
       app.use(require('serve-favicon')(favicon))
     }
   })
+  // TODO: make morgan configurable?
   app.use(require('morgan')({ stream: { write: function (log) { logger.silly(log) } } }))
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(bodyParser.json())

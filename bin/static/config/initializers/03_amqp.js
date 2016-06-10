@@ -41,16 +41,13 @@ Queue.prototype.ping = function (def) {
 
 module.exports = function (cb) {
   try {
+    var app = this
+    var cfg = app.get('serverConfig')
+
     var Amqp = require('amqp-eventemitter').AmqpEventEmitter
-    var amqpHost = process.env.AMQP_HOST || 'localhost'
-    var forceAmqp = process.env.FORCE_AMQP
-    var amqp = new Amqp({
-      connection: {
-        host: amqpHost,
-        port: 5672,
-        heartbeat: 55
-      }
-    })
+    var forceAmqp = cfg.amqp.force
+    var options = cfg.amqp.options
+    var amqp = new Amqp(options)
     var connected = false
     amqp.queue.on('amqp-eventemitter.ready', function () {
       if (!connected) {
@@ -71,7 +68,7 @@ module.exports = function (cb) {
     amqp.queue.connection.on('error', function (err) {
       if (forceAmqp) {
         logger.error('amqp error', err, err.stack)
-      // we need to catch this one if the server goes down unexpectedly.
+        // we need to catch this one if the server goes down unexpectedly.
       }
       if (err.code === 'EPIPE') {
         amqp.queue.connection.reconnect()

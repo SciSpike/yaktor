@@ -1,8 +1,7 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
 var session = require('express-session')
-
-var maxSessionAge = 60 * 60 * 20 * 1000
+var maxSessionAge
 
 var MongooseStore = function (session) {
   var Store = session.Store
@@ -84,12 +83,19 @@ var MongooseStore = function (session) {
 
 var SessionMongoose = MongooseStore(session)
 var mongooseSessionStore = new SessionMongoose()
-var secret = 'a very unique secret that is hard to guess'
+var secret
+var initialized = false
 
 module.exports = function () {
+  if (initialized) return
   var app = this
   var yaktor = app.yaktor
+  var cfg = app.get('serverConfig')
+
+  maxSessionAge = parseInt(cfg.session.maxAgeMillis)
+
   yaktor.sessionStore = mongooseSessionStore
+  secret = cfg.session.secret
   var sessionConfig = {
     resave: true,
     saveUninitialized: true,
@@ -118,4 +124,6 @@ module.exports = function () {
   }
   app.use(require('cookie-parser')(secret))
   app.use(session(sessionConfig))
+
+  initialized = true
 }

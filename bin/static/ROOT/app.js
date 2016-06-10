@@ -1,5 +1,5 @@
-// Here is where you setupup your requires
-var yaktor = require('yaktor')
+var config = require('config')
+var yaktor = require('yaktor')(config)
 var logger = yaktor.logger
 
 yaktor.start(function (err, ports) {

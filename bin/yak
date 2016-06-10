@@ -3,8 +3,19 @@
 if [ ! -f ~/.npmrc ]; then
   touch ~/.npmrc
 fi
+
 if [ "$(uname)" == "Darwin" ]; then
+  docker-machine start default
   eval $(docker-machine env default)
+fi
+
+if [ -z "$APP_NAME" ]; then
+  export APP_NAME=${PWD##*/} # (basename of the current directory)
+fi
+
+if grep -q APP_NAME_UPPERCASE ./docker-compose.yaml; then
+  APP_NAME_UPPERCASE=$(echo -n $APP_NAME | awk '{print toupper($1)}')
+  sed -i .previous -E "s/APP_NAME_UPPERCASE/$APP_NAME_UPPERCASE/g" ./docker-compose.yaml
 fi
 
 . $(dirname $0)/yak-up
@@ -15,4 +26,9 @@ else
   CMD="$@"
 fi
 
-docker exec -it ${APP_NAME}-app $CMD
+# make sure things are configurable via environment variables
+if [ ! -f ./config/custom-environment-variables.json ]; then
+  docker exec -it ${APP_NAME}-app bash -c "npm run envars-default && $CMD"
+else
+  docker exec -it ${APP_NAME}-app $CMD
+fi

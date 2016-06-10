@@ -4,10 +4,12 @@ var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 
 module.exports = function () {
+  var app = this
+  var cfg = app.get('serverConfig')
+
   var ws = require('websocket-stream')
   var Connection = require('mqtt-connection')
   var socketService = require('yaktor/app/services/socketService.js')
-  var app = this
   var nextId = 0
   var newId = function () {
     var id = nextId++
@@ -80,9 +82,9 @@ module.exports = function () {
         var topic = packet.topic.replace(/#/g, '**').replace(/\+/g, '*')
         var colonTopic = /([^:]+):state:([^:]+):(.*)/.exec(topic)
         var slashTopic = /([^\/]+)\/state\/([^\/]+)\/(.*)/.exec(topic)
-        var m = colonTopic || slashTopic
+        var matches = colonTopic || slashTopic
         if (slashTopic) {
-          topic = m[ 1 ] + ':state:' + m[ 2 ] + ':' + m[ 3 ]
+          topic = matches[ 1 ] + ':state:' + matches[ 2 ] + ':' + matches[ 3 ]
         }
         conn[ packet.topic ] = conn[ packet.topic ] || 0
         // only .on the first time
@@ -102,10 +104,10 @@ module.exports = function () {
           })
         }
         // autoInit
-        if (m) {
-          var init = m[ 1 ] + '::init'
+        if (matches) {
+          var init = matches[ 1 ] + '::init'
           emit.call(emitter, init, {
-            _id: m[ 3 ]
+            _id: matches[ 3 ]
           })
         }
       })
@@ -185,13 +187,14 @@ module.exports = function () {
       stream.unshift(d)
       /*
        * Because:
-       * In HTTP 1.0 and 1.1 Request-Line which begins with a method token (or a printable chars like [P]OST [G]ET). Also servers SHOULD ignore any empty line(s) received where a Request-Line is expected [rfc2616-sec4.1] [rfc2616-sec5.1]
+       * In HTTP 1.0 and 1.1 Request-Line which begins with a method token (or a printable chars like [P]OST [G]ET).
+       * Also servers SHOULD ignore any empty line(s) received where a Request-Line is expected [rfc2616-sec4.1] [rfc2616-sec5.1]
        * AND
        * In MQTT the first Packet sent from the Client to the Server MUST be a CONNECT Packet [MQTT-3.1.0-1].
        * Therefore:
        * A valid MQTT request begin with 0x10 and a HTTP request must not
        */
-      if (d[0] === 0x10 || d[0] === String.fromCharCode(0x10)) {
+      if (d[ 0 ] === 0x10 || d[ 0 ] === String.fromCharCode(0x10)) {
         mqttListener.call(that, stream)
       } else {
         httpListener.call(that, stream)
@@ -200,8 +203,10 @@ module.exports = function () {
     })
   }
   app.server.on('connection', testFn)
+  var serverPath = cfg.mqtt.path
+  if (serverPath.indexOf('/') !== 0) serverPath = '/' + serverPath
   ws.createServer({
-    path: '/mqtt',
+    path: serverPath,
     server: app.server
   }, mqttListener)
 }
