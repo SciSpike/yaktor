@@ -19,85 +19,92 @@ var sockjs = require('sockjs')
 var util = require('util')
 var http = 'http'
 
-var defaults = require('./config-defaults.js')
+var services = require('./app/services')
 
-module.exports = function (configuration) {
-  // NOTE: npm module 'config' versions 1.20.2 - 1.21.0 are buggy: https://github.com/lorenwest/node-config/issues/329
-  // which causes the next line to bork with "Cannot redefine property" error
-  config.util.extendDeep(defaults, configuration)
-  config.util.setModuleDefaults('yaktor', defaults)
-
-  var logger = require('./lib/logger')
-
-  process.removeAllListeners('uncaughtException')
-  process.on('uncaughtException', function (err) {
-    logger.error(err.stack)
-  })
-
-  var services = require('./app/services')
-
-  var yaktor = {
-    config: config,
-    logger: logger,
-    services: services,
-    converter: services.conversionService,
-    start: function (callback) {
-      logger.info('YAKTOR CONFIGURATION: ' + JSON.stringify(config, 0, 2))
-      var servers = config.get('yaktor.servers')
-      var ports = []
-      async.eachSeries(Object.keys(servers), function (serverName, cb) {
-        var cfg = servers[ serverName ]
-
-        var app = express()
-        var protocol = cfg.protocol
-        var serverFactory = require(protocol)
-        var server = (protocol === http) ? serverFactory.createServer(app) : serverFactory.createServer(cfg.options, app)
-
-        // Install socket-ability
-        var io = sockjs.createServer()
-        io.installHandlers(server, { prefix: '/ws/([^/.]+)(/auth/([^/.]+)){0,1}' })
-        app.io = io
-
-        app.server = server
-        app.yaktor = yaktor
-        app.set('serverName', serverName)
-        app.set('serverConfig', cfg)
-
-        if (cfg.caseSensitiveRouting !== null) app.set('case sensitive routing', cfg.caseSensitiveRouting)
-        if (cfg.etag !== null) app.set('etag', cfg.etag)
-        if (cfg.jsonpCallbackName !== null) app.set('jsonp callback name', cfg.jsonpCallbackName)
-        if (cfg.jsonReplacer !== null) app.set('jsonReplacer', cfg.jsonReplacer)
-        if (cfg.jsonSpaces !== null) app.set('jsonSpaces', cfg.jsonSpaces)
-        if (cfg.queryParser !== null) app.set('query parser', cfg.queryParser)
-        if (cfg.stringRouting !== null) app.set('string routing', cfg.stringRouting)
-        if (cfg.subdomainOffset !== null) app.set('subdomain offset', cfg.subdomainOffset)
-        if (cfg.trustProxy !== null) app.set('trust proxy', cfg.trustProxy)
-        if (cfg.views !== null) app.set('views', cfg.views)
-        if (cfg.viewCache !== null) app.set('view cache', cfg.viewCache)
-        if (cfg.viewEngine !== null) app.set('view engine', cfg.viewEngine)
-        if (cfg.xPoweredBy !== null) app.set('x-powered-by', !!cfg.xPoweredBy)
-        // TODO: remove -- used by generated ./config/initializers/10_routes.js, not by ./bin/static/config/initializers/10_routes.js
-        app.set('routesPath', path.resolve(cfg.routesPath))
-
-        init.call(app, function (err) {
-          if (err) {
-            logger.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
-            return cb(err)
-          }
-          // Setup the server
-          var port = parseInt(cfg.port)
-          ports.push(port)
-          server.listen(port, cb)
-        })
-      }, function (err) {
-        if (yaktor.gossipmonger) { yaktor.gossipmonger.gossip() }
-        var modulePath = path.resolve(path.join(config.get('yaktor.conversations.basedir'), config.get('yaktor.conversations.modules')))
-        require(config.get('yaktor.enginePath'))([ modulePath ], function () {
-          callback(err, ports)
-        })
-      })
+var yaktor = {
+  services: services,
+  converter: services.conversionService,
+  start: function (configuration, callback) {
+    if (configuration && typeof configuration === 'function') {
+      callback = configuration
+      configuration = {}
     }
-  }
+    // get design-time default configurations
+    var defaults = require('./defaults') // yaktor defaults
+    defaults.servers = require(path.resolve('config', 'servers')) // defaults for each server
+    var featureGlobalsDir = path.resolve('config', 'defaults') // defaults for features like cassandra
+    var featureGlobals = require(featureGlobalsDir)
+    for (var key in Object.keys(featureGlobals)) {
+      // keys can't conflict with our keys
+      if (defaults[ key ]) return callback(new Error('cannot use name "' + key + '" in ' + featureGlobalsDir))
+      defaults[ key ] = featureGlobals[ key ]
+    }
+    // NOTE: npm module 'config' versions 1.20.2 - 1.21.0 are buggy: https://github.com/lorenwest/node-config/issues/329
+    // which causes the next line to bork with "Cannot redefine property" error
+    config.util.extendDeep(defaults, configuration)
+    config.util.setModuleDefaults('yaktor', defaults)
+    yaktor.config = config
 
-  return yaktor
+    yaktor.logger = yaktor.log = require('./lib/logger')
+    process.on('uncaughtException', function (err) {
+      yaktor.logger.error(err.stack)
+    })
+    yaktor.logger.info('YAKTOR CONFIGURATION: ' + JSON.stringify(config, 0, 2))
+
+    async.series([
+      async.apply(init.initGlobals, yaktor), // initialize globals
+      function (next) { // initialize each server
+        var ports = []
+        async.eachSeries(Object.keys(config.get('yaktor.servers')), function (serverName, cb) {
+          var app = express()
+          app.yaktor = yaktor
+
+          var prefix = [ 'yaktor', 'servers', serverName ]
+          var getConfigVal = function (path) {
+            return app.yaktor.config.get(prefix.concat(path).join('.'))
+          }
+          app.getConfigVal = getConfigVal // handy for server initializers
+          var hasConfigVal = function (path) {
+            return app.yaktor.config.has(prefix.concat(path).join('.'))
+          }
+          app.hasConfigVal = hasConfigVal // handy for server initializers
+
+          var protocol = getConfigVal('protocol')
+          var serverFactory = require(protocol)
+          var server = (protocol === http)
+            ? serverFactory.createServer(app)
+            : serverFactory.createServer(getConfigVal('options'), app)
+          app.server = server
+
+          // Install socket-ability
+          var io = sockjs.createServer()
+          io.installHandlers(server, { prefix: '/ws/([^/.]+)(/auth/([^/.]+)){0,1}' })
+          app.io = io
+
+          init.initServer(serverName, app, function (err) {
+            if (err) {
+              yaktor.logger.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
+              return cb(err)
+            }
+            // Setup the server
+            var port = parseInt(getConfigVal('port'))
+            ports.push(port)
+            server.listen(port, cb)
+          })
+        }, function (err) {
+          if (err) next(err)
+
+          if (yaktor.gossipmonger) { yaktor.gossipmonger.gossip() }
+          var modulePath = path.resolve(path.join(config.get('yaktor.conversations.basedir'), config.get('yaktor.conversations.modules')))
+          require(config.get('yaktor.enginePath'))([ modulePath ], function (err) {
+            callback(err, ports)
+          })
+        })
+      }
+    ], function (err) {
+      callback(err)
+    })
+  }
 }
+
+module.exports = yaktor

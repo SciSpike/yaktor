@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var path = require('path')
 var bodyParser = require('body-parser')
@@ -6,11 +6,8 @@ var fs = require('fs')
 var url = require('url')
 
 // ///Endpoints
-module.exports = function () {
-  var app = this
-  var cfg = app.get('serverConfig')
-
-  var favicon = path.resolve(path.join(cfg.favicon.basedir, cfg.favicon.filename))
+module.exports = function (serverName, app, done) {
+  var favicon = path.resolve(path.join(app.getConfigVal('favicon.basedir'), app.getConfigVal('favicon.filename')))
   fs.exists(favicon, function (exists) {
     if (exists) {
       app.use(require('serve-favicon')(favicon))
@@ -63,4 +60,6 @@ module.exports = function () {
     res.locals.authenticated = !(req.user && req.user.anonymous)
     next()
   })
+
+  done && done()
 }

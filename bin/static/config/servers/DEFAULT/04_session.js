@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var session = require('express-session')
 var maxSessionAge
@@ -82,31 +82,15 @@ var MongooseStore = function (session) {
 }
 
 var SessionMongoose = MongooseStore(session)
-var mongooseSessionStore = new SessionMongoose()
-var secret
-var initialized = false
 
-module.exports = function () {
-  if (initialized) return
-  var app = this
-  var yaktor = app.yaktor
-  var cfg = app.get('serverConfig')
+module.exports = function (serverName, app, done) {
+  if (!app.getConfigVal('session.enable')) return done && done()
 
-  maxSessionAge = parseInt(cfg.session.maxAgeMillis)
-
-  yaktor.sessionStore = mongooseSessionStore
-  secret = cfg.session.secret
-  var sessionConfig = {
-    resave: true,
-    saveUninitialized: true,
-    store: mongooseSessionStore,
-    secret: secret,
-    key: 'connect.sid',
-    cookie: { httpOnly: false, maxAge: maxSessionAge }
-  }
-  app.set('sessionStore', mongooseSessionStore)
+  var sessionConfig = app.getConfigVal('session.config')
+  var sessionStore = new SessionMongoose()
+  sessionConfig.store = sessionStore
+  app.set('sessionStore', sessionStore)
   app.getSession = function (sessionId, cb) {
-    var sessionStore = mongooseSessionStore
     sessionStore.get(sessionId, function (err, sessionData) {
       if (err != null || !sessionData) {
         if (err) {
@@ -125,5 +109,5 @@ module.exports = function () {
   app.use(require('cookie-parser')(secret))
   app.use(session(sessionConfig))
 
-  initialized = true
+  done && done()
 }

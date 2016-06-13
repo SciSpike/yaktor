@@ -1,16 +1,12 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var path = require('path')
 var fs = require('fs')
 var serveStatic = require('serve-static')
 
-module.exports = function () {
-  var app = this
-  var cfg = app.get('serverConfig')
-
-  var publicDir = cfg[ 'static' ].basedir
-  this.use(serveStatic(path.resolve(publicDir))) // allowing static content to be found
-  this.use(serveStatic(path.resolve(path.join('node_modules', 'tv4')))) // allowing static content to be found
+module.exports = function (serverName, app, done) {
+  app.use(serveStatic(path.resolve(path.join('node_modules', 'tv4'))))
+  app.use(serveStatic(path.resolve('public')))
 
   // setup the error handling for development mode (prints the error stacktrace in browser)
   if (process.env.NODE_ENV === 'development') {
@@ -74,11 +70,13 @@ module.exports = function () {
     })
   })
   app.get('/', function (req, res) {
-    res.render(path.resolve(path.join(cfg.views_.basedir, cfg.views_.index)), {
+    res.render(path.resolve(path.join('views', 'index.html')), {
       locale: req.locale,
       sId: req.sessionID
     })
   })
 
-  app.use(serveStatic(path.resolve(cfg.views_.basedir)))
+  app.use(serveStatic(path.resolve('views')))
+
+  done && done()
 }

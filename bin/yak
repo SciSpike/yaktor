@@ -28,7 +28,7 @@ fi
 
 # make sure things are configurable via environment variables
 if [ ! -f ./config/custom-environment-variables.json ]; then
-  docker exec -it ${APP_NAME}-app bash -c "npm run envars-default && $CMD"
+  docker exec -it ${APP_NAME}-app bash -c "npm run envars && $CMD"
 else
   docker exec -it ${APP_NAME}-app $CMD
 fi

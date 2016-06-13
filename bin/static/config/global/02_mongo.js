@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var mongoose = require('mongoose')
 require('mongoose-shortid')
@@ -10,14 +10,12 @@ try {
   logger.warn('gridfs not found, skipping.')
 }
 /* jshint eqnull:true */
-module.exports = function (cb) {
-  var app = this
-  var cfg = app.get('serverConfig')
+module.exports = function (yaktor, cb) {
 
-  var host = cfg.mongo.host
-  var port = cfg.mongo.port
-  var db = cfg.mongo.db
-  var options = cfg.mongo.options
+  var host = yaktor.config.get('yaktor.mongo.host')
+  var port = yaktor.config.get('yaktor.mongo.port')
+  var db = yaktor.config.get('yaktor.mongo.db')
+  var options = yaktor.config.get('yaktor.mongo.options')
 
   require('mongoose-pagination')
   var f1nU = mongoose.Model.findOneAndUpdate

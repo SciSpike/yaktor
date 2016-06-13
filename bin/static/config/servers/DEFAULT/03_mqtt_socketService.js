@@ -1,11 +1,9 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 
-module.exports = function () {
-  var app = this
-  var cfg = app.get('serverConfig')
+module.exports = function (serverName, app, done) {
 
   var ws = require('websocket-stream')
   var Connection = require('mqtt-connection')
@@ -206,10 +204,12 @@ module.exports = function () {
     })
   }
   app.server.on('connection', testFn)
-  var serverPath = cfg.mqtt.path
+  var serverPath = app.getConfigVal('mqtt.path')
   if (serverPath.indexOf('/') !== 0) serverPath = '/' + serverPath
   ws.createServer({
     path: serverPath,
     server: app.server
   }, mqttListener)
+
+  done && done()
 }

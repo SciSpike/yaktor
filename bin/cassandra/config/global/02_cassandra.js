@@ -15,11 +15,9 @@ var getUserName = function (user) {
   return user._id || user.email || 'anonymous'
 }
 
-module.exports = function (cb) {
-  var app = this
-  var cfg = app.get('serverConfig')
-
-  if (!cfg.cassandra.enable) {
+module.exports = function (yaktor, cb) {
+  var config = yaktor.config
+  if (!config.get('yaktor.cassandra.enable')) {
     cql.client = {
       execute: function (query, data, options, cb) {
         (cb || options || data)()
@@ -28,9 +26,9 @@ module.exports = function (cb) {
     cb()
   }
   else {
-    var hosts = cfg.cassandra.hosts.split(',')
-    var keyspace = cfg.cassandra.keyspace
-    var hostPort = parseInt(cfg.cassandra.port)
+    var hosts = config.get('yaktor.cassandra.hosts').split(',')
+    var keyspace = config.get('yaktor.cassandra.keyspace')
+    var hostPort = parseInt(config.get('yaktor.cassandra.port'))
     // this will break if you have differing ports across servers :)
     hosts = hosts.map(function (host) {
       return host.replace(/([^:]*)(:(\d+))?/, function (all, host, colon, port) {
