@@ -51,7 +51,7 @@
     "standard": "6.0.8",
     "standard-format": "2.1.1",
     "swagger-ui": "2.1.4",
-    "config-cev-generator": "0.1.5"
+    "config-cev-generator": "0.1.6"
   },
   "scripts": {
     "start": "sudo -E node app.js",
@@ -64,7 +64,7 @@
     "gen-src": "find . -name '*.cl' -o -name '*.dm' -follow | xargs yaktor-lang",
     "test": "LOG_LEVEL=warn multi='spec=- mocha-text-cov=coverage.txt' mocha --require ./build/blanket -R mocha-multi && cat coverage.txt",
     "report": "find conversations/js  -name '*.js' | xargs plato -x '.gen.js|.def.js|\/types\/' -d plato",
-    "envars": "cev --prefix @ > config/custom-environment-variables.json"
+    "envars": "cev --noprefix > config/custom-environment-variables.json"
   },
   "config": {
     "registry": "http://npm.scispike.com"

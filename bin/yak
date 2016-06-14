@@ -23,12 +23,6 @@ if [ -z "$APP_NAME" ]; then
   export APP_NAME=${PWD##*/} # (basename of the current directory)
 fi
 
-# TODO: remove this in favor of using underscore.js template in ./yaktor.js at `yaktor create` time
-if egrep -q '<%=APP_NAME_UPPERCASED%>' ./docker-compose.yaml; then
-  APP_NAME_UPPERCASED=$(echo -n $APP_NAME | awk '{print toupper($1)}')
-  sed -i .previous -E "s/<%=APP_NAME_UPPERCASED%>/$APP_NAME_UPPERCASED/g" ./docker-compose.yaml
-fi
-
 . $(dirname $0)/yak-up
 
 if [ "$#" -eq 0 ]; then
