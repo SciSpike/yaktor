@@ -34,8 +34,8 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
 
     // Update dependencies
     // merge taking theirs
-      ;
-    [ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
+
+    ;[ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
       // merge taking theirs
       theirPackageJson[ m ] = theirPackageJson[ m ] || {}
       if (!force) {
@@ -45,8 +45,8 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     })
 
     // pwn subsection
-    ;
-    [ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
+
+    ;[ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
     })
 

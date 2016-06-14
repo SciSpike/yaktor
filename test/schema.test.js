@@ -1,4 +1,13 @@
 /* global describe, it */
+process.env.NODE_CONFIG = JSON.stringify({
+  yaktor: {
+    log: {
+      stdout: true,
+      level: 'info',
+      filename: ''
+    }
+  }
+})
 var path = require('path')
 var assert = require('assert')
 require('mongoose-shortid')
@@ -30,11 +39,9 @@ describe('shortId', function () {
     })
   })
   it('should create shortId of configured length', function (done) {
-    var logger = require(path.resolve('lib', 'logger'))
+    var logger = require('../logger')
     logger[ '@noCallThru' ] = true
-    proxyquire(path.resolve('bin', 'static', 'config', 'initializers', '02_shortid'), {
-      'yaktor/lib/logger': logger
-    })
+    proxyquire(path.resolve('bin', 'static', 'config', 'global', '02_shortid'), { 'yaktor/logger': logger })
     var DefaultShort = mongoose.model('DefaultShort')
     var ds = new DefaultShort({
       name: 'name'

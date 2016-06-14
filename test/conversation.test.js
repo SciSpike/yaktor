@@ -1,12 +1,18 @@
 /* global describe, it, before */
+process.env.NODE_CONFIG = JSON.stringify({
+  yaktor: {
+    log: {
+      stdout: true,
+      level: 'info',
+      filename: ''
+    }
+  }
+})
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
 require('mongoose-shortid')
-var logger = require('../lib/logger')
-logger.init({
-  get: function () {}
-})
+var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')

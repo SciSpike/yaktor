@@ -1,11 +1,17 @@
 /* global describe, it, beforeEach */
+process.env.NODE_CONFIG = JSON.stringify({
+  yaktor: {
+    log: {
+      stdout: true,
+      level: 'info',
+      filename: ''
+    }
+  }
+})
 var path = require('path')
 require('mongoose-shortid')
 var Promise = require('bluebird')
 var logger = require('../lib/logger')
-logger.init({
-  get: function () {}
-})
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')

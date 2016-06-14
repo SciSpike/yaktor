@@ -6,7 +6,7 @@ fs.readdirSync(__dirname).forEach(function (file) {
   var pathname = path.join(__dirname, file)
   if (!fs.lstatSync(pathname).isDirectory()) return
 
-  servers[ file ] = require(pathname);
-});
+  servers[ file ] = require(pathname)
+})
 
-module.exports = servers;
+module.exports = servers

@@ -64,17 +64,16 @@ module.exports = function (yaktor, done) {
         logger.error(err, err.stack)
         done(err)
       }
-
     })
     amqp.queue.connection.on('error', function (err) {
       if (forceAmqp) {
         logger.error('amqp error', err, err.stack)
-        // we need to catch this one if the server goes down unexpectedly.
+      // we need to catch this one if the server goes down unexpectedly.
       }
       if (err.code === 'EPIPE') {
         amqp.queue.connection.reconnect()
       }
-      // TODO: else cb(err) ?
+    // TODO: else cb(err) ?
     })
   } catch (e) {
     logger.warn('not loading amqp, %s', e.stack.toString())

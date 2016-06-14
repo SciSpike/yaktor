@@ -12,7 +12,6 @@ try {
 }
 /* jshint eqnull:true */
 module.exports = function (yaktor, done) {
-
   var host = config.get('yaktor.mongo.host')
   var port = config.get('yaktor.mongo.port')
   var db = config.get('yaktor.mongo.db')

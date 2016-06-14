@@ -24,8 +24,7 @@ module.exports = function (yaktor, cb) {
       }
     }
     cb()
-  }
-  else {
+  } else {
     var hosts = config.get('yaktor.cassandra.hosts').split(',')
     var keyspace = config.get('yaktor.cassandra.keyspace')
     var hostPort = parseInt(config.get('yaktor.cassandra.port'))

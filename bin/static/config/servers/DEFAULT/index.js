@@ -24,14 +24,14 @@ var settings = {
       // use this object to configure https if protocol is https
     },
     protocol: 'http', // if https, use options above
-    prefix: '', // protocol+prefix supercedes protocol+host+port 
+    prefix: '', // protocol+prefix supercedes protocol+host+port
     hostname: 'localhost',
     port: 3000
   },
   path: {
     routesPath: 'routes', // TODO: remove when routes/<serverName> directories implemented
     // TODO: routes: 'routes/DEFAULT',
-    actionsPath: 'actions', // TODO: remove when actions/<serverName> directories implemented
+    actionsPath: 'actions' // TODO: remove when actions/<serverName> directories implemented
     // TODO: actions: 'actions/DEFAULT'
   },
   favicon: {
@@ -69,7 +69,7 @@ fs.readdirSync(__dirname).forEach(function (file) {
 
   if (settings[ file ]) throw new Error('cannot use configuration name "' + file + '" -- already used in server settings')
   settings[ file ] = require(pathname)
-});
+})
 
 var regex = /\.js$/
 module.exports = {

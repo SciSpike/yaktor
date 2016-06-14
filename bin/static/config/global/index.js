@@ -9,7 +9,7 @@ fs.readdirSync(__dirname).forEach(function (file) {
 
   if (settings[ file ]) throw new Error('cannot use configuration name "' + file + '" -- already used in global settings')
   settings[ file ] = require(pathname)
-});
+})
 
 var regex = /\.js$/
 module.exports = {

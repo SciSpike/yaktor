@@ -5,10 +5,8 @@ var config = require('config')
 process.env.SUPRESS_NO_CONFIG_WARNING = suppress
 
 var express = require('express')
-var fs = require('fs')
 var async = require('async')
 var sockjs = require('sockjs')
-var util = require('util')
 var http = 'http'
 
 var yaktor = {

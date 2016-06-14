@@ -1,4 +1,13 @@
 /* global describe, it */
+process.env.NODE_CONFIG = JSON.stringify({
+  yaktor: {
+    log: {
+      stdout: true,
+      level: 'info',
+      filename: ''
+    }
+  }
+})
 var path = require('path')
 var assert = require('assert')
 var Response = require(path.resolve('app', 'services', 'rest', 'Response'))

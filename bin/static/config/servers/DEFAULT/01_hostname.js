@@ -1,9 +1,7 @@
-var config = require('config')
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
 
 module.exports = function (serverName, app, done) {
-
   // protocol+prefix supercedes protocol+hostname+port
   var protocol = app.getConfigVal('host.protocol')
   var prefix = app.getConfigVal('host.prefix')
@@ -16,7 +14,7 @@ module.exports = function (serverName, app, done) {
       protocol +
       '://' +
       hostname +
-      ((protocol == 'http' && port === 80) || (protocol === 'https' && port === 443) ? '' : (':' + port)))
+      ((protocol === 'http' && port === 80) || (protocol === 'https' && port === 443) ? '' : (':' + port)))
   }
 
   done && done()

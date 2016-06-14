@@ -106,7 +106,7 @@ module.exports = function (serverName, app, done) {
       }
     })
   }
-  app.use(require('cookie-parser')(secret))
+  app.use(require('cookie-parser')(app.getConfigVal('session.config.secret')))
   app.use(session(sessionConfig))
 
   done && done()
