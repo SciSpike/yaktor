@@ -15,7 +15,7 @@ var noAuth = function (arg, cb) {
 var noSession = function (sessionId, cb) {
   cb(null, {})
 }
-/* jshint eqnull:true */
+
 var SocketService = {
   agents: {},
   onConnect: function (app, sessionId, authToken, emitter, endFn, done) {

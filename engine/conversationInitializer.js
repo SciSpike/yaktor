@@ -14,7 +14,6 @@ var globalConversation = require('../index')
 
 var auditLogger = require(path.join('..', 'lib', 'auditLogger'))
 
-/* jshint eqnull:true */
 var noAuth = function (user, agentName, cb) {
   cb(null, true)
 }
