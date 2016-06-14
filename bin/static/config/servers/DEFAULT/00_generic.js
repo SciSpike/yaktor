@@ -1,7 +1,8 @@
 var logger = require('yaktor/lib/logger')
 logger.silly(__filename)
 
-var settings = {
+// maps between our setting name and express's well-known settings
+var mappings = { // see http://expressjs.com/en/4x/api.html#app.settings.table
   caseSensitiveRouting: 'case sensitive routing',
   etag: 'etag',
   jsonpCallbackName: 'jsonp callback name',
@@ -18,10 +19,10 @@ var settings = {
 }
 
 module.exports = function (serverName, app, done) {
-  Object.keys(settings).forEach(function (setting) {
-    var val = val = app.getConfigVal(setting)
-    if (val !== null) app.set(settings[ setting ], val)
+  Object.keys(mappings).forEach(function (setting) {
+    var val = val = app.getConfigVal('express.' + setting)
+    if (val !== null) app.set(mappings[ setting ], val)
   })
-  
+
   done && done()
 }

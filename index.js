@@ -1,44 +1,33 @@
-/**
- * This is the main startup file or the bootstrap if you'd like.
- */
-process.on('uncaughtException', function (err) {
-  console.log(err.stack)
-})
 var path = require('path')
 var suppress = process.env.SUPRESS_NO_CONFIG_WARNING
 process.env.SUPRESS_NO_CONFIG_WARNING = 'y'
 var config = require('config')
 process.env.SUPRESS_NO_CONFIG_WARNING = suppress
 
-// Model dependencies
 var express = require('express')
-var init = require('./lib/init.js')
 var fs = require('fs')
 var async = require('async')
 var sockjs = require('sockjs')
 var util = require('util')
 var http = 'http'
 
-var services = require('./app/services')
-
 var yaktor = {
-  services: services,
-  converter: services.conversionService,
   start: function (configuration, callback) {
     if (configuration && typeof configuration === 'function') {
       callback = configuration
       configuration = {}
     }
     // get design-time default configurations
-    var defaults = require('./defaults') // yaktor defaults
-    defaults.servers = require(path.resolve('config', 'servers')) // defaults for each server
-    var featureGlobalsDir = path.resolve('config', 'defaults') // defaults for features like cassandra
-    var featureGlobals = require(featureGlobalsDir)
-    for (var key in Object.keys(featureGlobals)) {
-      // keys can't conflict with our keys
-      if (defaults[ key ]) return callback(new Error('cannot use name "' + key + '" in ' + featureGlobalsDir))
-      defaults[ key ] = featureGlobals[ key ]
-    }
+    var defaults = {}
+    var globals = require(path.resolve('config', 'global'))
+    Object.keys(globals.settings).forEach(function (key) {
+      defaults[ key ] = globals.settings[ key ]
+    })
+    defaults.servers = {}
+    var servers = require(path.resolve('config', 'servers'))
+    Object.keys(servers).forEach(function (serverName) {
+      defaults.servers[ serverName ] = servers[ serverName ].settings
+    })
     // NOTE: npm module 'config' versions 1.20.2 - 1.21.0 are buggy: https://github.com/lorenwest/node-config/issues/329
     // which causes the next line to bork with "Cannot redefine property" error
     config.util.extendDeep(defaults, configuration)
@@ -47,12 +36,16 @@ var yaktor = {
 
     yaktor.logger = yaktor.log = require('./lib/logger')
     process.on('uncaughtException', function (err) {
-      yaktor.logger.error(err.stack)
+      yaktor.logger.error('uncaught exception', err.stack)
     })
-    yaktor.logger.info('YAKTOR CONFIGURATION: ' + JSON.stringify(config, 0, 2))
+    yaktor.logger.info('YAKTOR CONFIGURATION: ' + JSON.stringify(config.yaktor, 0, 2))
+
+    var services = require('./app/services')
+    yaktor.services = services
+    yaktor.conversionService = services.conversionService
 
     async.series([
-      async.apply(init.initGlobals, yaktor), // initialize globals
+      async.apply(globals.init, yaktor), // initialize globals
       function (next) { // initialize each server
         var ports = []
         async.eachSeries(Object.keys(config.get('yaktor.servers')), function (serverName, cb) {
@@ -69,11 +62,11 @@ var yaktor = {
           }
           app.hasConfigVal = hasConfigVal // handy for server initializers
 
-          var protocol = getConfigVal('protocol')
+          var protocol = getConfigVal('host.protocol')
           var serverFactory = require(protocol)
           var server = (protocol === http)
             ? serverFactory.createServer(app)
-            : serverFactory.createServer(getConfigVal('options'), app)
+            : serverFactory.createServer(getConfigVal('host.options'), app)
           app.server = server
 
           // Install socket-ability
@@ -81,13 +74,13 @@ var yaktor = {
           io.installHandlers(server, { prefix: '/ws/([^/.]+)(/auth/([^/.]+)){0,1}' })
           app.io = io
 
-          init.initServer(serverName, app, function (err) {
+          servers[ serverName ].init(serverName, app, function (err) {
             if (err) {
               yaktor.logger.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
               return cb(err)
             }
-            // Setup the server
-            var port = parseInt(getConfigVal('port'))
+
+            var port = parseInt(getConfigVal('host.port'))
             ports.push(port)
             server.listen(port, cb)
           })
@@ -95,8 +88,8 @@ var yaktor = {
           if (err) next(err)
 
           if (yaktor.gossipmonger) { yaktor.gossipmonger.gossip() }
-          var modulePath = path.resolve(path.join(config.get('yaktor.conversations.basedir'), config.get('yaktor.conversations.modules')))
-          require(config.get('yaktor.enginePath'))([ modulePath ], function (err) {
+          var modulePath = path.resolve('conversations', 'js')
+          require('./engine')([ modulePath ], function (err) {
             callback(err, ports)
           })
         })

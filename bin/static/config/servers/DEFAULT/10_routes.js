@@ -4,9 +4,9 @@ var path = require('path')
 var fs = require('fs')
 
 module.exports = function (serverName, app, done) {
-  var routes = path.resolve(app.hasConfigVal('routesPath')
-    ? app.getConfigVal('routesPath')
-    : path.join('routes', serverName))
+  var routes = path.resolve(app.hasConfigVal('path.routesPath')
+    ? app.getConfigVal('path.routesPath')
+    : path.resolve('routes', serverName))
 
   if (fs.existsSync(routes)) {
     fs.readdirSync(routes).forEach(function (file) {

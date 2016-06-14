@@ -5,7 +5,7 @@ var bodyParser = require('body-parser')
 var fs = require('fs')
 var url = require('url')
 
-// ///Endpoints
+// Endpoints
 module.exports = function (serverName, app, done) {
   var favicon = path.resolve(path.join(app.getConfigVal('favicon.basedir'), app.getConfigVal('favicon.filename')))
   fs.exists(favicon, function (exists) {

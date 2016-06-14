@@ -1,3 +1,4 @@
+var config = require('config')
 var logger = require(path.resolve('yaktor/lib/logger'))
 logger.silly(__filename)
 var cql = require('cassandra-driver')
@@ -16,7 +17,6 @@ var getUserName = function (user) {
 }
 
 module.exports = function (yaktor, cb) {
-  var config = yaktor.config
   if (!config.get('yaktor.cassandra.enable')) {
     cql.client = {
       execute: function (query, data, options, cb) {

@@ -1,3 +1,4 @@
+var config = require('config')
 var logger = require('yaktor/logger')
 logger.silly(__filename)
 var mongoose = require('mongoose')
@@ -10,12 +11,12 @@ try {
   logger.warn('gridfs not found, skipping.')
 }
 /* jshint eqnull:true */
-module.exports = function (yaktor, cb) {
+module.exports = function (yaktor, done) {
 
-  var host = yaktor.config.get('yaktor.mongo.host')
-  var port = yaktor.config.get('yaktor.mongo.port')
-  var db = yaktor.config.get('yaktor.mongo.db')
-  var options = yaktor.config.get('yaktor.mongo.options')
+  var host = config.get('yaktor.mongo.host')
+  var port = config.get('yaktor.mongo.port')
+  var db = config.get('yaktor.mongo.db')
+  var options = config.get('yaktor.mongo.options')
 
   require('mongoose-pagination')
   var f1nU = mongoose.Model.findOneAndUpdate
@@ -50,10 +51,10 @@ module.exports = function (yaktor, cb) {
       if (GridFs && !mongoose.gridFs) {
         mongoose.gridFs = new GridFs(mongoose.connection.db)
       }
-      cb(err)
+      done(err)
     })
     mongoose.connect('mongodb://' + host + ':' + port + '/' + db, options)
   } else {
-    cb()
+    done()
   }
 }

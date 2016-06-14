@@ -4,16 +4,19 @@ logger.silly(__filename)
 
 module.exports = function (serverName, app, done) {
 
-  var cfg = app.getConfigVal
-
   // protocol+prefix supercedes protocol+hostname+port
-  var prefix = cfg('prefix')
+  var protocol = app.getConfigVal('host.protocol')
+  var prefix = app.getConfigVal('host.prefix')
   if (prefix) {
-    app.set('urlPrefix', cfg('protocol') + '://' + prefix)
+    app.set('urlPrefix', protocol + '://' + prefix)
   } else {
-    var hostname = cfg('hostname')
-    var port = parseInt(cfg('port'))
-    app.set('urlPrefix', cfg('protocol') + '://' + hostname + ((port === 80 || port === 443) ? '' : ':' + port))
+    var hostname = app.getConfigVal('host.hostname')
+    var port = parseInt(app.getConfigVal('host.port'))
+    app.set('urlPrefix',
+      protocol +
+      '://' +
+      hostname +
+      ((protocol == 'http' && port === 80) || (protocol === 'https' && port === 443) ? '' : (':' + port)))
   }
 
   done && done()

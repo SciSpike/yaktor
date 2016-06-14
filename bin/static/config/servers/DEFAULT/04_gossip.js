@@ -10,7 +10,7 @@ var ClusterSeed = require('mongoose').model('ClusterSeed')
 module.exports = function (serverName, app, done) {
   var yaktor = app.yaktor
   var gPort = parseInt(app.getConfigVal('gossip.port'))
-    || parseInt(app.getConfigVal('port')) + parseInt(app.getConfigVal('gossip.portOffset'))
+    || parseInt(app.getConfigVal('host.port')) + parseInt(app.getConfigVal('gossip.portOffset'))
 
   dns.lookup(os.hostname(), function (err, gAddress) { // eslint-disable-line handle-callback-err
     var gHost = gAddress + ':' + gPort

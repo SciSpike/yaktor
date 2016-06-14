@@ -3,10 +3,10 @@ var fs = require('fs')
 
 var servers = {}
 fs.readdirSync(__dirname).forEach(function (file) {
-  var filePath = path.join(__dirname, file)
-  if (!fs.lstatSync(filePath).isDirectory()) return
+  var pathname = path.join(__dirname, file)
+  if (!fs.lstatSync(pathname).isDirectory()) return
 
-  servers[ file ] = require(filePath);
+  servers[ file ] = require(pathname);
 });
 
 module.exports = servers;

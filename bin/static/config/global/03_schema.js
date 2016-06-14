@@ -8,15 +8,13 @@ module.exports = function (yaktor, done) {
   try {
     if (initialized) return
 
-    config = yaktor.config
-
-    var modelAll = path.resolve(path.join(config.get('yaktor.generator.basedir'), config.get('yaktor.generator.models')))
+    var modelAll = path.resolve(path.join('src-gen', 'modelAll'))
     if (fs.existsSync(modelAll)) {
       // all we care is that they have been pre-loaded
       require(modelAll)
     }
 
-    var types = path.resolve(path.join(config.get('yaktor.conversations.basedir'), config.get('yaktor.conversations.types')))
+    var types = path.resolve(path.join('conversations', 'types'))
     if (fs.existsSync(types)) {
       require(types)
     }
