@@ -1,4 +1,5 @@
-var logger = require('yaktor/lib/logger')
+var config = require('config')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var messageService = require('yaktor/app/services/messageService')
 // add the missing methods
@@ -39,33 +40,29 @@ Queue.prototype.ping = function (def) {
   })
 }
 
-module.exports = function (cb) {
+module.exports = function (yaktor, done) {
   try {
     var Amqp = require('amqp-eventemitter').AmqpEventEmitter
-    var amqpHost = process.env.AMQP_HOST || 'localhost'
-    var forceAmqp = process.env.FORCE_AMQP
-    var amqp = new Amqp({
-      connection: {
-        host: amqpHost,
-        port: 5672,
-        heartbeat: 55
-      }
-    })
+    var forceAmqp = config.get('yaktor.amqp.force')
+    var options = config.get('yaktor.amqp.options')
+    var amqp = new Amqp(options)
     var connected = false
     amqp.queue.on('amqp-eventemitter.ready', function () {
       if (!connected) {
         connected = true
         messageService.emitter = amqp
         logger.silly('amqp ready.')
-        cb()
+        done()
       }
     })
     amqp.queue.on('error', function (err) {
-      logger.error(err, err.stack)
       if (!connected && !forceAmqp) {
         connected = true
-        logger.silly('amqp not ready, using local emitter instead.')
-        cb()
+        logger.info('amqp not ready, using local emitter instead.')
+        done()
+      } else {
+        logger.error(err, err.stack)
+        done(err)
       }
     })
     amqp.queue.connection.on('error', function (err) {
@@ -76,9 +73,10 @@ module.exports = function (cb) {
       if (err.code === 'EPIPE') {
         amqp.queue.connection.reconnect()
       }
+    // TODO: else cb(err) ?
     })
   } catch (e) {
-    logger.silly('not loading amqp, %s', e.stack.toString())
-    cb()
+    logger.warn('not loading amqp, %s', e.stack.toString())
+    done(e)
   }
 }

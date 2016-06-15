@@ -1,12 +1,18 @@
 /* global describe, it, beforeEach */
+process.env.NODE_CONFIG = JSON.stringify({
+  yaktor: {
+    log: {
+      stdout: true,
+      level: 'info',
+      filename: ''
+    }
+  }
+})
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
 require('mongoose-shortid')
 var logger = require('../lib/logger')
-logger.init({
-  get: function () {}
-})
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
@@ -37,7 +43,7 @@ var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
-  '../lib/logger': logger,
+  '../logger': logger,
   '../app/services/socketService': socketService,
   '../app/services/messageService': messageService,
   'sockjs-client-ws': Global(fakeWs)

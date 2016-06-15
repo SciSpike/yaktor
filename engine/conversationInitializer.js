@@ -178,11 +178,11 @@ var comparator = function (a, b) { // eslint-disable-line no-unused-vars
 }
 module.exports = function (conversation, done) {
   var conversationName = conversation.name
-  logger.silly('conversation loading:%s', conversationName)
+  logger.silly('loading conversation %s', conversationName)
   if (!conversation.agents) {
     return done()
   }
-  async.series([ function (taskDone) {
+  async.series([ function (next) {
     async.each(Object.keys(conversation.agents), function (agentName, configDone) {
       var agent = conversation.agents[ agentName ]
       // short circuit if not our conversation
@@ -269,8 +269,8 @@ module.exports = function (conversation, done) {
         })
         transConfigDone()
       }, configDone)
-    }, taskDone)
-  }, function (cb) {
+    }, next)
+  }, function (next) {
     async.each(Object.keys(conversation.agents), function (agentName, connectionNext) {
       // register with socketService so that we listen when they connect.
       socketService.agents[ agentName ] = function (socket, conn, sessionId, session, user, doneConnecting) {
@@ -409,7 +409,6 @@ module.exports = function (conversation, done) {
         }
       }
       connectionNext()
-    // ///////////////
-    }, cb)
+    }, next)
   } ], done)
 }

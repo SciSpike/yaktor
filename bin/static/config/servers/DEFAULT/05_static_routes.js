@@ -1,15 +1,12 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var path = require('path')
 var fs = require('fs')
-
 var serveStatic = require('serve-static')
 
-module.exports = function () {
-  var app = this
-
-  this.use(serveStatic(path.resolve(path.join('node_modules', 'tv4')))) // allowing static content to be found
-  this.use(serveStatic(path.resolve('public'))) // allowing static content to be found
+module.exports = function (serverName, app, done) {
+  app.use(serveStatic(path.resolve(path.join('node_modules', 'tv4'))))
+  app.use(serveStatic(path.resolve('public')))
 
   // setup the error handling for development mode (prints the error stacktrace in browser)
   if (process.env.NODE_ENV === 'development') {
@@ -67,14 +64,19 @@ module.exports = function () {
   app.get('/swagger-ui', swaggerIndex)
   app.use('/swagger-ui', serveStatic(path.resolve('node_modules', 'swagger-ui', 'dist')))
   app.get('/swagger-api/:id', function (req, res, next) {
-    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), {proto: req.protocol, host: req.get('host')})
+    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), {
+      proto: req.protocol,
+      host: req.get('host')
+    })
   })
   app.get('/', function (req, res) {
-    res.render(path.resolve('views/index.html'), {
+    res.render(path.resolve(path.join('views', 'index.html')), {
       locale: req.locale,
       sId: req.sessionID
     })
   })
 
-  app.use(serveStatic(path.resolve('views'))) // allowing static content to be found
+  app.use(serveStatic(path.resolve('views')))
+
+  done && done()
 }

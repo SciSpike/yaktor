@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var ShortId = require('mongoose-shortid')
 var extend = require('util')._extend
@@ -9,4 +9,3 @@ var options = {
   alphabet: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 }
 ShortId.prototype.options = extend(ShortId.prototype, options)
-module.exports = function () {}

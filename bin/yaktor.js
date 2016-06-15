@@ -13,10 +13,9 @@ var os = require('os')
 var which = require('which')
 
 var dir = process.cwd()
-var oldFiles = []
 
 var cpFiles = function (dir, destDir, force, cb) {
-  console.log('dir %s -> %s', dir, destDir)
+  console.log('recursively copying: %s -> %s', dir, destDir)
   fs.copy(dir, destDir, { clobber: force }, cb)
 }
 
@@ -27,26 +26,14 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
   var processFiles = function (cb) {
     var currentPackageJson = require('./package.json')
 
-    var configSubPath = 'config'
-    var initSubPath = 'initializers'
-    var configInitSubPath = path.join(configSubPath, initSubPath)
-
     // Read this file first. It will throw if you are in an empty dir (which is on
     // purpose).
     var theirPackageJson = require(path.join(appDir, 'package.json'))
-
-
-    ;[ 'lib', 'public', 'build', 'docker', configSubPath, configInitSubPath ].forEach(function (dir) {
-      if (!fs.existsSync(path.join(appDir, dir))) {
-        fs.mkdirSync(path.join(appDir, dir))
-      }
-    })
 
     var staticPath = path.join(__dirname, 'static')
 
     // Update dependencies
     // merge taking theirs
-
 
     ;[ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
       // merge taking theirs
@@ -59,7 +46,6 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
 
     // pwn subsection
 
-
     ;[ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
     })
@@ -70,17 +56,10 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
 
     fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
 
-    oldFiles.forEach(function (ff) {
-      if (fs.existsSync(ff.old)) {
-        console.log('renaming %s -> %s', ff.old, ff[ 'new' ])
-        fs.rename(ff.old, ff[ 'new' ], function (err) {}) // eslint-disable-line handle-callback-err
-      }
-    })
-
     async.parallel([ function (done) {
-      cpFiles(path.join(staticPath, configInitSubPath), path.join(appDir, configInitSubPath), force, done)
-    }, function (done) {
       cpFiles(path.join(staticPath, 'lib'), path.join(appDir, 'lib'), true, done)
+    }, function (done) {
+      cpFiles(path.join(staticPath, 'config'), path.join(appDir, 'config'), true, done)
     }, function (done) {
       cpFiles(path.join(staticPath, 'public'), path.join(appDir, 'public'), true, done)
     }, function (done) {

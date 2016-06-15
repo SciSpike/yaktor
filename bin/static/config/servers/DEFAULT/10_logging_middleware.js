@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var auditLogger = require('yaktor/lib/auditLogger')
 
@@ -8,8 +8,7 @@ var log = function (req, res) {
     .stringify(req.headers), res.statusCode)
 }
 
-module.exports = function () {
-  var app = this
+module.exports = function (serverName, app, done) {
   app.use(function logger (req, res, next) {
     var resHandler = function () {
       res.removeListener('finish', resHandler)
@@ -22,4 +21,6 @@ module.exports = function () {
 
     next()
   })
+
+  done && done()
 }

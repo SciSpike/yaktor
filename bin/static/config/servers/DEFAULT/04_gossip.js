@@ -1,16 +1,16 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
-var updateInterval = 60000
+var updateInterval = 60000 // TODO: make configurable?
 var os = require('os')
 var dns = require('dns')
 var async = require('async')
 var Gossipmonger = require('gossipmonger')
 var ClusterSeed = require('mongoose').model('ClusterSeed')
 
-module.exports = function (done) {
-  var app = this
+module.exports = function (serverName, app, done) {
   var yaktor = app.yaktor
-  var gPort = (parseInt(app.get('port')) + 1000)
+  var gPort = parseInt(app.getConfigVal('gossip.port')) ||
+    parseInt(app.getConfigVal('host.port')) + parseInt(app.getConfigVal('gossip.portOffset'))
 
   dns.lookup(os.hostname(), function (err, gAddress) { // eslint-disable-line handle-callback-err
     var gHost = gAddress + ':' + gPort

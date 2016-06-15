@@ -1,4 +1,5 @@
-var logger = require('yaktor/lib/logger')
+var config = require('config')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 var mongoose = require('mongoose')
 require('mongoose-shortid')
@@ -9,10 +10,13 @@ try {
 } catch (e) {
   logger.warn('gridfs not found, skipping.')
 }
+/* jshint eqnull:true */
+module.exports = function (yaktor, done) {
+  var host = config.get('yaktor.mongo.host')
+  var port = config.get('yaktor.mongo.port')
+  var db = config.get('yaktor.mongo.db')
+  var options = config.get('yaktor.mongo.options')
 
-module.exports = function (cb) {
-  logger.init(this)
-  var mongoHost = process.env.MONGO_HOST || 'localhost'
   require('mongoose-pagination')
   var f1nU = mongoose.Model.findOneAndUpdate
   // Monkey Patch for update existing doc.
@@ -43,10 +47,10 @@ module.exports = function (cb) {
       if (GridFs && !mongoose.gridFs) {
         mongoose.gridFs = new GridFs(mongoose.connection.db)
       }
-      cb(err)
+      done(err)
     })
-    mongoose.connect('mongodb://' + mongoHost + '/engine', { server: { auto_reconnect: true, numberOfRetries: 1000000 } })
+    mongoose.connect('mongodb://' + host + ':' + port + '/' + db, options)
   } else {
-    cb()
+    done()
   }
 }

@@ -1,7 +1,8 @@
 var logger = require('../../../lib/logger')
 var BadRequest = require('./BadRequest')
 
-;(function () {
+  ;
+(function () {
   'use strict'
   var Response = {
     SERVER_ERROR: 500,
@@ -16,10 +17,10 @@ var BadRequest = require('./BadRequest')
     NOT_AUTHENTICATED: 401,
     NOT_AUTHORIZED: 403,
 
-    get FAILURE() {
+    get FAILURE () {
       return 'FAILURE'
     },
-    get SUCCESS() {
+    get SUCCESS () {
       return 'SUCCESS'
     },
     status: function (err) {
@@ -63,10 +64,10 @@ var BadRequest = require('./BadRequest')
             res.end(JSON.stringify(err
               ? new Response.Failure(err)
               : new Response.Success(
-                dtos,
-                total,
-                page,
-                pageSize)
+              dtos,
+              total,
+              page,
+              pageSize)
             ))
             break
           case 'text/html':
@@ -78,10 +79,10 @@ var BadRequest = require('./BadRequest')
               response: err
                 ? new Response.Failure(err)
                 : new Response.Success(
-                  dtos,
-                  total,
-                  page,
-                  pageSize)
+                dtos,
+                total,
+                page,
+                pageSize)
             }))
             break
           case 'application/x-yaml':
@@ -90,10 +91,10 @@ var BadRequest = require('./BadRequest')
             res.end(require('js-yaml').dump(err
               ? new Response.Failure(err)
               : new Response.Success(
-                dtos,
-                total,
-                page,
-                pageSize)
+              dtos,
+              total,
+              page,
+              pageSize)
             ))
             break
           default:

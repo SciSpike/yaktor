@@ -3,8 +3,24 @@
 if [ ! -f ~/.npmrc ]; then
   touch ~/.npmrc
 fi
-if [ "$(uname)" == "Darwin" ] && [ -n $(which docker-machine) ]; then
-  eval $(docker-machine env default)
+
+export YAKTOR_DOCKER_MACHINE=${YAKTOR_DOCKER_MACHINE-default}
+
+if [ "$(uname)" == "Darwin" ]; then
+  if [ -n $(which docker-machine) ] && [ -n $(docker-machine ip $YAKTOR_DOCKER_MACHINE) ]; then
+    docker-machine start $YAKTOR_DOCKER_MACHINE
+    eval $(docker-machine env $YAKTOR_DOCKER_MACHINE)
+    ./osx-docker-machine-route.sh
+  elif [ -n $(which dlite) ] && [ -n $(dlite ip) ]; then
+    ./osx-dlite-route.sh
+  else
+    echo Error: cannot determine whether docker-machine or dlite is present -- exiting
+    exit 1
+  fi
+fi
+
+if [ -z "$APP_NAME" ]; then
+  export APP_NAME=${PWD##*/} # (basename of the current directory)
 fi
 
 . $(dirname $0)/yak-up
@@ -15,4 +31,10 @@ else
   CMD="$@"
 fi
 
-docker exec -it ${APP_NAME}-app $CMD
+# TODO: remove this in favor of using underscore.js template in ./yaktor.js at `yaktor create` time
+# make sure things are configurable via environment variables
+if [ ! -f ./config/custom-environment-variables.json ]; then
+  docker exec -it ${APP_NAME}-app bash -c "npm run envars && $CMD"
+else
+  docker exec -it ${APP_NAME}-app $CMD
+fi

@@ -1,11 +1,10 @@
-// Here is where you setupup your requires
+var config = require('config')
 var yaktor = require('yaktor')
-var logger = yaktor.logger
 
-yaktor.start(function (err, ports) {
+yaktor.start(config, function (err, ports) {
   if (!err) {
     require('dns').lookup(require('os').hostname(), function (err, ip) {
-      err || logger.info('Yaktor started. Listening on IP address ', ip, 'on port(s) ', ports.join(','))
+      err || yaktor.log.info('Yaktor started. Listening on IP address ', ip, 'on port(s) ', ports.join(','))
     })
   }
 })
