@@ -10,7 +10,7 @@ yaktor.start(config, function (err, ports) {
     return process.exit(1)
   }
 
-  dns.lookup(os.hostname(), function (err, ip) {
+  dns.lookup(os.hostname(), function (err, ip) { // eslint-disable-line handle-callback-err
     yaktor.log.info('Yaktor started. Listening on IP address ', ip || '(unknown)', 'on port(s) ', ports.join(','))
   })
 })
