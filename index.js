@@ -45,7 +45,7 @@ var yaktor = {
     async.series([
       async.apply(globals.init, yaktor), // initialize globals
       function (next) { // initialize each server
-        var ports = []
+        var serverPorts = []
         async.eachSeries(Object.keys(config.get('yaktor.servers')), function (serverName, cb) {
           var app = express()
           app.yaktor = yaktor
@@ -79,7 +79,7 @@ var yaktor = {
             }
 
             var port = parseInt(getConfigVal('host.port'))
-            ports.push(port)
+            serverPorts.push({ server: serverName, port: port })
             server.listen(port, cb)
           })
         }, function (err) {
@@ -88,7 +88,7 @@ var yaktor = {
           if (yaktor.gossipmonger) { yaktor.gossipmonger.gossip() }
           var modulePath = path.resolve('conversations', 'js')
           require('./engine')([ modulePath ], function (err) {
-            callback(err, ports)
+            callback(err, serverPorts)
           })
         })
       }
