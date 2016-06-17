@@ -69,10 +69,16 @@ describe('converter', function () {
       az: az._id.toString(),
       subs: subs,
       subType: {
-        field: subOne
+        field: subOne,
+        subSubType: {
+          field: subMany
+        }
       },
       subTypes: [ {
-        field: subMany
+        field: subMany,
+        subSubType: {
+          field: subMany
+        }
       } ],
       yandZ: yandZ,
       m: m,
@@ -108,10 +114,16 @@ describe('converter', function () {
       az: az._id.toString(),
       subs: subs,
       subType: {
-        field: subOne
+        field: subOne,
+        subSubType: {
+          field: subMany
+        }
       },
       subTypes: [ {
-        field: subMany
+        field: subMany,
+        subSubType: {
+          field: subMany
+        }
       } ],
       yandZ: yandZ,
       m: m,
@@ -158,12 +170,21 @@ describe('converter', function () {
       az: az._id.toString(),
       subs: subs,
       subType: {
-        field: subOne
+        field: subOne,
+        subSubType: {
+          field: subMany
+        }
       },
       subTypes: [ {
-        field: subMany
+        field: subMany,
+        subSubType: {
+          field: subMany
+        }
       }, {
-        field: subMany
+        field: subMany,
+        subSubType: {
+          field: subMany
+        }
       } ],
       yandZ: yandZ,
       m: m,
@@ -199,10 +220,16 @@ describe('converter', function () {
       az: az,
       subs: subs,
       subType: {
-        field: subOne
+        field: subOne,
+        subSubType: {
+          field: subMany
+        }
       },
       subTypes: [ {
-        field: subMany
+        field: subMany,
+        subSubType: {
+          field: subMany
+        }
       } ],
       yandZ: yandZ,
       m: m

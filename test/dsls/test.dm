@@ -59,9 +59,15 @@ domain-model Test {
   enum Values {
     One = "One"
   }
+  type SubSubType {
+    String field
+    String afield?
+  }
   type SubType {
     String field
     String afield?
+    SubSubType subSubType
+    SubSubType aSubSubType?
   }
   entity Z {
     String patterned pattern "^pattern$"
