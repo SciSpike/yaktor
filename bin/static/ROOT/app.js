@@ -16,6 +16,6 @@ yaktor.start(config, function (err, serverPorts) {
     yaktor.log.info('yaktor started; listening%s with server%s %s',
       !ip ? '' : ' on IP address ' + ip,
       serverPorts.length === 1 ? '' : 's',
-      serverPorts.map(function (it) { return it.server + ' at port ' + it.port}).join(','))
+      serverPorts.map(function (it) { return it.server + ' at port ' + it.port }).join(','))
   })
 })
