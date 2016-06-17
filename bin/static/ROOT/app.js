@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var config = require('config')
 var yaktor = require('yaktor')
 
