@@ -1,5 +1,5 @@
 var config = require('config')
-var logger = require(path.resolve('yaktor/lib/logger'))
+var logger = require(path.resolve('yaktor/logger'))
 logger.silly(__filename)
 var cql = require('cassandra-driver')
 var async = require('async')

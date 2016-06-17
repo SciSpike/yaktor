@@ -32,7 +32,7 @@ var yaktor = {
     config.util.setModuleDefaults('yaktor', defaults)
     yaktor.config = config
 
-    yaktor.logger = yaktor.log = require('./lib/logger')
+    yaktor.logger = yaktor.log = require('./logger')
     process.on('uncaughtException', function (err) {
       yaktor.logger.error('uncaught exception', err.stack)
     })

@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 
 // maps between our setting name and express's well-known settings

@@ -1,4 +1,4 @@
-var logger = require('yaktor/lib/logger')
+var logger = require('yaktor/logger')
 logger.silly(__filename)
 
 module.exports = function (serverName, app, done) {

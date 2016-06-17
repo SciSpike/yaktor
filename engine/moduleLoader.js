@@ -2,7 +2,7 @@ var fs = require('fs')
 var path = require('path')
 // var vm = require('vm')
 // var nativeModule = require('module')
-var logger = require('../lib/logger')
+var logger = require('../logger')
 var async = require('async')
 
 module.exports = function (moduleDirectories, callback) {

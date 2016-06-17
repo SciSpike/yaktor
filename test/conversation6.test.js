@@ -11,7 +11,7 @@ process.env.NODE_CONFIG = JSON.stringify({
 var path = require('path')
 require('mongoose-shortid')
 var Promise = require('bluebird')
-var logger = require('../lib/logger')
+var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
@@ -40,7 +40,7 @@ var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
-  '../lib/logger': logger,
+  '../logger': logger,
   '../app/services/socketService': socketService,
   '../app/services/messageService': messageService
 }
