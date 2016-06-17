@@ -39,9 +39,11 @@ describe('shortId', function () {
     })
   })
   it('should create shortId of configured length', function (done) {
-    var logger = require('../logger')
-    logger[ '@noCallThru' ] = true
-    proxyquire(path.resolve('bin', 'static', 'config', 'global', '02_shortid'), { 'yaktor/logger': logger })
+    var proxy = {
+      'yaktor/logger': Global(require('../logger')),
+      'mongoose-shortid': Global(require('mongoose-shortid'))
+    }
+    proxyquire(path.resolve('bin', 'static', 'config', 'global', '02_shortid'), proxy)
     var DefaultShort = mongoose.model('DefaultShort')
     var ds = new DefaultShort({
       name: 'name'

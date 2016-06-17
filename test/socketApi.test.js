@@ -43,7 +43,7 @@ var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
-  '../logger': logger,
+  '../logger': Global(logger),
   '../app/services/socketService': socketService,
   '../app/services/messageService': messageService,
   'sockjs-client-ws': Global(fakeWs)
