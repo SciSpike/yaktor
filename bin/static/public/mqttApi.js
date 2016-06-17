@@ -1,4 +1,5 @@
 ;(function () {
+  var log = require('../logger')
   var mqtt = require('mqtt')
   var Backo = require('backo')
   var backoff = new Backo({ min: 100, max: 2000 })
@@ -9,11 +10,11 @@
       var client = clients[ urlPrefix ]
       delete clients[ urlPrefix ]
       client.end()
-      console.log('%s: disconnecting', urlPrefix)
+      log.info('%s: disconnecting', urlPrefix)
     },
     connectWithPrefix: function (urlPrefix, sessionId, authFunction, isDebug) {
       if (isDebug) {
-        console.log('connecting with %s', urlPrefix)
+        log.debug('connecting with %s', urlPrefix)
       }
       var client = clients[ urlPrefix ]
       if (!client) {

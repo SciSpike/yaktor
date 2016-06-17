@@ -1,5 +1,5 @@
 var logger = require('yaktor/logger')
-logger.silly(__filename)
+logger.info(__filename)
 
 module.exports = function (serverName, app, done) {
   // protocol+prefix supercedes protocol+hostname+port

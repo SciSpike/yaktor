@@ -1,5 +1,5 @@
 var logger = require('yaktor/logger')
-logger.silly(__filename)
+logger.info(__filename)
 
 // maps between our setting name and express's well-known settings
 var mappings = { // see http://expressjs.com/en/4x/api.html#app.settings.table

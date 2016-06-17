@@ -1,5 +1,5 @@
 var logger = require('yaktor/logger')
-logger.silly(__filename)
+logger.info(__filename)
 var path = require('path')
 var fs = require('fs')
 var serveStatic = require('serve-static')

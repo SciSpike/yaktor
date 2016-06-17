@@ -1,5 +1,5 @@
 var logger = require('yaktor/logger')
-logger.silly(__filename)
+logger.info(__filename)
 var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 

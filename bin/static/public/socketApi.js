@@ -1,5 +1,6 @@
 var EventEmitter = require('emitter-component')
 var Backo = require('backo')
+var log = require('../logger')
 // define some stuff in the global space
 var globalSockets = {}
 var globalConnections = {}
@@ -65,7 +66,7 @@ var socketApi = {
         callback()
       }
       if (globalSockets[ sessionId ].debug) {
-        console.log('%s: sending', data)
+        log.silly('%s: sending', data)
       }
     } else {
       if (callback) {
@@ -82,7 +83,7 @@ var socketApi = {
     socket.close()
     globalConnections[ sessionId ] = false
     if (debug) {
-      console.log('%s: disconnecting', sessionId)
+      log.silly('%s: disconnecting', sessionId)
     }
   },
   connectWithPrefix: function (urlPrefix, sessionId, authFunction, isDebug, callback) {
@@ -93,11 +94,11 @@ var socketApi = {
       max: 2 * 60 * 1000
     })
     if (isDebug) {
-      console.log('connecting with %s', sessionId)
+      log.silly('connecting with %s', sessionId)
     }
     var doReconnect = function (sessionId, reAuth) {
       if (isDebug) {
-        console.log('reconnecting with %s', sessionId)
+        log.silly('reconnecting with %s', sessionId)
       }
       socketApi.disconnect(sessionId)
       doConnect(sessionId, reAuth)
@@ -146,19 +147,19 @@ var socketApi = {
           backoff.reset()
           resetHeartbeatTimer(sessionId)
           if (isDebug) {
-            console.log('%s: connected with', sessionId)
+            log.silly('%s: connected with', sessionId)
           }
         }
         mySocket.onmessage = function (e) {
           var msg = JSON.parse(e.data)
           globalEmitter.emit(msg.event, msg.data)
           if (isDebug) {
-            console.log('%s, receiving:', sessionId, e.data)
+            log.silly('%s, receiving:', sessionId, e.data)
           }
         }
         mySocket.onheartbeat = function () {
           if (isDebug) {
-            console.log('h')
+            log.silly('h')
           }
           resetHeartbeatTimer(sessionId)
         }
@@ -183,7 +184,7 @@ var socketApi = {
     // Handle Events regardless of who manages the connections
     globalEmitter.once(sessionId + ':connect', function (data) {
       if (isDebug) {
-        console.log('api connected with %s', sessionId)
+        log.silly('api connected with %s', sessionId)
       }
       if (notYetCalledCallback) {
         var cb = notYetCalledCallback
@@ -193,13 +194,13 @@ var socketApi = {
     })
     globalEmitter.on(sessionId + ':connect', function (data) {
       if (isDebug) {
-        console.log('%s: connected', sessionId)
+        log.silly('%s: connected', sessionId)
       }
       connectEmitter.emit('connect', null)
     })
     globalEmitter.on(sessionId + ':error', function (data) {
       if (isDebug) {
-        console.log('%s: error', sessionId, JSON.stringify(data.stack, null, 2))
+        log.silly('%s: error', sessionId, JSON.stringify(data.stack, null, 2))
       }
       connectEmitter.emit('error', data)
     })
@@ -207,7 +208,7 @@ var socketApi = {
     if (connected) {
       if (notYetCalledCallback) {
         if (isDebug) {
-          console.log('api already connected just calling cb with %s', sessionId)
+          log.silly('api already connected just calling cb with %s', sessionId)
         }
         var cb = notYetCalledCallback
         notYetCalledCallback = null

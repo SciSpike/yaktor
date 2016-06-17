@@ -1,6 +1,6 @@
 var config = require('config')
 var logger = require('yaktor/logger')
-logger.silly(__filename)
+logger.info(__filename)
 var mongoose = require('mongoose')
 require('mongoose-shortid')
 var GridFs

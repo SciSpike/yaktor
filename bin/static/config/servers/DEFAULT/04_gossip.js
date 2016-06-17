@@ -1,5 +1,5 @@
 var logger = require('yaktor/logger')
-logger.silly(__filename)
+logger.info(__filename)
 var updateInterval = 60000 // TODO: make configurable?
 var os = require('os')
 var dns = require('dns')
