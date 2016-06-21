@@ -2,7 +2,7 @@
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
-require('mongoose-shortid')
+require('mongoose-shortid-nodeps')
 require(path.resolve('src-gen', 'test'))
 var converter = require(path.resolve('app', 'services', 'conversionService'))
 var mongoose = require('mongoose')

@@ -38,7 +38,12 @@ domain-model Test {
   abstract entity DSuper {
   }
   entity DefaultShort {
-    ShortId s
+    ShortId s?
+    String name
+    key(s)
+  }
+  entity CustomShort {
+    ShortId s? "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz" 1000000000
     String name
     key(s)
   }

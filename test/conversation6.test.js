@@ -9,7 +9,7 @@ process.env.NODE_CONFIG = JSON.stringify({
   }
 })
 var path = require('path')
-require('mongoose-shortid')
+require('mongoose-shortid-nodeps')
 var Promise = require('bluebird')
 var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))

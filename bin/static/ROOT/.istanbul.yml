@@ -1,0 +1,12 @@
+instrumentation:
+  excludes:
+    - public/*/*
+    - src-gen/**/*
+    - conversations/**/*
+reporting:
+  reports:
+    - lcov
+    - text
+  report-config:
+    text:
+     file: coverage.txt

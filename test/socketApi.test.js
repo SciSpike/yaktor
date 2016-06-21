@@ -11,7 +11,7 @@ process.env.NODE_CONFIG = JSON.stringify({
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
-require('mongoose-shortid')
+require('mongoose-shortid-nodeps')
 var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')

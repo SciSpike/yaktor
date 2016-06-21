@@ -1,11 +1,9 @@
 {
   "dependencies": {
     "amqp-eventemitter": "0.5.1",
-    "async": "1.5.2",
     "backo": "1.0.1",
     "bcrypt": "0.8.5",
     "body-parser": "1.4.3",
-    "config": "1.20.1",
     "connect-flash": "0.1.0",
     "consolidate": "0.10.0",
     "cookie-parser": "1.3.2",
@@ -20,7 +18,7 @@
     "method-override": "2.0.2",
     "mongoose": "4.4.12",
     "mongoose-pagination": "1.0.0",
-    "mongoose-shortid": "0.5.0",
+    "mongoose-shortid-nodeps": "0.6.5",
     "morgan": "1.1.1",
     "mqtt-connection": "2.1.1",
     "qs": "0.6.6",
@@ -34,24 +32,11 @@
     "winston": "0.7.1"
   },
   "devDependencies": {
-    "blanket": "1.1.6-ex",
-    "commander": "2.0.0",
     "cookie": "0.1.0",
     "engine-ui": "5.2.x",
-    "grunt": "0.4.5",
-    "grunt-bump": "0.0.16",
-    "grunt-cli": "0.1.13",
-    "grunt-shell": "0.7.0",
-    "load-grunt-tasks": "0.6.0",
-    "mocha": "1.20.1",
-    "mocha-multi": "0.4.1-ex",
-    "mocha-text-cov": "0.1.1",
     "plato": "1.2.0",
     "request": "2.29.0",
-    "standard": "6.0.8",
-    "standard-format": "2.1.1",
-    "swagger-ui": "2.1.4",
-    "config-cev-generator": "0.1.6"
+    "swagger-ui": "2.1.4"
   },
   "scripts": {
     "start": "sudo -E node app.js",
@@ -62,7 +47,7 @@
     "gen-views": "grunt gen-views",
     "gen-docs": "(cd doc/; ruby buildAll.rb;)",
     "gen-src": "find . -name '*.cl' -o -name '*.dm' -follow | xargs yaktor-lang",
-    "test": "LOG_LEVEL=warn multi='spec=- mocha-text-cov=coverage.txt' mocha --require ./build/blanket -R mocha-multi && cat coverage.txt",
+    "test": "LOG_LEVEL=warn istanbul cover _mocha -- --color=true -R spec",
     "report": "find conversations/js  -name '*.js' | xargs plato -x '.gen.js|.def.js|\/types\/' -d plato",
     "envars": "cev --noprefix > config/custom-environment-variables.json"
   },

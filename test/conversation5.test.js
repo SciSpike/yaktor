@@ -14,7 +14,7 @@ var util = require('util')
 var clone = function (thing) {
   return util._extend({}, thing)
 }
-require('mongoose-shortid')
+require('mongoose-shortid-nodeps')
 var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')

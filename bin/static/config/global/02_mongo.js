@@ -2,7 +2,6 @@ var config = require('config')
 var logger = require('yaktor/logger')
 logger.info(__filename)
 var mongoose = require('mongoose')
-require('mongoose-shortid')
 var GridFs
 try {
   GridFs = require('gridfs-stream')

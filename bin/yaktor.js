@@ -166,6 +166,7 @@ argv.command('create <appName>')
       '/conversations/ejs',
       '/conversations/security',
       '/actions',
+      '/coverage',
       '/doc',
       '/public/*',
       '!/public/socketApi.js',

@@ -10,7 +10,7 @@ process.env.NODE_CONFIG = JSON.stringify({
 })
 var path = require('path')
 var assert = require('assert')
-require('mongoose-shortid')
+require('mongoose-shortid-nodeps')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
@@ -34,18 +34,29 @@ describe('shortId', function () {
       name: 'name'
     })
     ds.save(function () {
+      console.log(arguments)
       assert.equal(ds.id.length, 7)
       done()
     })
   })
-  it('should create shortId of configured length', function (done) {
+  it('should create shortId of default length', function (done) {
     var proxy = {
       'yaktor/logger': Global(require('../logger')),
-      'mongoose-shortid': Global(require('mongoose-shortid'))
+      'mongoose-shortid-nodeps': Global(require('mongoose-shortid-nodeps'))
     }
     proxyquire(path.resolve('bin', 'static', 'config', 'global', '02_shortid'), proxy)
     var DefaultShort = mongoose.model('DefaultShort')
     var ds = new DefaultShort({
+      name: 'name'
+    })
+    ds.save(function () {
+      assert.equal(ds.id.length, 7)
+      done()
+    })
+  })
+  it('should create shortId of default length', function (done) {
+    var CustomShort = mongoose.model('CustomShort')
+    var ds = new CustomShort({
       name: 'name'
     })
     ds.save(function () {
