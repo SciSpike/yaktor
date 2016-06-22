@@ -46,7 +46,7 @@ var proxy = {
   '../logger': Global(logger),
   '../app/services/socketService': socketService,
   '../app/services/messageService': messageService,
-  'sockjs-client-ws': Global(fakeWs)
+  'mqtt': Global(fakeWs)
 }
 
 proxy[ path.resolve('node_modules', 'mongoose') ] = proxy.mongoose
@@ -61,40 +61,43 @@ describe('socketApi', function () {
     conversationInitializer(testConversation)
     yaktor.agentAuthorize = null
   })
-
+  it('should test more', function () {
+    // TODO
+  })
   it('should be able to [dis]connect multiple times', function (done) {
     var i = 0
-    var j = 5
+    var j = 6
     var k = 0
     var sessionId = 'sessionId'
 
-    fakeWs.create = function () {
+    fakeWs.connect = function () {
       var ws = new events.EventEmitter()
-      ws.close = function () {
+      ws.end = function () {
         k++
+        ws.emit('close', ':)')
       }
-      var on = ws.on
-      ws.on = function () {
-        on.apply(this, arguments)
-        if (arguments[ 0 ] === 'data') {
-          ws.emit('data', JSON.stringify({
-            event: sessionId + ':connected'
-          }))
-        }
-      }
+      ws.connected = true
+      ws.emit('connect')
       return ws
     }
     async.times(j, function (n, cb) {
-      socketApi.connect(sessionId, function (cb) {
+      var prefix = 'http://localhost:3000'
+      var client = socketApi.connectWithPrefix(prefix, sessionId, function (cb) {
         cb()
-      }, false, function (ws) {
-        i++
-        ws.emit('data', JSON.stringify({
-          event: sessionId + ':connected'
-        }))
-        ws.emit('close', ':)')
+      }, false)
+      client.on('close', function () {
         cb()
       })
+      var connected = function () {
+        i++
+        if (n % 2) {
+          socketApi.disconnect(prefix)
+        }
+      }
+      if (client.connected) {
+        connected()
+      }
+      client.once('connect', connected)
     }, function (err) {
       assert.ifError(err)
       assert.equal(j, i)

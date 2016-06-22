@@ -34,7 +34,6 @@ describe('shortId', function () {
       name: 'name'
     })
     ds.save(function () {
-      console.log(arguments)
       assert.equal(ds.id.length, 7)
       done()
     })
