@@ -14,7 +14,7 @@ var settings = {
     stringRouting: null,
     subdomainOffset: null,
     trustProxy: null,
-    views: 'views/ejs',
+    views: 'conversations/ejs',
     viewCache: null,
     viewEngine: null,
     xPoweredBy: null

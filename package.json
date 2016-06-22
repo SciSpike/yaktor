@@ -26,6 +26,7 @@
     "mongoose": "4.4.12",
     "mongoose-pagination": "1.0.0",
     "mongoose-shortid-nodeps": "0.6.5",
+    "mqtt": "1.7.4",
     "nice-xml": "0.1.1-rc2",
     "node-uuid": "1.4.2",
     "proxyquire": "1.0.1",
@@ -33,7 +34,7 @@
     "standard-format": "2.1.1",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "0.1.0-pre.0"
+    "yaktor-lang": "~0.1.0-0"
   },
   "engines": {
     "node": ">=4.0.x"

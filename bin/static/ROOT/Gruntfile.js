@@ -18,7 +18,6 @@ module.exports = function (grunt) {
   })
   fs.writeFileSync(path.resolve('package.json'), JSON.stringify(packageJson, null, 2))
 
-  var registry = packageJson.config.registry
   var config = {
     'basePath': basePath,
     'dir': dir,
@@ -39,7 +38,7 @@ module.exports = function (grunt) {
         command: 'git clean -fdX -- src-gen conversation routes routes_* actions action_* doc simulators servers public views'
       },
       'create-views': {
-        command: '$(npm bin)/engine-ui create'
+        command: '$(npm bin)/yaktor-ui create'
       },
       'install-views': {
         options: {
@@ -54,7 +53,7 @@ module.exports = function (grunt) {
         command: 'npm run gen-src'
       },
       'generate-views': {
-        command: '$(npm bin)/engine-ui generate',
+        command: '$(npm bin)/yaktor-ui generate',
         'options': {
           execOptions: {
             maxBuffer: Infinity
@@ -74,13 +73,13 @@ module.exports = function (grunt) {
         command: 'npm pack'
       },
       'publish': {
-        command: 'npm publish --registry=' + registry
+        command: 'npm publish'
       },
       'pull': {
         command: 'git pull'
       },
       'add-owner': {
-        command: [ 'npm owner add', grunt.option('owner'), 'engine-ui', '--registry=' + registry ].join(' ')
+        command: [ 'npm owner add', grunt.option('owner'), 'engine-ui' ].join(' ')
       },
       start: {
         command: 'LOG_LEVEL=silly npm start'

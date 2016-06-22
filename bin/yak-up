@@ -10,4 +10,4 @@ else
   export APP_TAG=master
 fi
 
-docker-compose up -d
+docker-compose up $@

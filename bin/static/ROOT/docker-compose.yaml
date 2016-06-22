@@ -3,8 +3,6 @@ services:
   app:
     build:
       context: ./docker
-      args:
-        USER: docker
     image: ${APP_NAME}:${APP_TAG}
     environment:
       YAKTOR_MONGO_HOST: ${APP_NAME}-mongo
