@@ -4,13 +4,14 @@ var os = require('os')
 var config = require('config')
 var yaktor = require('yaktor')
 
-yaktor.start(config, function (err, ports) {
+yaktor.start(config, function (err, serverPorts) {
   if (err) {
     console.log(err)
     return process.exit(1)
   }
 
   dns.lookup(os.hostname(), function (err, ip) { // eslint-disable-line handle-callback-err
-    yaktor.log.info('Yaktor started. Listening on IP address ', ip || '(unknown)', 'on port(s) ', ports.join(','))
+    yaktor.log.info('yaktor started; %s',
+      serverPorts.map(function (it) { return it.server + '@' + (ip ? ip + ':' : '') + it.port }).join(','))
   })
 })
