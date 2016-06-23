@@ -2,7 +2,7 @@
 
 ## Build and Test
 
-`run.sh` is a shortcut to typing `docker run -it -v "$PWD":/app -w --rm yactor/yaktor`
+`run.sh` is a shortcut to typing `docker run -it -v "$PWD":/app --rm yaktor/yaktor`
 
 `./run.sh` will invoke bash by default, but the container lacks commands for hard core editing.
 
