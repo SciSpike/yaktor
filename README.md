@@ -1,12 +1,5 @@
 This module supports the conversation DSL to produce a event-driven asynchronous distributed multi-party state-machine in Node.js.
 
-
-## create docker image
-
-```
-docker build -t yaktor:$(node -e 'console.log(require("./package.json").version.replace(/-pre.*/,""));') --build-arg UID=$(id -u) --build-arg USER=$(id -un) docker
-```
-
 ## Build and Test
 
 `run.sh` is a shortcut to typing `docker run -it -v "$PWD":/app -w "/app" --rm yactor-app`
