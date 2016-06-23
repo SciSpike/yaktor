@@ -82,7 +82,7 @@ module.exports = function (grunt) {
         command: [ 'npm owner add', grunt.option('owner'), 'engine-ui' ].join(' ')
       },
       start: {
-        command: 'LOG_LEVEL=silly npm start'
+        command: 'YAKTOR_LOG_LEVEL=silly npm start'
       }
     }
   }

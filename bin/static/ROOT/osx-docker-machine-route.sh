@@ -5,5 +5,6 @@ eval $(docker-machine env $YAKTOR_DOCKER_MACHINE)
 DOCKER_IP=$(docker-machine ip $YAKTOR_DOCKER_MACHINE)
 SUBNET=$(docker network inspect --format '{{ range .IPAM.Config }}{{ .Subnet}}{{end}}' ${PWD##*/}_default)
 if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
+  echo "Creating route to stack."
   sudo route -n add $SUBNET $DOCKER_IP
 fi
