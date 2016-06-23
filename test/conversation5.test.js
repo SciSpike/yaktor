@@ -36,15 +36,16 @@ var socketService = Global({
 })
 
 var yaktor = Global({
-  logger: logger
+  logger: logger,
+  auth: {}
 })
 var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
   '../logger': logger,
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService
+  '../services/socketService': socketService,
+  '../services/messageService': messageService
 }
 proxy[ path.resolve('node_modules', 'mongoose') ] = proxy.mongoose
 
@@ -119,7 +120,7 @@ describe('conversation5', function () {
   beforeEach(function () {
     mockgoose.reset()
     conversationInitializer(testConversation)
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
   })
 
   it('should pass the data through a custom decision', function (done) {

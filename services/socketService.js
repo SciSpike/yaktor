@@ -1,15 +1,15 @@
-var logger = require('../../logger.js')
+var logger = require('../logger.js')
 var events = require('events')
 var async = require('async')
 
 var messageService = require('./messageService')
 
-var noAuthen = function (arg, cb) {
+var noAuthentication = function (arg, cb) {
   cb(null, true, {
     scope: '*'
   }, null)
 }
-var noAuth = function (arg, cb) {
+var noAuthorization = function (arg, cb) {
   cb(null, true)
 }
 var noSession = function (sessionId, cb) {
@@ -18,11 +18,11 @@ var noSession = function (sessionId, cb) {
 
 var SocketService = {
   agents: {},
-  onConnect: function (app, sessionId, authToken, emitter, endFn, done) {
-    var yaktor = app.yaktor
-    var authenticate = yaktor.tokenAuthenticate ? yaktor.tokenAuthenticate : noAuthen
-    var getSession = yaktor.getSession || noSession
-    var authorize = yaktor.authorize ? yaktor.authorize : noAuth
+  onConnect: function (sessionId, authToken, emitter, endFn, done) {
+    var yaktor = require('../index')
+    var authenticate = yaktor.auth && yaktor.auth.tokenAuthenticate || noAuthentication
+    var authorize = yaktor.auth && yaktor.auth.authorize || noAuthorization
+    var getSession = yaktor.session.getSession || noSession
     async.waterfall([
       async.apply(authenticate, authToken),
       function (user, info, token, cb) {
@@ -87,39 +87,6 @@ var SocketService = {
     }, function () {
       logger.silly(sessionId + ':connected')
       emitter.emit(sessionId + ':connected')
-    })
-  },
-  init: function (app, io) {
-    SocketService.io = io
-    SocketService.io.on('connection', function (conn) {
-      var emitter = new events.EventEmitter()
-      emitter.setMaxListeners(0)
-      conn.setMaxListeners(0)
-      var emit = emitter.emit
-      emitter.emit = function (st, data) {
-        conn.write(JSON.stringify({
-          event: st,
-          data: data
-        }))
-      }
-      conn.on('close', function () {
-        emit.call(emitter, 'close')
-        emitter.removeAllListeners()
-      })
-      conn.on('data', function (message) {
-        var json = JSON.parse(message)
-        emit.call(emitter, json.event, json.data)
-      })
-
-      // ************
-      var sessionId = conn.url.replace(new RegExp(conn.prefix + '/.*'), '$1')
-      var authToken = conn.url.replace(new RegExp(conn.prefix + '/.*'), '$3')
-
-      SocketService.onConnect(app, sessionId, authToken, emitter, function () {
-        conn.end()
-      }, function (err, session, user) { // eslint-disable-line handle-callback-err
-        SocketService.startListening(emitter, sessionId, session, user)
-      })
     })
   }
 }

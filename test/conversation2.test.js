@@ -32,14 +32,16 @@ var socketService = Global({
   agents: {}
 })
 
-var yaktor = Global({})
+var yaktor = Global({
+  auth: {}
+})
 var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
   '../logger': logger,
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService
+  '../services/socketService': socketService,
+  '../services/messageService': messageService
 }
 proxy[ path.resolve('node_modules', 'mongoose') ] = proxy.mongoose
 
@@ -71,7 +73,7 @@ describe('conversation2', function () {
   })
   it('should have registered listeners to init message', function (done) {
     var i = 0
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
     control.once('controlling', function () {
       i++
       control.emit('stop')

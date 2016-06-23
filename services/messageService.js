@@ -1,4 +1,4 @@
-var logger = require('../../logger')
+var logger = require('../logger')
 var events = require('events')
 
 var emitter = {}

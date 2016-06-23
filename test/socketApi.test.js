@@ -33,7 +33,8 @@ var socketService = Global({
 })
 
 var yaktor = Global({
-  logger: logger
+  logger: logger,
+  auth: {}
 })
 
 var fakeWs = {}
@@ -44,8 +45,8 @@ var proxy = {
   'mongoose': Global(mongoose),
   '../index': yaktor,
   '../logger': Global(logger),
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService,
+  '../services/socketService': socketService,
+  '../services/messageService': messageService,
   'mqtt': Global(fakeWs)
 }
 
@@ -59,7 +60,7 @@ describe('socketApi', function () {
   beforeEach(function () {
     mockgoose.reset()
     conversationInitializer(testConversation)
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
   })
   it('should test more', function () {
     // TODO

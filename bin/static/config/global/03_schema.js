@@ -19,7 +19,7 @@ module.exports = function (yaktor, done) {
       require(types)
     }
     initialized = true
-    done && done()
+    done()
   } catch (e) {
     logger.error(e.stack)
     done(e)

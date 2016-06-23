@@ -4,7 +4,7 @@ var assert = require('assert')
 var async = require('async')
 require('mongoose-shortid-nodeps')
 require(path.resolve('src-gen', 'test'))
-var converter = require(path.resolve('app', 'services', 'conversionService'))
+var converter = require(path.resolve('services', 'conversionService'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
 var proxyquire = require('proxyquire')
@@ -13,7 +13,7 @@ var ObjectId = mongoose.Types.ObjectId
 var proxy = {
   'mongoose': Global(mongoose)
 }
-proxy[ path.resolve('node_modules', 'yaktor', 'app', 'services', 'conversionService') ] = Global(converter)
+proxy[ 'yaktor/services/conversionService' ] = Global(converter)
 proxyquire(path.resolve('conversations', 'types'), proxy)
 
 function Global (m) {

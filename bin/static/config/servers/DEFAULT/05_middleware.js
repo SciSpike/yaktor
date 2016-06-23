@@ -6,12 +6,17 @@ var fs = require('fs')
 var url = require('url')
 
 // Endpoints
-module.exports = function (serverName, app, done) {
-  var favicon = path.resolve(path.join(app.getConfigVal('favicon.basedir'), app.getConfigVal('favicon.filename')))
+module.exports = function (ctx, done) {
+  var app = ctx.app
+  var favicon = path.resolve(path.join(ctx.favicon.basedir, ctx.favicon.filename))
   fs.exists(favicon, function (exists) {
     if (exists) {
       app.use(require('serve-favicon')(favicon))
     }
+  })
+  app.use(function (req, res, next) {
+    req.ctx = ctx
+    next()
   })
   // TODO: make morgan configurable?
   app.use(require('morgan')({ stream: { write: function (log) { logger.silly(log) } } }))
@@ -51,7 +56,7 @@ module.exports = function (serverName, app, done) {
 
   app.use(function (req, res, next) {
     if (!req.urlPrefix) {
-      req.urlPrefix = app.get('urlPrefix')
+      req.urlPrefix = ctx.urlPrefix
     }
     return next()
   })
@@ -61,5 +66,5 @@ module.exports = function (serverName, app, done) {
     next()
   })
 
-  done && done()
+  done()
 }

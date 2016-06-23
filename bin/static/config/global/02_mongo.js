@@ -1,4 +1,3 @@
-var config = require('config')
 var logger = require('yaktor/logger')
 logger.info(__filename)
 var mongoose = require('mongoose')
@@ -11,10 +10,10 @@ try {
 }
 /* jshint eqnull:true */
 module.exports = function (yaktor, done) {
-  var host = config.get('yaktor.mongo.host')
-  var port = config.get('yaktor.mongo.port')
-  var db = config.get('yaktor.mongo.db')
-  var options = config.get('yaktor.mongo.options')
+  var host = yaktor.mongo.host
+  var port = yaktor.mongo.port
+  var db = yaktor.mongo.db
+  var options = yaktor.mongo.options
 
   require('mongoose-pagination')
   var f1nU = mongoose.Model.findOneAndUpdate

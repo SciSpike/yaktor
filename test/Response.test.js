@@ -10,8 +10,8 @@ process.env.NODE_CONFIG = JSON.stringify({
 })
 var path = require('path')
 var assert = require('assert')
-var Response = require(path.resolve('app', 'services', 'rest', 'Response'))
-var BadRequest = require(path.resolve('app', 'services', 'rest', 'BadRequest'))
+var Response = require(path.resolve('services', 'Response'))
+var BadRequest = require(path.resolve('services', 'BadRequest'))
 var data = {
   'a': 'a',
   'b': 2,

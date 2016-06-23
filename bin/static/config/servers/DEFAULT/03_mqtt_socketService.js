@@ -3,10 +3,11 @@ logger.info(__filename)
 var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 
-module.exports = function (serverName, app, done) {
+module.exports = function (ctx, done) {
+  var app = ctx.app
   var ws = require('websocket-stream')
   var Connection = require('mqtt-connection')
-  var socketService = require('yaktor/app/services/socketService.js')
+  var socketService = require('yaktor/services/socketService')
   var nextId = 0
   var newId = function () {
     var id = nextId++
@@ -38,7 +39,7 @@ module.exports = function (serverName, app, done) {
     conn.once('connect', function (op) {
       var authToken = op.username === 'Bearer' && op.password ? op.password.toString() : ''
       var sessionId = op.clientId
-      socketService.onConnect(app, sessionId, authToken, emitter, function () {
+      socketService.onConnect(sessionId, authToken, emitter, function () {
         conn.end()
       }, function (err, session, user) { // eslint-disable-line handle-callback-err
         if (!user) {
@@ -177,8 +178,9 @@ module.exports = function (serverName, app, done) {
     })
   }
   // store for later and remove httpListener.
-  var httpListener = app.server.listeners('connection')[ 0 ]
-  app.server.removeListener('connection', httpListener)
+  var server = ctx.server
+  var httpListener = server.listeners('connection')[ 0 ]
+  server.removeListener('connection', httpListener)
   // taste incoming socket for HTTP[S]. WS is still HTTP.
   var testFn = function (stream) {
     var that = this
@@ -202,13 +204,13 @@ module.exports = function (serverName, app, done) {
       stream.resume()
     })
   }
-  app.server.on('connection', testFn)
-  var serverPath = app.getConfigVal('mqtt.path')
+  server.on('connection', testFn)
+  var serverPath = ctx.mqtt.path
   if (serverPath.indexOf('/') !== 0) serverPath = '/' + serverPath
   ws.createServer({
     path: serverPath,
-    server: app.server
+    server: server
   }, mqttListener)
 
-  done && done()
+  done()
 }

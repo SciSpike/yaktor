@@ -4,10 +4,8 @@ process.env.SUPRESS_NO_CONFIG_WARNING = 'y'
 var config = require('config')
 process.env.SUPRESS_NO_CONFIG_WARNING = suppress
 
-var express = require('express')
 var async = require('async')
-var sockjs = require('sockjs')
-var http = 'http'
+var _ = require('lodash')
 
 var yaktor = {
   start: function (configuration, callback) {
@@ -30,65 +28,45 @@ var yaktor = {
     // which causes the next line to bork with "Cannot redefine property" error
     config.util.extendDeep(defaults, configuration)
     config.util.setModuleDefaults('yaktor', defaults)
-    yaktor.config = config
 
-    yaktor.logger = yaktor.log = require('./logger')
+    var log = require('./logger')
     process.on('uncaughtException', function (err) {
-      yaktor.logger.error('uncaught exception', err.stack)
+      log.error('uncaught exception', err.stack)
     })
-    yaktor.logger.info('YAKTOR CONFIGURATION: ' + JSON.stringify(config.yaktor, 0, 2))
+    var yaktorConfig = JSON.parse(JSON.stringify(config.yaktor)) // HACK
+    if (yaktorConfig.yaktor) delete yaktorConfig.yaktor // HACK: not sure why this is showing up...oddity of require('config')?
+    // bootstrap time static configuration
+    log.info('YAKTOR CONFIGURATION: ' + JSON.stringify(yaktorConfig, 0, 2))
 
-    var services = require('./app/services')
-    yaktor.services = services
-    yaktor.conversionService = services.conversionService
+    Object.keys(yaktorConfig).forEach(function (setting) {
+      yaktor[ setting ] = yaktorConfig[ setting ]
+    })
 
     async.series([
       async.apply(globals.init, yaktor), // initialize globals
       function (next) { // initialize each server
-        var serverPorts = []
-        async.eachSeries(Object.keys(config.get('yaktor.servers')), function (serverName, cb) {
-          var app = express()
-          app.yaktor = yaktor
-
-          var prefix = [ 'yaktor', 'servers', serverName ]
-          var getConfigVal = function (path) {
-            return app.yaktor.config.get(prefix.concat(path).join('.'))
-          }
-          app.getConfigVal = getConfigVal // handy for server initializers
-          var hasConfigVal = function (path) {
-            return app.yaktor.config.has(prefix.concat(path).join('.'))
-          }
-          app.hasConfigVal = hasConfigVal // handy for server initializers
-
-          var protocol = getConfigVal('host.protocol')
-          var serverFactory = require(protocol)
-          var server = (protocol === http)
-            ? serverFactory.createServer(app)
-            : serverFactory.createServer(getConfigVal('host.options'), app)
-          app.server = server
-
-          // Install socket-ability
-          var io = sockjs.createServer()
-          io.installHandlers(server, { prefix: '/ws/([^/.]+)(/auth/([^/.]+)){0,1}' })
-          app.io = io
-
-          servers[ serverName ].init(serverName, app, function (err) {
-            if (err) {
-              yaktor.logger.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
-              return cb(err)
+        yaktor.serverContexts = {}
+        async.eachSeries(Object.keys(yaktor.servers), function (serverName, next) {
+          var server = servers[ serverName ]
+          var ctx = _.cloneDeep(yaktorConfig.servers[ serverName ])
+          // this provides a back door via require('yaktor').serverContexts[...]...
+          yaktor.serverContexts[ serverName ] = ctx
+          ctx.serverName = serverName
+          Object.keys(yaktor).forEach(function (setting) {
+            if (setting !== 'servers' || setting !== 'start' || setting !== 'serverContexts') {
+              // merge global settings into server settings with server settings winning
+              ctx[ setting ] = _.merge(_.cloneDeep(yaktor[ setting ]), ctx[ setting ] || {})
             }
-
-            var port = parseInt(getConfigVal('host.port'))
-            serverPorts.push({ server: serverName, port: port })
-            server.listen(port, cb)
+          })
+          server.init(ctx, function (err) {
+            if (err) log.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
+            next(err)
           })
         }, function (err) {
           if (err) next(err)
 
-          if (yaktor.gossipmonger) { yaktor.gossipmonger.gossip() }
-          var modulePath = path.resolve('conversations', 'js')
-          require('./engine')([ modulePath ], function (err) {
-            callback(err, serverPorts)
+          require('./engine')([ path.resolve('conversations', 'js') ], function (err) {
+            callback(err)
           })
         })
       }
