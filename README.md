@@ -1,4 +1,4 @@
-This module leverages [yaktor-lang](https://github.com/Scispike/yaktor-lang-js) and [yaktor-ui](https://github.com/Scispike/yaktor-ui-angular1) to produce a event-driven asynchronous distributed multi-party state-machine in Node.js.
+[Yakor](https://github.com/Scispike/yaktor) module leverages [yaktor-lang](https://github.com/Scispike/yaktor-lang-js) and [yaktor-ui](https://github.com/Scispike/yaktor-ui-angular1) to produce a event-driven asynchronous distributed multi-party state-machine in Node.js.
 
 ## Build and Test
 
