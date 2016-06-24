@@ -4,7 +4,6 @@ var EventEmitter = require('events').EventEmitter
 var EventEmitter2 = require('eventemitter2')
 
 module.exports = function (ctx, done) {
-  var app = ctx.app
   var ws = require('websocket-stream')
   var Connection = require('mqtt-connection')
   var socketService = require('yaktor/services/socketService')

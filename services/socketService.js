@@ -1,5 +1,4 @@
 var logger = require('../logger.js')
-var events = require('events')
 var async = require('async')
 
 var messageService = require('./messageService')

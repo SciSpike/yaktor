@@ -1,4 +1,4 @@
-/* global describe, it, before */
+/* global describe, it */
 process.env.NODE_CONFIG = JSON.stringify({
   yaktor: {
     log: {
