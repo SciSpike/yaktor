@@ -1,3 +1,3 @@
 FROM yaktor/yaktor
 
-CMD ["sleep infinity"]
+CMD ["tail -f /dev/null"]
