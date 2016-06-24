@@ -1,9 +1,9 @@
-var logger = require(path.resolve('yaktor/logger'))
+var logger = require('yaktor/logger')
 logger.info(__filename)
 var cql = require('cassandra-driver')
 var async = require('async')
 var path = require('path')
-var auditLogger = require(path.resolve('node_modules/yaktor/lib/auditLogger'))
+var auditLogger = require('yaktor/lib/auditLogger')
 
 var logError = function (error) {
   if (error) {
@@ -17,11 +17,6 @@ var getUserName = function (user) {
 
 module.exports = function (yaktor, cb) {
   if (!yaktor.cassandra.enable) {
-    cql.client = {
-      execute: function (query, data, options, cb) {
-        (cb || options || data)()
-      }
-    }
     cb()
   } else {
     var hosts = yaktor.cassandra.hosts.split(',')
