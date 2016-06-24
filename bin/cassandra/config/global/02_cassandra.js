@@ -2,7 +2,6 @@ var logger = require('yaktor/logger')
 logger.info(__filename)
 var cql = require('cassandra-driver')
 var async = require('async')
-var path = require('path')
 var auditLogger = require('yaktor/lib/auditLogger')
 
 var logError = function (error) {
