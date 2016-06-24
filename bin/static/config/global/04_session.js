@@ -95,8 +95,10 @@ module.exports = function (yaktor, done) {
       if (err != null || !sessionData) {
         if (err) {
           logger.error(err.stack)
+        } else {
+          err = new Error('missing session; id ' + sessionId)
+          logger.warn(err.message)
         }
-        err = new Error('connection invalid, ' + sessionId + ': missing session')
         return cb(err)
       } else if (sessionData) {
         // create a fake request object with a sessionStore in order to create a session instance
