@@ -31,7 +31,9 @@ if [ "$#" -eq 0 ]; then
 else
   CMD="$@"
 fi
-
+if [ "$CMD" != "bash" ]; then
+  CMD="grunt $CMD"
+fi
 # TODO: remove this in favor of using underscore.js template in ./yaktor.js at `yaktor create` time
 # make sure things are configurable via environment variables
 if [ ! -f ./config/custom-environment-variables.json ]; then

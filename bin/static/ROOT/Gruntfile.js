@@ -34,10 +34,16 @@ module.exports = function (grunt) {
       }
     },
     shell: {
+//      "migrate":{
+//        command:"yaktor migrate",
+//        usage:  "Update your app to the latest"
+//      },
       'clean': {
+        usage:"Removes all non tracked files",
         command: 'git clean -fdX -- src-gen conversation routes routes_* actions action_* doc simulators servers public views'
       },
       'gen-docs': {
+        usage:"Produces html from the adoc in ./doc",
         options: {
           execOptions: {
             cwd: './doc',
@@ -59,6 +65,7 @@ module.exports = function (grunt) {
         command: [ 'npm install', '$(npm bin)/bower install' ].join(';')
       },
       'gen-src': {
+        usage:"Produce JavaScript source files from the Yaktor DSLs",
         command: 'npm run gen-src'
       },
       'generate-views': {
@@ -78,9 +85,6 @@ module.exports = function (grunt) {
         },
         command: '$(npm bin)/grunt'
       },
-      'package': {
-        command: 'npm pack'
-      },
       'publish': {
         command: 'npm publish'
       },
@@ -99,15 +103,38 @@ module.exports = function (grunt) {
   grunt.initConfig(config)
 
   for (var s in config.shell) {
-    grunt.registerTask(s, 'shell:' + s)
+    if(config.shell[s].usage){
+      grunt.registerTask(s, config.shell[s].usage, 'shell:' + s)
+    }
   }
 
-  var preTasks = [ 'create-views', 'install-views' ]
-  var reTasks = [ 'generate-views', 'grunt-views' ]
+  var preTasks = [ 'shell:create-views', 'shell:install-views' ]
+  var reTasks = [ 'shell:generate-views', 'shell:grunt-views' ]
 
   grunt.registerTask('pre-views', preTasks)
   grunt.registerTask('re-views', reTasks)
-  grunt.registerTask('gen-views', preTasks.concat(reTasks))
-  grunt.registerTask('release-patch', [ 'pull' ].concat([ 'bump:patch', 'publish' ]))
-  grunt.registerTask('release-minor', [ 'pull' ].concat([ 'bump:minor', 'publish' ]))
+  grunt.registerTask('gen-views', "Produces the ui located in ./views", preTasks.concat(reTasks))
+  grunt.registerTask('release-patch',"Executes git pull bump:path and npm publish this module (requires git and npm login )", [ 'pull' ].concat([ 'bump:patch', 'shell:publish' ]))
+  grunt.registerTask('release-minor', "Executes git pull bump:minor and npm publish this module (requires git and npm login )", [ 'pull' ].concat([ 'bump:minor', 'shell:publish' ]))
+  grunt.registerTask('bash', "Gets a bash shell inside this container",function(){
+    console.log("??")
+  })
+  grunt.registerTask("help","Prints this help message",function(){
+    console.log("\n  Usage: yak [command] ...")
+    console.log("\n         yak bash | yak \n")
+    console.log("  Thank you for using yak, a container for running a Yaktor.\n")
+    console.log("  Commands:\n")
+    var tasks = Object.keys(grunt.task._tasks).filter(function(name){
+      return "shell"!=name;
+    })
+    var usageMax = tasks.reduce(function(max,v){
+      return Math.max(max,v.length)
+    },0);
+    var pad = Array(usageMax).join(' ')
+    tasks.forEach(function(taskName){
+      var task = grunt.task._tasks[taskName]
+      var name = (taskName+pad).substr(0,usageMax)
+      console.log("    "+name+"  "+ task.info)
+    });
+  })
 }
