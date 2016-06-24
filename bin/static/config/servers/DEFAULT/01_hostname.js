@@ -5,7 +5,9 @@ module.exports = function (ctx, done) {
   // protocol+prefix supercedes protocol+hostname+port
   var protocol = ctx.host.protocol
   var prefix = ctx.host.prefix
-  if (prefix) {
+  if (ctx.urlPrefix){
+    //NOOP
+  } else if (prefix) {
     ctx.urlPrefix = protocol + '://' + prefix
   } else {
     var hostname = ctx.host.hostname
