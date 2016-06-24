@@ -39,6 +39,10 @@ module.exports = function (grunt) {
       'add-owner': {
         command: [ 'npm owner add', grunt.option('owner'), packageJson.name ].join(' ')
       },
+      'create-maintenance-branch':{
+        command:['git checkout -b ' + newTag + ' ' + tag,
+          'git branch --set-upstream-to=origin/' + newTag + ' ' + newTag].join('&&')
+      },
       'release-minor': {
         'command': [
           "[ $(git status | head -n 1 | awk '{ print $3 }') == '" + master + "' ]", // minors only from master branch
@@ -46,7 +50,7 @@ module.exports = function (grunt) {
           'git diff --cached --exit-code --no-patch', // no modified files
           'grunt bump:minor',
           'grunt shell:publish',
-          'git checkout -b ' + newTag + ' ' + tag,
+          'grunt shell:create-maintenance-branch',
           'grunt bump:prepatch --no-tag',
           'git checkout master',
           'grunt bump:preminor --no-tag'
