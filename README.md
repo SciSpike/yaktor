@@ -1,24 +1,25 @@
-This module supports the conversation DSL to produce a event-driven asynchronous distributed multi-party state-machine in Node.js.
+# yaktor
 
+Web framework that adds behavior to your domain.
 
-## create docker image
+## Description
 
-```
-docker build -t yaktor:$(node -e 'console.log(require("./package.json").version.replace(/-pre.*/,""));') --build-arg UID=$(id -u) --build-arg USER=$(id -un) docker
-```
+[Yakor](https://github.com/Scispike/yaktor) module leverages [yaktor-lang](https://github.com/Scispike/yaktor-lang-js) and [yaktor-ui](https://github.com/Scispike/yaktor-ui-angular1) to produce a event-driven asynchronous distributed multi-party state-machine in Node.js.
 
-## Build and Test
+Also an application generator for building an applicaiton based on yaktor.
 
-`run.sh` is a shortcut to typing `docker run -it -v "$PWD":/app -w "/app" --rm yactor-app`
+## Usage
 
-`./run.sh` will invoke bash by default, but the contianer lacks commands for hardcore editing.
+`run.sh` is a shortcut to typing `docker run -it -v "$PWD":/app --rm yaktor/yaktor`
+
+`./run.sh` will invoke bash by default, but the container lacks commands for hard core editing.
 
 So you should edit in the host using what ever you like.
 
 Then you can:
 
 ```
-./run.sh npm login # only need to do this once 
+./run.sh npm install 
 ./run.sh npm run gen-src
 ./run.sh npm test
 ```

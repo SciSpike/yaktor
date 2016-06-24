@@ -12,9 +12,8 @@ module.exports = function (ctx, done) {
   ctx.server.listen(port, function (err) {
     if (err) return done(err)
     dns.lookup(os.hostname(), function (err, ip) { // eslint-disable-line handle-callback-err
-      var protocol = ctx.host.protocol
       var p = ((protocol === 'http' && port === 80) || (protocol === 'https' && port === 443)) ? '' : (':' + port)
-      logger.info('server %s listening at %s', ctx.serverName, ip ? (protocol + '://' + ip + p) : ('port ' + port))
+      logger.info('server %s listening at %s ip % ', ctx.serverName, ctx.urlPrefix, ip)
       done()
     })
   })
