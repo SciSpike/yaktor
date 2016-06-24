@@ -37,6 +37,15 @@ module.exports = function (grunt) {
       'clean': {
         command: 'git clean -fdX -- src-gen conversation routes routes_* actions action_* doc simulators servers public views'
       },
+      'gen-docs': {
+        options: {
+          execOptions: {
+            cwd: './doc',
+            maxBuffer: Infinity
+          }
+        },
+        command: 'ruby buildAll.rb'
+      },
       'create-views': {
         command: '$(npm bin)/yaktor-ui create'
       },
