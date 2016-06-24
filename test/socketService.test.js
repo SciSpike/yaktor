@@ -1,13 +1,4 @@
 /* global describe, it */
-process.env.NODE_CONFIG = JSON.stringify({
-  yaktor: {
-    log: {
-      stdout: true,
-      level: 'info',
-      filename: ''
-    }
-  }
-})
 var proxyquire = require('proxyquire')
 function Global (m) {
   m[ '@noCallThru' ] = true
@@ -16,10 +7,17 @@ function Global (m) {
 }
 var yaktor = Global({
   auth: {},
-  session: {}
+  session: {},
+  log: {
+    level: 'info',
+    stdout: true,
+    filename: ''
+  }
 })
-var proxy = {}
-proxy[ '../index' ] = yaktor
+var proxy = {
+  '../index': yaktor
+}
+
 var path = require('path')
 var assert = require('assert')
 var events = require('events')

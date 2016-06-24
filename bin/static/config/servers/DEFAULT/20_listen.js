@@ -12,7 +12,7 @@ module.exports = function (ctx, done) {
   ctx.server.listen(port, function (err) {
     if (err) return done(err)
     dns.lookup(os.hostname(), function (err, ip) { // eslint-disable-line handle-callback-err
-      logger.info('server %s listening at %s ip %s', ctx.serverName, ctx.urlPrefix, ip)
+      logger.info('server %s listening at %s (ip %s)', ctx.serverName, ctx.urlPrefix, ip)
       done()
     })
   })

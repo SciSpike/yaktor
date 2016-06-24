@@ -1,17 +1,30 @@
 /* global describe, it */
-process.env.NODE_CONFIG = JSON.stringify({
-  yaktor: {
-    log: {
-      stdout: true,
-      level: 'info',
-      filename: ''
-    }
-  }
-})
 var path = require('path')
 var assert = require('assert')
-var Response = require(path.resolve('services', 'Response'))
-var BadRequest = require(path.resolve('services', 'BadRequest'))
+var proxyquire = require('proxyquire')
+function Global (m) {
+  m[ '@noCallThru' ] = true
+  m[ '@global' ] = true
+  return m
+}
+var yaktor = Global({
+  auth: {},
+  log: {
+    stdout: true,
+    level: 'info',
+    filename: ''
+  }
+})
+var logger = Global(proxyquire('../logger', { '../index': yaktor }))
+var proxy = {
+  'yaktor': yaktor,
+  '../index': yaktor,
+  '../logger': logger,
+  'yaktor/logger': logger
+}
+
+var Response = proxyquire(path.resolve('services', 'Response'), proxy)
+var BadRequest = proxyquire(path.resolve('services', 'BadRequest'), proxy)
 var data = {
   'a': 'a',
   'b': 2,
