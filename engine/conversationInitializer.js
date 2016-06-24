@@ -30,7 +30,7 @@ var socketEventHandler = function (agent, reqData, event, qId, conversation, use
   meta.user = user
   meta.agentDataId = reqData._id
   meta.agentData = reqData
-  var agentAuthorize = yaktor.auth.agentAuthorize || noAuth
+  var agentAuthorize = yaktor.auth && yaktor.auth.agentAuthorize || noAuth
   var messageAuth = agent.messageAuth || noMessageAuth
   logger.silly('%s on event: %s; %s; agentDataId: %s', agent.name.blue, event.yellow, qId, meta.agentDataId.yellowBG)
   async.waterfall([
