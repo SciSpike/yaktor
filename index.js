@@ -22,7 +22,7 @@ var yaktor = {
 
     // now override from environment variables
     var envOverrides = getConfigEnvironmentVariables(yaktor)
-    var serversEnvOverrides = envOverrides.servers
+    var serversEnvOverrides = envOverrides.servers || {}
     var globalEnvOverrides = _.cloneDeep(envOverrides)
     delete globalEnvOverrides.servers
     _.merge(yaktor, globalEnvOverrides)
@@ -30,12 +30,12 @@ var yaktor = {
     debug(JSON.stringify(yaktor, 0, 2))
 
     // now override from given configuration parameter
-    _.merge(yaktor, configuration)
-    debug('configuration after overriding from start function parameter:')
-    debug(JSON.stringify(yaktor, 0, 2))
-
-    // log bootstrap time static configuration FYI
-    debug('YAKTOR CONFIGURATION:')
+    debug('given configuration object:')
+    debug(JSON.stringify(configuration, 0, 2))
+    var suppliedGlobalOverrides = _.cloneDeep(configuration)
+    delete suppliedGlobalOverrides.servers
+    _.merge(yaktor, suppliedGlobalOverrides)
+    debug('resolved yaktor configuration:')
     debug(JSON.stringify(yaktor, 0, 2))
 
     // initialize logger
