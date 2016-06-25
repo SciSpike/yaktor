@@ -2,7 +2,7 @@ var path = require('path')
 var async = require('async')
 var _ = require('lodash')
 var cev = require('config-cev-generator')
-var debug = require('debug')('yaktor-config')
+var debug = require('debug')('yaktor:config')
 
 var globals
 var servers
@@ -21,20 +21,16 @@ var yaktor = {
     debug(JSON.stringify(yaktor, 0, 2))
 
     // now override from environment variables
-    var envOverrides = getConfigEnvironmentVariables(yaktor)
-    var serversEnvOverrides = envOverrides.servers || {}
-    var globalEnvOverrides = _.cloneDeep(envOverrides)
-    delete globalEnvOverrides.servers
-    _.merge(yaktor, globalEnvOverrides)
+    _.merge(yaktor, getConfigEnvironmentVariables(yaktor))
     debug('configuration after overriding from environment variables:')
     debug(JSON.stringify(yaktor, 0, 2))
 
     // now override from given configuration parameter
-    debug('given configuration object:')
+    debug('supplied configuration object:')
     debug(JSON.stringify(configuration, 0, 2))
-    var suppliedGlobalOverrides = _.cloneDeep(configuration)
-    delete suppliedGlobalOverrides.servers
-    _.merge(yaktor, suppliedGlobalOverrides)
+    _.merge(yaktor, configuration)
+
+    // configuration overriding is done
     debug('resolved yaktor configuration:')
     debug(JSON.stringify(yaktor, 0, 2))
 
@@ -49,13 +45,9 @@ var yaktor = {
       function (next) { // initialize all the servers
         yaktor.serverContexts = {}
         async.eachSeries(Object.keys(yaktor.servers), function (serverName, next) {
-          var server = servers[ serverName ]
-          var ctx = _.cloneDeep(server.settings)
-          // override values from environment variables
-          _.merge(ctx, serversEnvOverrides[ serverName ] || {})
-          // override values from configuration parameter
-          _.merge(ctx, configuration.servers && configuration.servers[ serverName ] || {})
-          // this allows a server to get at all config via require('yaktor').serverContexts['...']....
+          var server = yaktor.servers[ serverName ]
+          var ctx = _.cloneDeep(server)
+          // this allows a server to get at other servers' contexts via require('yaktor').serverContexts['...']....
           yaktor.serverContexts[ serverName ] = ctx
           ctx.serverName = serverName
           Object.keys(yaktor).forEach(function (setting) {
@@ -64,13 +56,13 @@ var yaktor = {
               case 'servers': // settings for all servers
               case 'serverContexts': // yaktor's bucket for all server contexts
                 return // skip because these aren't appropriate for the current server context
-              default:
-                // else merge copy of global context into server context with server context winning any conflicts
+
+              default: // merge copy of global context into server context with server context winning any conflicts
                 ctx[ setting ] = _.merge(_.cloneDeep(yaktor[ setting ]), ctx[ setting ] || {})
                 return
             }
           })
-          server.init(ctx, function (err) {
+          servers[ serverName ].init(ctx, function (err) {
             if (err) log.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
             next(err)
           })
@@ -88,18 +80,20 @@ var yaktor = {
   }
 }
 
-var getConfigDefaults = function () {
-  // get design-time default configurations
+var getConfigDefaults = function (opts) {
+  opts = opts || { global: true, servers: true }
   var defaults = {}
-  Object.keys(globals.settings).forEach(function (key) {
-    defaults[ key ] = globals.settings[ key ]
-  })
-
-  defaults.servers = {}
-  Object.keys(servers).forEach(function (serverName) {
-    defaults.servers[ serverName ] = servers[ serverName ].settings
-  })
-
+  if (opts && opts.global) {
+    Object.keys(globals.settings).forEach(function (key) {
+      defaults[ key ] = globals.settings[ key ]
+    })
+  }
+  if (opts && opts.servers) {
+    defaults.servers = {}
+    Object.keys(servers).forEach(function (serverName) {
+      defaults.servers[ serverName ] = servers[ serverName ].settings
+    })
+  }
   return defaults
 }
 
