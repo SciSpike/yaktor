@@ -1,22 +1,12 @@
 /* global describe, it, beforeEach */
-process.env.NODE_CONFIG = JSON.stringify({
-  yaktor: {
-    log: {
-      stdout: true,
-      level: 'info',
-      filename: ''
-    }
-  }
-})
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
+var proxyquire = require('proxyquire')
 require('mongoose-shortid-nodeps')
-var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
-var proxyquire = require('proxyquire')
 mockgoose(mongoose)
 require(path.resolve('src-gen', 'modelAll'))
 var events = require('events')
@@ -33,9 +23,14 @@ var socketService = Global({
 })
 
 var yaktor = Global({
-  logger: logger
+  auth: {},
+  log: {
+    level: 'info',
+    stdout: true,
+    filename: ''
+  }
 })
-
+var logger = Global(proxyquire('../logger', { '../index': yaktor }))
 var fakeWs = {}
 events.EventEmitter.defaultMaxListeners = 0
 var proxy = {
@@ -43,9 +38,10 @@ var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
-  '../logger': Global(logger),
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService,
+  '../logger': logger,
+  'yaktor/logger': logger,
+  '../services/socketService': socketService,
+  '../services/messageService': messageService,
   'mqtt': Global(fakeWs)
 }
 
@@ -59,7 +55,7 @@ describe('socketApi', function () {
   beforeEach(function () {
     mockgoose.reset()
     conversationInitializer(testConversation)
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
   })
   it('should test more', function () {
     // TODO

@@ -4,24 +4,25 @@ var path = require('path')
 var fs = require('fs')
 var serveStatic = require('serve-static')
 
-module.exports = function (serverName, app, done) {
+module.exports = function (ctx, done) {
+  var app = ctx.app
   app.use(serveStatic(path.resolve(path.join('node_modules', 'tv4'))))
   app.use(serveStatic(path.resolve('public')))
 
   // setup the error handling for development mode (prints the error stacktrace in browser)
   if (process.env.NODE_ENV === 'development') {
     app.use(require('errorhandler')())
-    app.get('/dump', function (req, res) {
+    app.get('/dump', function (req, res) { // TODO: make configurable?
       var heapdump = require('heapdump')
       heapdump.writeSnapshot()
       res.end('thanks')
     })
   }
   // Convenience route for integrators to view all registered routes
-  app.get('/__routes', function (req, res) {
+  app.get('/__routes', function (req, res) { // TODO: make configurable?
     res.end(JSON.stringify(app.routes))
   })
-  app.get('/reinit', function (req, res) {
+  app.get('/reinit', function (req, res) { // TODO: make configurable?
     req.session.regenerate(function () { // eslint-disable-line handle-callback-err
       logger.debug('initialized session:%s', req.sessionID)
       if (req.param('redir')) {
@@ -33,7 +34,7 @@ module.exports = function (serverName, app, done) {
       }
     })
   })
-  app.get('/emitter.js', function (req, res) {
+  app.get('/emitter.js', function (req, res) { // TODO: make configurable?
     var path = require.resolve('emitter-component')
     var stat = fs.statSync(path)
     var header = '(function(global){var exports=null,module = {exports:exports};'
@@ -60,23 +61,23 @@ module.exports = function (serverName, app, done) {
       res.end(f)
     })
   }
-  app.get('/swagger-ui/index.html', swaggerIndex)
-  app.get('/swagger-ui', swaggerIndex)
-  app.use('/swagger-ui', serveStatic(path.resolve('node_modules', 'swagger-ui', 'dist')))
-  app.get('/swagger-api/:id', function (req, res, next) {
-    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), {
+  app.get('/swagger-ui/index.html', swaggerIndex) // TODO: make configurable?
+  app.get('/swagger-ui', swaggerIndex) // TODO: make configurable?
+  app.use('/swagger-ui', serveStatic(path.resolve('node_modules', 'swagger-ui', 'dist'))) // TODO: make configurable?
+  app.get('/swagger-api/:id', function (req, res, next) { // TODO: make configurable?
+    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), { // TODO: make configurable?
       proto: req.protocol,
       host: req.get('host')
     })
   })
   app.get('/', function (req, res) {
-    res.render(path.resolve(path.join('views', 'index.html')), {
+    res.render(path.resolve(path.join('views', 'index.html')), { // TODO: make configurable?
       locale: req.locale,
       sId: req.sessionID
     })
   })
 
-  app.use(serveStatic(path.resolve('views')))
+  app.use(serveStatic(path.resolve('views'))) // TODO: make configurable?
 
-  done && done()
+  done()
 }

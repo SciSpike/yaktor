@@ -26,7 +26,13 @@ function Global (m) {
   m[ '@global' ] = true
   return m
 }
-
+var yaktor = Global({
+  log: {
+    level: 'info',
+    stdout: true,
+    filename: ''
+  }
+})
 describe('shortId', function () {
   it('should create shortId with the longer default', function (done) {
     var DefaultShort = mongoose.model('DefaultShort')
@@ -40,7 +46,8 @@ describe('shortId', function () {
   })
   it('should create shortId of default length', function (done) {
     var proxy = {
-      'yaktor/logger': Global(require('../logger')),
+      'yaktor': yaktor,
+      'yaktor/logger': Global(proxyquire('../logger', { '../index': yaktor })),
       'mongoose-shortid-nodeps': Global(require('mongoose-shortid-nodeps'))
     }
     proxyquire(path.resolve('bin', 'static', 'config', 'global', '02_shortid'), proxy)

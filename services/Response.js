@@ -1,5 +1,4 @@
-var logger = require('../../../logger')
-var BadRequest = require('./BadRequest')
+var logger = require('../logger')
 
 ;(function () {
   'use strict'
@@ -23,7 +22,7 @@ var BadRequest = require('./BadRequest')
       return 'SUCCESS'
     },
     status: function (err) {
-      return err instanceof BadRequest ? Response.BAD_REQUEST : Response.SERVER_ERROR
+      return err.name === 'BadRequest' ? Response.BAD_REQUEST : Response.SERVER_ERROR
     },
     Failure: function (err) {
       this.status = Response.FAILURE

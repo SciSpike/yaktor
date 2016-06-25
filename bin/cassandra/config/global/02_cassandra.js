@@ -1,9 +1,7 @@
-var config = require('config')
 var logger = require('yaktor/logger')
 logger.info(__filename)
 var cql = require('cassandra-driver')
 var async = require('async')
-var path = require('path')
 var auditLogger = require('yaktor/lib/auditLogger')
 
 var logError = function (error) {
@@ -17,13 +15,12 @@ var getUserName = function (user) {
 }
 
 module.exports = function (yaktor, cb) {
-  console.log(config.get('yaktor.cassandra.enable'))
-  if (!config.get('yaktor.cassandra.enable')) {
-    return cb();
+  if (!yaktor.cassandra.enable) {
+    cb()
   } else {
-    var hosts = config.get('yaktor.cassandra.hosts').split(',')
-    var keyspace = config.get('yaktor.cassandra.keyspace')
-    var hostPort = parseInt(config.get('yaktor.cassandra.port'))
+    var hosts = yaktor.cassandra.hosts.split(',')
+    var keyspace = yaktor.cassandra.keyspace
+    var hostPort = parseInt(yaktor.cassandra.port)
     // this will break if you have differing ports across servers :)
     hosts = hosts.map(function (host) {
       return host.replace(/([^:]*)(:(\d+))?/, function (all, host, colon, port) {

@@ -1,7 +1,6 @@
-var config = require('config')
 var logger = require('yaktor/logger')
 logger.info(__filename)
-var messageService = require('yaktor/app/services/messageService')
+var messageService = require('yaktor/services/messageService')
 // add the missing methods
 var def = require('amqp-eventemitter/node_modules/amqp/lib/amqp-definitions-0-9-1.js')
 def.classes.push({
@@ -43,8 +42,8 @@ Queue.prototype.ping = function (def) {
 module.exports = function (yaktor, done) {
   try {
     var Amqp = require('amqp-eventemitter').AmqpEventEmitter
-    var forceAmqp = config.get('yaktor.amqp.force')
-    var options = config.get('yaktor.amqp.options')
+    var forceAmqp = yaktor.amqp.force
+    var options = yaktor.amqp.options
     var amqp = new Amqp(options)
     var connected = false
     amqp.queue.on('amqp-eventemitter.ready', function () {

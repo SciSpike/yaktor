@@ -1,5 +1,5 @@
 var util = require('util')
-var AbstractError = require('../errors/AbstractError')
+var AbstractError = require('./AbstractError')
 
 var BadRequest = function BadRequest (msg) {
   AbstractError.call(this, msg)

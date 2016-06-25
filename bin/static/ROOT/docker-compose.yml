@@ -8,12 +8,12 @@ services:
       context: ./docker
     image: ${APP_NAME}:${APP_TAG}
     environment:
-      YAKTOR_MONGO_HOST: ${APP_NAME}-mongo
-      YAKTOR_AMQP_FORCE: 1
-      YAKTOR_AMQP_OPTIONS_CONNECTION_HOST: ${APP_NAME}-amqp
-      YAKTOR_SERVERS_DEFAULT_HOST_PORT: 80
-#      YAKTOR_CASSANDRA_ENABLE: 1
-#      YAKTOR_CASSANDRA_HOSTS: ${APP_NAME}-cassandra
+      MONGO_HOST: ${APP_NAME}-mongo
+      AMQP_FORCE: 1
+      AMQP_OPTIONS_CONNECTION_HOST: ${APP_NAME}-amqp
+      SERVERS_DEFAULT_HOST_PORT: 80
+#      CASSANDRA_ENABLE: 1
+#      CASSANDRA_HOSTS: ${APP_NAME}-cassandra
     depends_on:
       - amqp
       - mongo

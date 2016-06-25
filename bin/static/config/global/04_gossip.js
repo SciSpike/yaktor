@@ -1,18 +1,25 @@
 var logger = require('yaktor/logger')
 logger.info(__filename)
-var updateInterval = 60000 // TODO: make configurable?
 var os = require('os')
 var dns = require('dns')
 var async = require('async')
 var Gossipmonger = require('gossipmonger')
 var ClusterSeed = require('mongoose').model('ClusterSeed')
 
-module.exports = function (serverName, app, done) {
-  var yaktor = app.yaktor
-  var gPort = parseInt(app.getConfigVal('gossip.port')) ||
-    parseInt(app.getConfigVal('host.port')) + parseInt(app.getConfigVal('gossip.portOffset'))
+module.exports = function (yaktor, done) {
+  var gPort = yaktor.gossip.port
+  var i = parseInt(gPort)
+  if (gPort.toString() !== i.toString()) return done(new Error('gossip port is not an integer'))
+  gPort = i
 
-  dns.lookup(os.hostname(), function (err, gAddress) { // eslint-disable-line handle-callback-err
+  var updateInterval = yaktor.gossip.updateIntervalMillis
+  i = parseInt(updateInterval)
+  if (updateInterval.toString() !== i.toString()) return done(new Error('gossip updateIntervalMillis is not an integer'))
+  updateInterval = i
+
+  dns.lookup(os.hostname(), function (err, gAddress) {
+    if (err) return done(err)
+
     var gHost = gAddress + ':' + gPort
     var registerNode = function () {
       ClusterSeed.update({
@@ -23,15 +30,15 @@ module.exports = function (serverName, app, done) {
         upsert: true
       }, function (err) {
         if (err) {
-          if (yaktor.peers) {
+          if (yaktor.gossip.peers) {
             logger.error('failed to update kill gossip')
-            yaktor.gossipmonger.transport.close()
-            delete yaktor.peers
+            yaktor.gossip.monger.transport.close()
+            delete yaktor.gossip.peers
           }
           logger.error(err.stack)
         }
-        if (yaktor.peers) {
-          var ps = yaktor.peers.livePeers()
+        if (yaktor.gossip.peers) {
+          var ps = yaktor.gossip.peers.livePeers()
           var sp = {}
           for (var p in ps) {
             sp[ ps[ p ].id ] = true
@@ -63,8 +70,8 @@ module.exports = function (serverName, app, done) {
               }, {
                 seeds: gSeeds
               })
-              yaktor.gossipmonger = gossipmonger
-              yaktor.peers = gossipmonger.storage
+              yaktor.gossip.monger = gossipmonger
+              yaktor.gossip.peers = gossipmonger.storage
               gossipmonger.on('error', function (error) { // eslint-disable-line handle-callback-err
                 // XXX something :0
               })
@@ -90,8 +97,13 @@ module.exports = function (serverName, app, done) {
               gossipmonger.on('peer new', function (peer) {
                 logger.warn('peer live %s', peer.id)
               })
-              gossipmonger.transport.listen(done)
-              logger.silly('%s: gossiping to:', gPort, yaktor.peers.livePeers())
+              gossipmonger.transport.listen(function (err) {
+                if (!err) {
+                  gossipmonger.gossip()
+                  logger.silly('%s: gossipping to:', gPort, yaktor.gossip.peers.livePeers())
+                }
+                done(err)
+              })
             })
           })
         }

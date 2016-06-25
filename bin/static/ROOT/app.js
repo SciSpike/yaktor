@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-var dns = require('dns')
-var os = require('os')
-var config = require('config')
 var yaktor = require('yaktor')
+var log = require('yaktor/logger')
+var config = {
+  // TODO: pass any values here to override environment variables and to override values in ./config
+}
 
-yaktor.start(config, function (err, serverPorts) {
+yaktor.start(config, function (err) {
   if (err) {
-    console.log(err)
+    log.error(err)
     return process.exit(1)
   }
-
-  dns.lookup(os.hostname(), function (err, ip) { // eslint-disable-line handle-callback-err
-    yaktor.log.info('yaktor started; %s',
-      serverPorts.map(function (it) { return it.server + ' at ' + (ip ? ip + ':' : '') + it.port }).join(','))
-  })
+  log.info('yaktor started ok')
 })

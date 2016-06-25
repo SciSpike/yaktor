@@ -1,16 +1,16 @@
 var agents = {}
 var async = require('async')
 var path = require('path')
-var messageService = require(path.join('..', 'app', 'services', 'messageService'))
-var localEmitter = require(path.join('..', 'app', 'services', 'localEmitter'))
-var socketService = require(path.join('..', 'app', 'services', 'socketService'))
-var logger = require(path.join('..', 'lib', 'logger'))
+var messageService = require(path.join('..', 'services', 'messageService'))
+var localEmitter = require(path.join('..', 'services', 'localEmitter'))
+var socketService = require(path.join('..', 'services', 'socketService'))
+var logger = require(path.join('..', 'logger'))
 var conversationService = require('./conversationService')
 var util = require('util')
 require('winston/node_modules/colors')
 var agentConversationModel = require('mongoose').model('AgentConversation')
 var getAgentConversation = conversationService.restoreAgentConversation
-var globalConversation = require('../index')
+var yaktor = require('../index')
 
 var auditLogger = require(path.join('..', 'lib', 'auditLogger'))
 
@@ -30,7 +30,7 @@ var socketEventHandler = function (agent, reqData, event, qId, conversation, use
   meta.user = user
   meta.agentDataId = reqData._id
   meta.agentData = reqData
-  var agentAuthorize = globalConversation.agentAuthorize || noAuth
+  var agentAuthorize = yaktor.auth && yaktor.auth.agentAuthorize || noAuth
   var messageAuth = agent.messageAuth || noMessageAuth
   logger.silly('%s on event: %s; %s; agentDataId: %s', agent.name.blue, event.yellow, qId, meta.agentDataId.yellowBG)
   async.waterfall([

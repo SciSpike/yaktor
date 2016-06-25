@@ -34,16 +34,16 @@ module.exports = function (grunt) {
       }
     },
     shell: {
-//      "migrate":{
-//        command:"yaktor migrate",
-//        usage:  "Update your app to the latest"
-//      },
+      //      "migrate":{
+      //        command:"yaktor migrate",
+      //        usage:  "Update your app to the latest"
+      //      },
       'clean': {
-        usage:"Removes all non tracked files",
+        usage: 'Removes all non tracked files',
         command: 'git clean -fdX -- src-gen conversation routes routes_* actions action_* doc simulators servers public views'
       },
       'gen-docs': {
-        usage:"Produces html from the adoc in ./doc",
+        usage: 'Produces html from the adoc in ./doc',
         options: {
           execOptions: {
             cwd: './doc',
@@ -65,7 +65,7 @@ module.exports = function (grunt) {
         command: [ 'npm install', '$(npm bin)/bower install' ].join(';')
       },
       'gen-src': {
-        usage:"Produce JavaScript source files from the Yaktor DSLs",
+        usage: 'Produce JavaScript source files from the Yaktor DSLs',
         command: 'npm run gen-src'
       },
       'generate-views': {
@@ -95,7 +95,16 @@ module.exports = function (grunt) {
         command: [ 'npm owner add', grunt.option('owner'), 'engine-ui' ].join(' ')
       },
       start: {
-        command: 'YAKTOR_LOG_LEVEL=silly npm start'
+        usage: 'Starts the yaktor app',
+        command: 'LOG_LEVEL=silly npm start'
+      },
+      rebuild: {
+        usage: 'Rebuilds npm modules',
+        command: 'npm rebuild'
+      },
+      install: {
+        usage: 'Installs npm modules',
+        command: 'npm install'
       }
     }
   }
@@ -103,8 +112,8 @@ module.exports = function (grunt) {
   grunt.initConfig(config)
 
   for (var s in config.shell) {
-    if(config.shell[s].usage){
-      grunt.registerTask(s, config.shell[s].usage, 'shell:' + s)
+    if (config.shell[ s ].usage) {
+      grunt.registerTask(s, config.shell[ s ].usage, 'shell:' + s)
     }
   }
 
@@ -113,28 +122,27 @@ module.exports = function (grunt) {
 
   grunt.registerTask('pre-views', preTasks)
   grunt.registerTask('re-views', reTasks)
-  grunt.registerTask('gen-views', "Produces the ui located in ./views", preTasks.concat(reTasks))
-  grunt.registerTask('release-patch',"Executes git pull bump:path and npm publish this module (requires git and npm login )", [ 'pull' ].concat([ 'bump:patch', 'shell:publish' ]))
-  grunt.registerTask('release-minor', "Executes git pull bump:minor and npm publish this module (requires git and npm login )", [ 'pull' ].concat([ 'bump:minor', 'shell:publish' ]))
-  grunt.registerTask('bash', "Gets a bash shell inside this container",function(){
-    console.log("??")
-  })
-  grunt.registerTask("help","Prints this help message",function(){
-    console.log("\n  Usage: yak [command] ...")
-    console.log("\n         yak bash | yak \n")
-    console.log("  Thank you for using yak, a container for running a Yaktor.\n")
-    console.log("  Commands:\n")
-    var tasks = Object.keys(grunt.task._tasks).filter(function(name){
-      return "shell"!=name;
+  grunt.registerTask('gen-views', 'Produces the ui located in ./views', preTasks.concat(reTasks))
+  grunt.registerTask('release-patch', 'Executes git pull bump:path and npm publish this module (requires git and npm login )', [ 'pull' ].concat([ 'bump:patch', 'shell:publish' ]))
+  grunt.registerTask('release-minor', 'Executes git pull bump:minor and npm publish this module (requires git and npm login )', [ 'pull' ].concat([ 'bump:minor', 'shell:publish' ]))
+
+  grunt.registerTask('help', 'Prints this help message', function () {
+    console.log('\n  Usage: yak command ... # Issues yaktor command(s)')
+    console.log('\n         yak bash        # Gets a bash shell inside this container')
+    console.log('\n         yak             # Prints this help message\n')
+    console.log('  A management script for running a Yaktor stack.\n')
+    console.log('  Commands:\n')
+    var tasks = Object.keys(grunt.task._tasks).filter(function (name) {
+      return name !== 'shell'
     })
-    var usageMax = tasks.reduce(function(max,v){
-      return Math.max(max,v.length)
-    },0);
+    var usageMax = tasks.reduce(function (max, v) {
+      return Math.max(max, v.length)
+    }, 0)
     var pad = Array(usageMax).join(' ')
-    tasks.forEach(function(taskName){
-      var task = grunt.task._tasks[taskName]
-      var name = (taskName+pad).substr(0,usageMax)
-      console.log("    "+name+"  "+ task.info)
-    });
+    tasks.forEach(function (taskName) {
+      var task = grunt.task._tasks[ taskName ]
+      var name = (taskName + pad).substr(0, usageMax)
+      console.log('    ' + name + '  ' + task.info)
+    })
   })
 }

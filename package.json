@@ -1,11 +1,12 @@
 {
   "name": "yaktor",
-  "version": "0.1.0-pre.7",
+  "version": "0.2.0-pre.0",
   "main": "index.js",
   "dependencies": {
     "async": "1.5.2",
     "commander": "2.0.0",
-    "config": "1.20.1",
+    "config-cev-generator": "0.1.6",
+    "debug": "2.2.0",
     "fs-extra": "0.30.0",
     "lodash": "4.13.1",
     "which": "1.0.5"
@@ -13,7 +14,6 @@
   "devDependencies": {
     "backo": "1.0.1",
     "bluebird": "3.3.4",
-    "config-cev-generator": "0.1.4",
     "grunt": "1.0.1",
     "grunt-bump": "0.5.0",
     "grunt-cli": "0.1.13",
@@ -34,7 +34,7 @@
     "standard-format": "2.1.1",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "~0.1.0-0"
+    "yaktor-lang": "~0.2.0-pre"
   },
   "engines": {
     "node": ">=4.0.x"

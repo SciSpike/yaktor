@@ -1,17 +1,7 @@
 /* global describe, it, beforeEach */
-process.env.NODE_CONFIG = JSON.stringify({
-  yaktor: {
-    log: {
-      stdout: true,
-      level: 'info',
-      filename: ''
-    }
-  }
-})
 var path = require('path')
 require('mongoose-shortid-nodeps')
 var Promise = require('bluebird')
-var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
@@ -34,15 +24,22 @@ var socketService = Global({
 })
 
 var yaktor = Global({
-  logger: logger
+  auth: {},
+  log: {
+    stdout: true,
+    level: 'info',
+    filename: ''
+  }
 })
+var logger = Global(proxyquire('../logger', { '../index': yaktor }))
 var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
   '../logger': logger,
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService
+  'yaktor/logger': logger,
+  '../services/socketService': socketService,
+  '../services/messageService': messageService
 }
 proxy[ path.resolve('node_modules', 'mongoose') ] = proxy.mongoose
 
@@ -59,7 +56,7 @@ describe(path.basename(__filename), function () {
   beforeEach(function () {
     mockgoose.reset()
     conversationInitializer(testConversation)
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
   })
   it('should pass the data through', function (done) {
     var a = new Agent('test6.a', {

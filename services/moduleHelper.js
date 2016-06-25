@@ -1,4 +1,4 @@
-var logger = require('../../logger')
+var logger = require('../logger')
 
 module.exports = {
   setupSession: function (channel, providerChannel, urlScheme) {

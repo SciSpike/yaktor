@@ -1,18 +1,8 @@
 /* global describe, it, before */
-process.env.NODE_CONFIG = JSON.stringify({
-  yaktor: {
-    log: {
-      stdout: true,
-      level: 'info',
-      filename: ''
-    }
-  }
-})
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
 require('mongoose-shortid-nodeps')
-var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
@@ -54,14 +44,23 @@ var times = function (times, task, callback) {
   pt()
 }
 
-var yaktor = Global({})
+var yaktor = Global({
+  auth: {},
+  log: {
+    stdout: true,
+    level: 'info',
+    filename: ''
+  }
+})
+var logger = Global(proxyquire('../logger', { '../index': yaktor }))
 var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
   '../logger': logger,
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService
+  'yaktor/logger': logger,
+  '../services/socketService': socketService,
+  '../services/messageService': messageService
 }
 proxy[ path.resolve('node_modules', 'mongoose') ] = proxy.mongoose
 
@@ -101,7 +100,7 @@ describe('conversationInitializer', function () {
   })
   it('should have registered listeners to init message', function (done) {
     var state = null
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
     a.connect(function () {
       a.once(state, function () {
         done()
@@ -111,7 +110,7 @@ describe('conversationInitializer', function () {
   })
   it('should be able to jump to the new state', function (done) {
     var state = 'begun'
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
     a.once(state, function () {
       done()
     })
@@ -122,7 +121,7 @@ describe('conversationInitializer', function () {
   it('should authorize init message', function (done) {
     var state = 'begun'
     var i = 0
-    yaktor.agentAuthorize = function (u, agentQName, cb) {
+    yaktor.auth.agentAuthorize = function (u, agentQName, cb) {
       i++
       assert.equal(u, user)
       assert.equal(agentQName, agentName)
@@ -136,7 +135,7 @@ describe('conversationInitializer', function () {
   })
   it('should not authorize init message', function (done) {
     var i = 0
-    yaktor.agentAuthorize = function (u, agentQName, cb) {
+    yaktor.auth.agentAuthorize = function (u, agentQName, cb) {
       i++
       assert.equal(u, user)
       assert.equal(agentQName, agentName)
@@ -151,7 +150,7 @@ describe('conversationInitializer', function () {
   })
   it('should close and then not respond to events', function (done) {
     var state = 'begun'
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
     a.close()
     var i = 0
     a.once(state, function () {
@@ -214,7 +213,7 @@ describe('conversationInitializer', function () {
     a.init()
   })
   it('should be able to do many of these at once', function (done) {
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
     times(100, function (n, done) {
       var a = new Agent('test.test', {
         _id: 'time:' + n

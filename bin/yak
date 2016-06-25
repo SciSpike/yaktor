@@ -27,12 +27,14 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 if [ "$#" -eq 0 ]; then
-  CMD=bash
+  CMD=help
 else
   CMD="$@"
 fi
-if [ "$CMD" != "bash" ]; then
+if [ ! "$CMD" == 'bash' ]; then
   CMD="grunt $CMD"
+else
+  CMD="bash -l"
 fi
 # TODO: remove this in favor of using underscore.js template in ./yaktor.js at `yaktor create` time
 # make sure things are configurable via environment variables

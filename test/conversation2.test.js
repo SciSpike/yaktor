@@ -1,18 +1,8 @@
 /* global describe, it, before */
-process.env.NODE_CONFIG = JSON.stringify({
-  yaktor: {
-    log: {
-      stdout: true,
-      level: 'info',
-      filename: ''
-    }
-  }
-})
 var path = require('path')
 var assert = require('assert')
 var async = require('async')
 require('mongoose-shortid-nodeps')
-var logger = require('../logger')
 require(path.resolve('src-gen', 'test'))
 var mongoose = require('mongoose')
 var mockgoose = require('mockgoose')
@@ -32,14 +22,23 @@ var socketService = Global({
   agents: {}
 })
 
-var yaktor = Global({})
+var yaktor = Global({
+  auth: {},
+  log: {
+    stdout: true,
+    level: 'info',
+    filename: ''
+  }
+})
+var logger = Global(proxyquire('../logger', { '../index': yaktor }))
 var proxy = {
   'yaktor': yaktor,
   'mongoose': Global(mongoose),
   '../index': yaktor,
   '../logger': logger,
-  '../app/services/socketService': socketService,
-  '../app/services/messageService': messageService
+  'yaktor/logger': logger,
+  '../services/socketService': socketService,
+  '../services/messageService': messageService
 }
 proxy[ path.resolve('node_modules', 'mongoose') ] = proxy.mongoose
 
@@ -71,7 +70,7 @@ describe('conversation2', function () {
   })
   it('should have registered listeners to init message', function (done) {
     var i = 0
-    yaktor.agentAuthorize = null
+    yaktor.auth.agentAuthorize = null
     control.once('controlling', function () {
       i++
       control.emit('stop')
