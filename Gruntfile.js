@@ -39,9 +39,11 @@ module.exports = function (grunt) {
       'add-owner': {
         command: [ 'npm owner add', grunt.option('owner'), packageJson.name ].join(' ')
       },
-      'create-maintenance-branch': {
-        command: ['git checkout -b ' + newTag + ' ' + tag,
-          'git branch --set-upstream-to=origin/' + newTag + ' ' + newTag].join('&&')
+      'create-maintenance-branch':{
+        command:'git checkout -b ' + newTag + ' ' + tag
+      },
+      'create-tag': {
+        command: 'git tag v' + packageJson.version
       },
       'release-minor': {
         'command': [
@@ -66,13 +68,13 @@ module.exports = function (grunt) {
           'grunt shell:publish',
           'grunt bump:prepatch --no-tag'
         ].join('&&'),
-        help: "Release a patch. You must do this in a clean working directory from a release branch, like 'v0.1.x'."
+        help: 'Release a patch. You must do this in a clean working directory from a release branch, like \'v0.1.x\'.'
       },
       'release-pre': {
         'command': [
           '[ -z "$(git status -s)" ]', // no untracked files
           'git diff --cached --exit-code --no-patch', // no modified files
-          'git tag v' + packageJson.version,
+          'grunt shell:create-tag',
           'grunt shell:publish',
           'git push --tags',
           'grunt bump:prerelease --no-tag'
