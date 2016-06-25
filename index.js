@@ -121,8 +121,7 @@ var getConfigEnvironmentVariables = function (object) {
           if (envarValue) {
             mappings[ key ] = envarValue
             debug('replaced configuration setting "' + configPrefix.concat(key).join('.') + '" with value "' + envarValue + '" from environment variable "' + envarName + '"')
-          }
-          else {
+          } else {
             delete mappings[ key ]
             debug('no value found in environment variable "' + envarName + '" for configuration setting "' + configPrefix.concat(key).join('.') + '"')
           }
