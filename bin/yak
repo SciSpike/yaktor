@@ -36,10 +36,5 @@ if [ ! "$CMD" == 'bash' ]; then
 else
   CMD="bash -l"
 fi
-# TODO: remove this in favor of using underscore.js template in ./yaktor.js at `yaktor create` time
-# make sure things are configurable via environment variables
-if [ ! -f ./config/custom-environment-variables.json ]; then
-  docker exec -it ${APP_NAME}-app bash -c ". /home/yaktor/.profile && npm run envars && $CMD"
-else
-  docker exec -it ${APP_NAME}-app bash -c ". /home/yaktor/.profile && $CMD"
-fi
+
+docker exec -it ${APP_NAME}-app bash -c ". /home/yaktor/.profile && $CMD"
