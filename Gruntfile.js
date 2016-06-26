@@ -39,8 +39,8 @@ module.exports = function (grunt) {
       'add-owner': {
         command: [ 'npm owner add', grunt.option('owner'), packageJson.name ].join(' ')
       },
-      'create-maintenance-branch':{
-        command:'git checkout -b ' + newTag + ' ' + tag
+      'create-maintenance-branch': {
+        command: 'git checkout -b ' + newTag + ' ' + tag
       },
       'create-tag': {
         command: 'git tag v' + packageJson.version
