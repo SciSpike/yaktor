@@ -9,8 +9,10 @@ module.exports = function (grunt) {
   var basePath = grunt.option('basePath') || './'
   var path = require('path')
   var packageJson = require(path.resolve('package.json'))
-  var tag = 'v' + packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
-  var newTag = tag && tag.replace(/\.\d*$/, '.x')
+  var rawVersion = packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
+  var minor = rawVersion.replace(/\.\d*$/,'');
+  var tag = 'v' + rawVersion
+  var newTag = 'v'+minor+'.x'
   var master = grunt.option('source-branch') || 'master'
 
   var config = {
@@ -40,10 +42,18 @@ module.exports = function (grunt) {
         command: [ 'npm owner add', grunt.option('owner'), packageJson.name ].join(' ')
       },
       'create-maintenance-branch':{
-        command:'git checkout -b ' + newTag + ' ' + tag
+        command: 'git checkout -b ' + newTag + ' ' + tag
       },
       'create-tag': {
         command: 'git tag v' + packageJson.version
+      },
+      'sync-dockerfile':{
+        command: [
+          'sed -i~ \'s,yaktor/yaktor:.*,yaktor/yaktor:'+minor+',\' bin/static/docker/Dockerfile',
+          'rm bin/static/docker/Dockerfile~',
+          'git commit -o -m "sync-dockerfile" -- bin/static/docker/Dockerfile '
+        ].join('&&'),
+        usage: "Ensures the Dockerfile matches our minor version."
       },
       'release-minor': {
         'command': [
@@ -53,11 +63,13 @@ module.exports = function (grunt) {
           'grunt bump:minor',
           'grunt shell:publish',
           'grunt shell:create-maintenance-branch',
+          'grunt shell:sync-dockerfile',
           'grunt bump:prepatch --no-tag',
           'git checkout master',
-          'grunt bump:preminor --no-tag'
+          'grunt bump:preminor --no-tag',
+          'grunt shell:sync-dockerfile'
         ].join('&&'),
-        help: 'Make a new release. You must do this in a clean working directory from the ' + master + ' branch.'
+        usage: 'Make a new release. You must do this in a clean working directory from the ' + master + ' branch.'
       },
       'release-patch': {
         'command': [
@@ -68,7 +80,7 @@ module.exports = function (grunt) {
           'grunt shell:publish',
           'grunt bump:prepatch --no-tag'
         ].join('&&'),
-        help: 'Release a patch. You must do this in a clean working directory from a release branch, like \'v0.1.x\'.'
+        usage: 'Release a patch. You must do this in a clean working directory from a release branch, like \'v0.1.x\'.'
       },
       'release-pre': {
         'command': [
@@ -79,15 +91,37 @@ module.exports = function (grunt) {
           'git push --tags',
           'grunt bump:prerelease --no-tag'
         ].join('&&'),
-        help: 'Release a preview. You must do this in a clean working directory in any branch.'
+        usage: 'Release a preview. You must do this in a clean working directory in any branch.'
       }
     }
   }
 
   grunt.initConfig(config)
 
-  grunt.registerTask('add-owner', [ 'shell:add-owner' ])
-  grunt.registerTask('release-patch', [ 'shell:pull', 'shell:release-patch' ])
-  grunt.registerTask('release-minor', [ 'shell:pull', 'shell:release-minor' ])
-  grunt.registerTask('release-pre', [ 'shell:pull', 'shell:release-pre' ])
+  grunt.registerTask('release-patch', 'Executes git pull bump:path and npm publish this module (requires git and npm login )', [ 'shell:pull', 'shell:release-patch' ])
+  grunt.registerTask('release-minor', 'Executes git pull bump:minor and npm publish this module (requires git and npm login )', [ 'shell:pull', 'shell:release-minor' ])
+  grunt.registerTask('release-pre', 'Executes git pull bump:pre and npm publish this module (requires git and npm login )',  [ 'shell:pull', 'shell:release-pre' ])
+  
+  for (var s in config.shell) {
+    if (config.shell[ s ].usage) {
+      grunt.registerTask(s, config.shell[ s ].usage, 'shell:' + s)
+    }
+  }
+  grunt.registerTask('help', 'Prints this help message.', function () {
+    console.log('\n  Usage: grunt command ... # Issues grunt command(s).\n ')
+    console.log('  A management script for running a grunt tasks.\n')
+    console.log('  Commands:\n')
+    var tasks = Object.keys(grunt.task._tasks).filter(function (name) {
+      return name !== 'shell'
+    })
+    var usageMax = tasks.reduce(function (max, v) {
+      return Math.max(max, v.length)
+    }, 0)
+    var pad = new Array(usageMax).join(' ')
+    tasks.forEach(function (taskName) {
+      var task = grunt.task._tasks[ taskName ]
+      var name = (taskName + pad).substr(0, usageMax)
+      console.log('    ' + name + '  ' + task.info)
+    })
+  })
 }
