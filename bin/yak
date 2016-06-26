@@ -32,7 +32,9 @@ else
   CMD="$@"
 fi
 if [ ! "$CMD" == 'bash' ]; then
-  CMD="grunt $CMD"
+  if [[ ! "$CMD" =~ ^yaktor ]]; then
+    CMD="grunt $CMD"
+  fi
 else
   CMD="bash -l"
 fi

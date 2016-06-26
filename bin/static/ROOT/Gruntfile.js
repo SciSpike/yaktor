@@ -34,10 +34,6 @@ module.exports = function (grunt) {
       }
     },
     shell: {
-      //      "migrate":{
-      //        command:"yaktor migrate",
-      //        usage:  "Update your app to the latest"
-      //      },
       'clean': {
         usage: 'Removes all non tracked files',
         command: 'git clean -fdX -- src-gen conversation routes routes_* actions action_* doc simulators servers public views'
@@ -125,9 +121,10 @@ module.exports = function (grunt) {
     }
   }
   grunt.registerTask('help', 'Prints this help message', function () {
-    console.log('\n  Usage: yak command ... # Issues yaktor command(s)')
-    console.log('\n         yak bash        # Gets a bash shell inside this container')
-    console.log('\n         yak             # Prints this help message\n')
+    console.log('\n  Usage: yak command ...       # Issues yaktor command(s)')
+    console.log('\n         yak bash              # Gets a bash shell inside this container')
+    console.log('\n         yak yaktor [command]  # See `yak yaktor --help`')
+    console.log('\n         yak                   # Prints this help message\n')
     console.log('  A management script for running a Yaktor stack.\n')
     console.log('  Commands:\n')
     var tasks = Object.keys(grunt.task._tasks).filter(function (name) {
