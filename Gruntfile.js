@@ -9,7 +9,7 @@ module.exports = function (grunt) {
   var basePath = grunt.option('basePath') || './'
   var path = require('path')
   var packageJson = require(path.resolve('package.json'))
-  var tag = grunt.option('tag')
+  var tag = 'v' + packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
   var newTag = tag && tag.replace(/\.\d*$/, '.x')
   var master = grunt.option('source-branch') || 'master'
 
