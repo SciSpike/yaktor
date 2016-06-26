@@ -10,9 +10,9 @@ module.exports = function (grunt) {
   var path = require('path')
   var packageJson = require(path.resolve('package.json'))
   var rawVersion = packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
-  var minor = rawVersion.replace(/\.\d*$/,'');
+  var minor = rawVersion.replace(/\.\d*$/, '')
   var tag = 'v' + rawVersion
-  var newTag = 'v'+minor+'.x'
+  var newTag = 'v' + minor + '.x'
   var master = grunt.option('source-branch') || 'master'
 
   var config = {
@@ -41,19 +41,19 @@ module.exports = function (grunt) {
       'add-owner': {
         command: [ 'npm owner add', grunt.option('owner'), packageJson.name ].join(' ')
       },
-      'create-maintenance-branch':{
+      'create-maintenance-branch': {
         command: 'git checkout -b ' + newTag + ' ' + tag
       },
       'create-tag': {
         command: 'git tag v' + packageJson.version
       },
-      'sync-dockerfile':{
+      'sync-dockerfile': {
         command: [
-          'sed -i~ \'s,yaktor/yaktor:.*,yaktor/yaktor:'+minor+',\' bin/static/docker/Dockerfile',
+          'sed -i~ \'s,yaktor/yaktor:.*,yaktor/yaktor:' + minor + ',\' bin/static/docker/Dockerfile',
           'rm bin/static/docker/Dockerfile~',
           'git commit -o -m "sync-dockerfile" -- bin/static/docker/Dockerfile '
         ].join('&&'),
-        usage: "Ensures the Dockerfile matches our minor version."
+        usage: 'Ensures the Dockerfile matches our minor version.'
       },
       'release-minor': {
         'command': [
@@ -100,8 +100,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('release-patch', 'Executes git pull bump:path and npm publish this module (requires git and npm login )', [ 'shell:pull', 'shell:release-patch' ])
   grunt.registerTask('release-minor', 'Executes git pull bump:minor and npm publish this module (requires git and npm login )', [ 'shell:pull', 'shell:release-minor' ])
-  grunt.registerTask('release-pre', 'Executes git pull bump:pre and npm publish this module (requires git and npm login )',  [ 'shell:pull', 'shell:release-pre' ])
-  
+  grunt.registerTask('release-pre', 'Executes git pull bump:pre and npm publish this module (requires git and npm login )', [ 'shell:pull', 'shell:release-pre' ])
+
   for (var s in config.shell) {
     if (config.shell[ s ].usage) {
       grunt.registerTask(s, config.shell[ s ].usage, 'shell:' + s)

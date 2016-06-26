@@ -119,7 +119,6 @@ module.exports = function (grunt) {
   grunt.registerTask('release-patch', 'Executes git pull bump:path and npm publish this module (requires git and npm login )', [ 'pull' ].concat([ 'bump:patch', 'shell:publish' ]))
   grunt.registerTask('release-minor', 'Executes git pull bump:minor and npm publish this module (requires git and npm login )', [ 'pull' ].concat([ 'bump:minor', 'shell:publish' ]))
 
-  
   for (var s in config.shell) {
     if (config.shell[ s ].usage) {
       grunt.registerTask(s, config.shell[ s ].usage, 'shell:' + s)
