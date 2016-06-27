@@ -70,7 +70,7 @@ module.exports = function (yaktor, cb) {
         [
           originalAgentDataId || 'null',
           meta.agentDataId || 'null',
-          new Date().getTime(),
+          new Date(),
           userName,
           agentName,
           agentConversation.state,

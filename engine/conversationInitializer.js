@@ -50,7 +50,7 @@ var logError = function (error) {
 }
 
 var fireEvent = function (meta, data, event, agentName, state) {
-  auditLogger.event(meta, new Date().getTime(), JSON.stringify(data), agentName, event, state)
+  auditLogger.event(meta, new Date(), JSON.stringify(data), agentName, event, state)
   localEmitter.emit(event, meta, data)
 }
 
