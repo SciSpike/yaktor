@@ -204,8 +204,6 @@ argv.command('create <appName>')
     fs.writeFileSync(path.join(appDir, '.npmignore'), '')
     fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
 
-    fs.copySync(path.join(__dirname, 'static', 'ROOT', '_npmrc'), path.join(appDir, '.npmrc'), { clobber: options.force })
-
     console.log('create %s %s using yaktor@%s', name, version, packageJson.version)
 
     shared(appDir, options.force, options.developerRole, packageJson.version)
