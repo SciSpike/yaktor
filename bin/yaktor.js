@@ -179,38 +179,6 @@ argv.command('create <appName>')
       'node_modules',
       'bower_components'
     ].join(os.EOL)
-    var cl = [
-      'conversation ' + name + ' {',
-      '  type Dto {',
-      '  }',
-      '  agent obj concerning Dto {',
-      '    privately receives signal',
-      '    receives stop',
-      '    sends sync',
-      '',
-      '    initially receives signal -> running > sync',
-      '    {',
-      '      terminated {',
-      '      }',
-      '      running {',
-      '        stop -> terminated',
-      '      }',
-      '    }',
-      '  }',
-      '  agent control concerning Dto {',
-      '    privately receives stop',
-      '',
-      '    initially receives obj.sync -> controlling',
-      '    {',
-      '      controlling {',
-      '        stop -> ^end > obj.stop',
-      '      }',
-      '      ^end {',
-      '      }',
-      '    }',
-      '  }',
-      '}'
-    ].join(os.EOL)
     var dotProject = [
       '<?xml version="1.0" encoding="UTF-8"?>',
       '<projectDescription>',
@@ -234,7 +202,6 @@ argv.command('create <appName>')
     fs.writeFileSync(path.join(appDir, '.project'), dotProject)
     fs.writeFileSync(path.join(appDir, '.gitignore'), gitignore)
     fs.writeFileSync(path.join(appDir, '.npmignore'), '')
-    fs.writeFileSync(path.join(appDir, name + '.cl'), cl)
     fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
 
     fs.copySync(path.join(__dirname, 'static', 'ROOT', '_npmrc'), path.join(appDir, '.npmrc'), { clobber: options.force })
@@ -251,33 +218,6 @@ argv.command('help [subCommand]')
     } else {
       cp.fork(__filename, [ '-h' ])
     }
-  })
-
-var watches = [ 'actions', 'config', 'conversations', 'node_modules', 'routes', 'src-gen' ]
-
-argv.command('play')
-  .option('-l, --locale-override [locale]', 'override the env LANG; defaults to ' + process.env.LANG, process.env.LANG)
-  .option('-w, --watch [dirs]', 'list of directories to watch; defaults to ' + watches.join(','), watches.join(','))
-  .option('-t, --trace-level [level]', 'specify the verbosity of LOG_LEVEL for app', 'INFO')
-  .description("it's fun to control the conversation")
-  .action(function (options) {
-    process.env.LOG_LEVEL = options.traceLevel
-    process.env.LANG = process.env.LANG
-    var children = []
-    var appArgs = []
-    options.watch.split(',').forEach(function (w) {
-      appArgs.push('-w', w)
-    })
-    appArgs.push('app.js')
-    console.log(process.cwd())
-    children.push(exec('nodemon', [ '-w', './public/', '-w', './views/controller/custom/', '--exec', 'npm run gen-views' ]))
-    children.push(exec('nodemon', [ '-i', 'index.adoc', '-e', '.adoc', '--exec', 'npm run gen-docs' ]))
-    children.push(exec('nodemon', appArgs))
-    process.on('exit', function (code) {
-      for (var p in children) {
-        p.kill()
-      }
-    })
   })
 
 argv.command('version')
