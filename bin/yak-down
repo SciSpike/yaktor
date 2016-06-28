@@ -1,3 +1,11 @@
 #!/usr/bin/env bash
-
-docker-compose down
+if [ "$#" -eq 0 ]; then
+  CMD=''
+else
+  CMD="$@"
+fi
+if [ "$CMD" == 'rm' ]; then
+  docker-compose down
+else
+  docker-compose stop
+fi
