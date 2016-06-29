@@ -5,7 +5,7 @@ module.exports = function (ctx, done) {
   // protocol+prefix supercedes protocol+hostname+port
   var protocol = ctx.host.protocol
   var prefix = ctx.host.prefix
-  ctx.host.hostname=ctx.host.hostname|| require('yaktor').ip
+  ctx.host.hostname = ctx.host.hostname || require('yaktor').ip
   if (ctx.urlPrefix) {
     // NOOP
   } else if (prefix) {

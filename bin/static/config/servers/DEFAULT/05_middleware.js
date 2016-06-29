@@ -8,13 +8,13 @@ var url = require('url')
 // Endpoints
 module.exports = function (ctx, done) {
   var app = ctx.app
-  if(ctx.favicon){
-  	var favicon = path.resolve(path.join(ctx.favicon.basedir, ctx.favicon.filename))
-  	fs.exists(favicon, function (exists) {
-  		if (exists) {
-  			app.use(require('serve-favicon')(favicon))
-  		}
-  	})
+  if (ctx.favicon) {
+    var favicon = path.resolve(path.join(ctx.favicon.basedir, ctx.favicon.filename))
+    fs.exists(favicon, function (exists) {
+      if (exists) {
+        app.use(require('serve-favicon')(favicon))
+      }
+    })
   }
   app.use(function (req, res, next) {
     req.ctx = ctx
@@ -33,11 +33,11 @@ module.exports = function (ctx, done) {
     var hostname = req.hostname
     if (referer) {
       referer = referer.hostname ? referer : url.parse(referer)
-          refHost = referer.href.replace(referer.path, '')
+      refHost = referer.href.replace(referer.path, '')
       hostname = referer.hostname
     }
     // we allow you as long as you match
-    var allowedOrigin = new RegExp( '^'+yaktor.ip+ '|'+ctx.host.hostname + '$').test(hostname) ? refHost : app.get('urlPrefix')
+    var allowedOrigin = new RegExp('^' + yaktor.ip + '|' + ctx.host.hostname + '$').test(hostname) ? refHost : app.get('urlPrefix')
     res.header('Access-Control-Allow-Origin', allowedOrigin)
     res.header('Access-Control-Allow-Credentials', 'true')
     // * might not be doing what is expected so drop this one.

@@ -21,3 +21,4 @@ conversation-*.tgz
 *.log
 .idea/
 .npmrc.ignore
+rest

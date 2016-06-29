@@ -29,8 +29,8 @@ var settings = {
     port: 3000
   },
   path: {
-    routesPath: path.resolve('routes',"DEFAULT"),
-    actionsPath: path.resolve('actions',"DEFAULT")
+    routesPath: path.resolve('routes', 'DEFAULT'),
+    actionsPath: path.resolve('actions', 'DEFAULT')
   },
   favicon: {
     basedir: 'public',
