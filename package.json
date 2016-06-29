@@ -19,7 +19,6 @@
     "grunt-cli": "1.2.0",
     "grunt-shell": "1.3.0",
     "istanbul": "0.4.4",
-    "istanbul": "0.4.4",
     "js-yaml": "3.2.3",
     "load-grunt-tasks": "3.5.0",
     "mocha": "2.3.4",
@@ -35,7 +34,7 @@
     "standard-format": "2.1.1",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "~0.2.0-pre"
+    "yaktor-lang": "~0.3.0-pre"
   },
   "engines": {
     "node": ">=4.0.x"

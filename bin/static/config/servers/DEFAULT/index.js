@@ -25,12 +25,12 @@ var settings = {
     },
     protocol: 'http', // if https, use options above
     prefix: '', // protocol+prefix supercedes protocol+host+port
-    hostname: 'localhost',
+    hostname: null,
     port: 3000
   },
   path: {
-    routesPath: path.join('routes'),
-    actionsPath: path.join('actions')
+    routesPath: path.resolve('routes',"DEFAULT"),
+    actionsPath: path.resolve('actions',"DEFAULT")
   },
   favicon: {
     basedir: 'public',

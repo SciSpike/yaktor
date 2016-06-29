@@ -2,7 +2,9 @@ var path = require('path')
 var fs = require('fs')
 var async = require('async')
 
-var settings = {}
+var settings = {
+  hostname: 'localhost'
+}
 fs.readdirSync(__dirname).forEach(function (file) {
   var pathname = path.join(__dirname, file)
   if (!fs.lstatSync(pathname).isDirectory()) return

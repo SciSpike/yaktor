@@ -2,6 +2,7 @@ var logger = require('yaktor/logger')
 logger.info(__filename)
 var path = require('path')
 var fs = require('fs')
+var util = require('util')
 var serveStatic = require('serve-static')
 
 module.exports = function (ctx, done) {
@@ -64,11 +65,22 @@ module.exports = function (ctx, done) {
   app.get('/swagger-ui/index.html', swaggerIndex) // TODO: make configurable?
   app.get('/swagger-ui', swaggerIndex) // TODO: make configurable?
   app.use('/swagger-ui', serveStatic(path.resolve('node_modules', 'swagger-ui', 'dist'))) // TODO: make configurable?
+  var sprocessed = {}
   app.get('/swagger-api/:id', function (req, res, next) { // TODO: make configurable?
-    res.render(path.resolve('public/swagger_api/' + req.params.id + '/api.json'), { // TODO: make configurable?
-      proto: req.protocol,
-      host: req.get('host')
-    })
+    if (!sprocessed[req.params.id]) {
+      sprocessed[req.params.id]
+      var serverPath = path.resolve('public/swagger_api/' + req.params.id)
+      fs.readdirSync(serverPath).forEach(function (file) {
+        var schema = require(path.join(serverPath, file))
+        sprocessed[req.params.id] = sprocessed[req.params.id] || schema
+        util._extend(sprocessed[req.params.id].paths, schema.paths)
+        sprocessed[req.params.id].tags = sprocessed[req.params.id].tags.concat(schema.tags)
+      })
+      var host = require('yaktor').serverContexts[ req.params.id ].host
+      sprocessed[req.params.id].schemes = host.proto
+      sprocessed[req.params.id].host = host.hostname + ':' + host.port
+    }
+    res.end(JSON.stringify(sprocessed[req.params.id]))
   })
   app.get('/', function (req, res) {
     res.render(path.resolve(path.join('views', 'index.html')), { // TODO: make configurable?
