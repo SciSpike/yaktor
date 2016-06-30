@@ -34,7 +34,7 @@
     "standard-format": "2.1.1",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "~0.3.0-pre"
+    "yaktor-lang": "~0.4.0-pre"
   },
   "engines": {
     "node": ">=4.0.x"

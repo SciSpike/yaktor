@@ -76,9 +76,19 @@ module.exports = function (ctx, done) {
         util._extend(sprocessed[req.params.id].paths, schema.paths)
         sprocessed[req.params.id].tags = sprocessed[req.params.id].tags.concat(schema.tags)
       })
-      var host = require('yaktor').serverContexts[ req.params.id ].host
-      sprocessed[req.params.id].schemes = host.proto
-      sprocessed[req.params.id].host = host.hostname + ':' + host.port
+      var server = require('yaktor').serverContexts[ req.params.id ];
+      var host = server.host
+      var schema = sprocessed[req.params.id]
+      schema.schemes = [server.host.proto]
+      schema.host = server.host.hostname + ':' + server.host.port
+      var implicit = schema.securityDefinitions.implicit;
+      if(implicit){
+        implicit.authorizationUrl = implicit.authorizationUrl.replace(/<%=proto %>:\/\/<%=host %>/,server.urlPrefix)
+      }
+      var password = schema.securityDefinitions.password;
+      if(password) {
+        password.tokenUrl = password.tokenUrl.replace(/<%=proto %>:\/\/<%=host %>/,server.urlPrefix)
+      }
     }
     res.end(JSON.stringify(sprocessed[req.params.id]))
   })
