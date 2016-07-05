@@ -1,25 +1,32 @@
 # yaktor
 
-Web framework that adds behavior to your domain.
+DSL-based tool to produce an event-driven, asynchronous, distributed, multi-party state machine for Node.js.
 
 ## Description
 
-[Yakor](https://github.com/Scispike/yaktor) module leverages [yaktor-lang](https://github.com/Scispike/yaktor-lang-js) and [yaktor-ui](https://github.com/Scispike/yaktor-ui-angular1) to produce a event-driven asynchronous distributed multi-party state-machine in Node.js.
+[Yakor](https://github.com/Scispike/yaktor) leverages our npm modules [yaktor-lang](https://github.com/Scispike/yaktor-lang-js) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1) to produce an event-driven, asynchronous, distributed, multi-party state-machine in Node.js.
 
-Also an application generator for building an applicaiton based on yaktor.
+It is also an application generator for building an application based on yaktor.
 
 ## Usage
 
-`run.sh` is a shortcut to typing `docker run -it -v "$PWD":/app --rm yaktor/yaktor`
-
-`./run.sh` will invoke bash by default, but the container lacks commands for hard core editing.
-
-So you should edit in the host using what ever you like.
-
-Then you can:
+Typically, you'll want to
 
 ```
-./run.sh npm install 
-./run.sh npm run gen-src
-./run.sh npm test
+$ docker run -it -v "$PWD":/app --rm yaktor/yaktor yaktor create myapp
 ```
+
+which will use Docker to pull the latest yaktor image and create a yaktor-based application called `myapp`.  Then, when the command completes,
+
+```
+$ cd myapp
+$ yak gen-src gen-views start
+```
+
+After that, you can navigate to the `myapp`'s UI at `http://myapp.yaktor` (if you're on Mac with `docker-machine` installed, you'll have to use the IP address instead of `myapp.yaktor` that's echoed to the terminal when `yak start` runs).
+
+## Edit
+
+Once you're running, you can use any text editor you want to work on your application, but you might consider using our eclipse plugins, available at eclipse update site http://yaktor.io/eclipse.  They include a yaktor DSL-aware editor for `*.cl` and `*.dm` files that provide syntax highlighting and completion.
+
+For more information, see the full yaktor documentation.
