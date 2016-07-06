@@ -3,13 +3,13 @@
  * The demo describes two simple agents:
  *
  * - Switch. Represents a simple switch that when receiving a command to 'flip' turns itself on or off
- * - Outlet. Represents some outlet controlled by the switch
+ * - Outlet. Represents some electrical outlet controlled by the switch
  */ 
 conversation demo {
 
 	/*
 	 * The Circuit is what we call a `conversation type`. 
-	 * The idea is that there actors collaborate over the same instance of a conversation object (here an instance of a Circuit).
+	 * Agents collaborate over the same instance of an object; here, the object is an instance of a Circuit.
 	 */
 	type Circuit {
 		String name!
@@ -34,15 +34,15 @@ conversation demo {
 	}
 
 	/*
-	 * A simple outlet
+	 * A simple electrical outlet agent
 	 */
 	infinite agent Outlet concerning Circuit {
 
 		initially becomes off {
 			off {
-				Switch.turnOn -> current
+				Switch.turnOn -> flowing
 			}
-			current {
+			flowing {
 				Switch.turnOff -> off
 			}
 		}

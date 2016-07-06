@@ -11,6 +11,7 @@ var fs = require('fs-extra')
 var cp = require('child_process')
 var os = require('os')
 var which = require('which')
+var semver = require('semver')
 
 var dir = process.cwd()
 
@@ -35,7 +36,8 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     // Update dependencies
     // merge taking theirs
 
-    ;[ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
+      ;
+    [ 'dependencies', 'devDependencies', 'scripts', 'config' ].forEach(function (m) {
       // merge taking theirs
       theirPackageJson[ m ] = theirPackageJson[ m ] || {}
       if (!force) {
@@ -46,7 +48,8 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
 
     // pwn subsection
 
-    ;[ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
+    ;
+    [ { sub: 'devDependencies', name: 'yaktor-lang' } ].forEach(function (d) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
     })
 
@@ -69,15 +72,37 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     }, function (done) {
       cpFiles(path.join(staticPath, 'test'), path.join(appDir, 'test'), force, done)
     }, function (done) {
-      cpFiles(path.join(staticPath, 'ROOT'), path.join(appDir), force, done)
+      async.series([ function (next) {
+        cpFiles(path.join(staticPath, 'ROOT'), path.join(appDir), force, next)
+      }, function (next) {
+        fs.move(path.join(appDir, 'demo.cl.example'), path.join(appDir, 'demo.cl'), { clobber: force }, next)
+      } ], done)
     } ], cb)
   }
 
   if (packageJson._resolved && packageJson._resolved.indexOf('file:') === 0) { // then assume you're developing yaktor itself
     console.log('NOTE: local development of yaktor detected; installing yaktor from ' + path.resolve(__dirname, '..'))
     async.series([
-      async.apply(exec, 'npm', [ 'install', path.resolve(__dirname, '..') ]),
       async.apply(processFiles),
+      async.apply(exec, 'npm', [ 'install', path.resolve(__dirname, '..') ]), // install this very yaktor
+      function (next) {
+        var yaktorLangRequiredVersion = packageJson.devDependencies[ 'yaktor-lang' ]
+        console.log('INFO: trying to install required yaktor-lang@%s', yaktorLangRequiredVersion)
+
+        exec('npm', [ 'install', 'yaktor-lang@' + yaktorLangRequiredVersion ], function (err) {
+          if (!err) return next()
+
+          // else try to install from location next to this very yaktor
+          var yaktorLangDir = path.resolve(__dirname, '..') + '-lang'
+          if (fs.existsSync(yaktorLangDir)
+            && semver.satisfies(require(path.resolve(path.join(yaktorLangDir, 'package.json'))).version, yaktorLangRequiredVersion)) {
+            console.log('WARNING: ignore previous error; installing yaktor-lang@%s instead from directory %s', yaktorLangRequiredVersion, yaktorLangDir)
+            exec('npm', [ 'install', yaktorLangDir ], next)
+          } else {
+            next(new Error('No yaktor-lang found that satisfies version requirement of ' + yaktorLangRequiredVersion))
+          }
+        })
+      },
       async.apply(exec, 'npm', [ 'install' ])
     ], function (err) {
       if (err) {
@@ -130,7 +155,7 @@ argv.command('cassandra')
     var currentPackageJson = require('./cassandra-package.json')
     util._extend(theirPackageJson.dependencies, currentPackageJson.dependencies)
     cpFiles(path.join(staticPath, 'config'), path.join(dir, 'config'), true)
-    exec('npm', ['install'])
+    exec('npm', [ 'install' ])
     fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
   })
 argv.command('create <appName>')
@@ -228,7 +253,7 @@ argv.command('version')
 argv.parse(process.argv)
 
 function exec (cmd, args, cb) {
-  console.log(cmd, args.join(', '))
+  console.log([ cmd ].concat(args).join(' '))
   var proc = cp.spawn(which.sync(cmd), args || [], { stdio: 'inherit' })
   if (cb) {
     proc.on('close', cb)

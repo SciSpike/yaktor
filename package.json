@@ -10,7 +10,8 @@
     "debug": "2.2.0",
     "fs-extra": "0.30.0",
     "lodash": "4.13.1",
-    "which": "1.0.5"
+    "which": "1.0.5",
+    "semver": "5.2.0"
   },
   "devDependencies": {
     "backo": "1.0.1",
@@ -35,7 +36,7 @@
     "standard-format": "2.1.1",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "~0.4.0-pre"
+    "yaktor-lang": "~0.3.0-pre"
   },
   "engines": {
     "node": ">=4.0.x"
