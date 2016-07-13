@@ -3,6 +3,12 @@ networks:
   default:
     driver: bridge
 services:
+  vpn:
+    privileged: true
+    ports:
+      - '22'
+    build:
+      context: ./docker/vpn
   app:
     build:
       context: ./docker
