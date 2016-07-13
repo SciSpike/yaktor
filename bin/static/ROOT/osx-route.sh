@@ -7,7 +7,7 @@ if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
   sudo -v
   if [ ! -d  /Library/Extensions/tap.kext ]; then
     LWD=$PWD
-    curl -L https://github.com/zchee/tuntaposx/archive/release_20150118.tar.gz > /tmp/tuntap_20150118.tar.gz
+    curl -L http://downloads.sourceforge.net/project/tuntaposx/tuntap/20150118/tuntap_20150118.tar.gz > /tmp/tuntap_20150118.tar.gz
     cd /tmp
     tar xf /tmp/tuntap_20150118.tar.gz
     sudo installer -pkg /tmp/tuntap_20150118.pkg -target /
@@ -33,7 +33,7 @@ if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
   NET=${NEXT_TUN##tun}
   sudo ssh root@${SSH_HOST_IP} \
     -i ~/.ssh/id_rsa_${PWD##*/} \
-    -NTf \
+    -Tf \
     -w $NET:$NET \
     -p $SSH_HOST_PORT \
     -o StrictHostKeyChecking=no \
