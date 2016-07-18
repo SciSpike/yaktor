@@ -6,9 +6,9 @@ services:
   vpn:
     privileged: true
     ports:
-      - '22'
-    build:
-      context: ./docker/vpn
+      - 4444
+    image: bobrik/socat
+    command: -d TCP-LISTEN:4444,fork TUN
   app:
     build:
       context: ./docker

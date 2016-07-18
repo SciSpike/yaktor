@@ -1,44 +1,42 @@
 #!/usr/bin/env bash -ex
 
-SUBNET=$(docker network inspect --format '{{ range .IPAM.Config }}{{ .Subnet}}{{end}}' ${PWD##*/}_default | sed 's,/16,,')
+STACK=${PWD##*/}
+STACK=${STACK//-}
+NETWORK=${STACK}_default
+
+SUBNET=$(docker network inspect --format '{{ range .IPAM.Config }}{{ .Subnet}}{{end}}' ${NETWORK} | sed 's,/16,,')
 SUBSUBNET=$(echo $SUBNET | sed 's/\.0\.0//')
+NET=$(echo $SUBSUBNET | sed 's/\.//')
 if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
-  echo "creating vpn connection to ${PWD##*/}"
+  echo "creating vpn connection to ${STACK}"
   sudo -v
-  if [ ! -d  /Library/Extensions/tap.kext ]; then
+  if [ ! -f bin/soctun ]; then
     LWD=$PWD
-    curl -L http://downloads.sourceforge.net/project/tuntaposx/tuntap/20150118/tuntap_20150118.tar.gz > /tmp/tuntap_20150118.tar.gz
+    if [ ! -f /tmp/soctun.tar.gz ]; then
+      curl -L https://github.com/jkamke/soctun/releases/download/0.0.0-pre.0/soctun.tar.gz > /tmp/soctun.tar.gz
+    fi
+    mkdir -p bin
+    echo 'soctun' >> bin/.gitignore 
     cd /tmp
-    tar xf /tmp/tuntap_20150118.tar.gz
-    sudo installer -pkg /tmp/tuntap_20150118.pkg -target /
+    tar xf /tmp/soctun.tar.gz
+    mv /tmp/soctun/soctun $LWD/bin
+    rm -rf /tmp/soctun/
     cd $LWD
   fi
-  if [ ! -f ~/.ssh/id_rsa_${PWD##*/}.pub ]; then
-    ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa_${PWD##*/}
-  fi
-  cat ~/.ssh/id_rsa_${PWD##*/}.pub | docker exec -i ${PWD##*/}_vpn_1 sh -c 'cat >> /root/.ssh/authorized_keys'
   if [ -n "$(which docker-machine)" ] && docker-machine ip $YAKTOR_DOCKER_MACHINE &> /dev/null; then
     SSH_HOST_IP=$(docker-machine ip $YAKTOR_DOCKER_MACHINE)
   elif [ -n "$(which dlite)" ] && [ -n "$(dlite ip 2> /dev/null)" ]; then
     SSH_HOST_IP=$(dlite ip)
   elif [ -n "$(docker info 2> /dev/null)" ]; then
-    SSH_HOST_IP=$(docker inspect --format '{{ range index .NetworkSettings.Ports "22/tcp" }}{{ .HostIp}}{{end}}' ${PWD##*/}_vpn_1)
+    SSH_HOST_IP=$(docker inspect --format '{{ range index .NetworkSettings.Ports "22/tcp" }}{{ .HostIp}}{{end}}' ${STACK}_vpn_1)
   else
-    echo Error: cannot determine how you expect this to work without docker setup -- exiting
+    2> echo Error: cannot determine how you expect this to work without docker setup -- exiting
     exit 1
   fi
-  SSH_HOST_PORT=$(docker inspect --format '{{ range index .NetworkSettings.Ports "22/tcp" }}{{ .HostPort}}{{end}}' ${PWD##*/}_vpn_1)
-  SSH_CONTAINER_IP=$(docker inspect --format "{{ .NetworkSettings.Networks.${PWD##*/}_default.IPAddress }}" ${PWD##*/}_vpn_1)
-  NEXT_TUN=$(comm -23 <(ls /dev/tun* | sed 's,/dev/,,') <(ifconfig | grep tun | sed 's/\(tun[0-9]*\).*/\1/') | head -1)
-  NET=${NEXT_TUN##tun}
-  sudo ssh root@${SSH_HOST_IP} \
-    -i ~/.ssh/id_rsa_${PWD##*/} \
-    -Tf \
-    -w $NET:$NET \
-    -p $SSH_HOST_PORT \
-    -o StrictHostKeyChecking=no \
-    -o UserKnownHostsFile=/dev/null \
-    "ip link set $NEXT_TUN up && ip addr add ${SSH_CONTAINER_IP}/16 peer ${SUBSUBNET}.1.1 dev $NEXT_TUN && arp -sD  ${SUBSUBNET}.1.1 eth0 pub"
-  sudo ipconfig set $NEXT_TUN manual ${SUBSUBNET}.1.1 255.255.0.0
+  SSH_CONTAINER_IP=$(docker inspect --format "{{ .NetworkSettings.Networks.${NETWORK}.IPAddress }}" ${STACK}_vpn_1)
+  SOCTUN_PORT=$(docker inspect --format '{{ range index .NetworkSettings.Ports "4444/tcp" }}{{ .HostPort}}{{end}}' ${STACK}_vpn_1)
+  sudo bin/soctun -t $NET -h localhost -p $SOCTUN_PORT & sleep 1
+  sudo ipconfig set utun$NET manual ${SUBSUBNET}.1.1 255.255.0.0
+  docker exec -i ${STACK}_vpn_1 sh -c "ip link set tun0 up && ip addr add $SSH_CONTAINER_IP/16 peer ${SUBSUBNET}.1.1 dev tun0 && arp -sD  ${SUBSUBNET}.1.1 eth0 pub"
   #sudo route -n add $SUBNET -interface $NEXT_TUN
 fi
