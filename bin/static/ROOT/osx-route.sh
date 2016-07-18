@@ -24,19 +24,19 @@ if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
     cd $LWD
   fi
   if [ -n "$(which docker-machine)" ] && docker-machine ip $YAKTOR_DOCKER_MACHINE &> /dev/null; then
-    SSH_HOST_IP=$(docker-machine ip $YAKTOR_DOCKER_MACHINE)
+    VPN_HOST_IP=$(docker-machine ip $YAKTOR_DOCKER_MACHINE)
   elif [ -n "$(which dlite)" ] && [ -n "$(dlite ip 2> /dev/null)" ]; then
-    SSH_HOST_IP=$(dlite ip)
+    VPN_HOST_IP=$(dlite ip)
   elif [ -n "$(docker info 2> /dev/null)" ]; then
-    SSH_HOST_IP=$(docker inspect --format '{{ range index .NetworkSettings.Ports "22/tcp" }}{{ .HostIp}}{{end}}' ${STACK}_vpn_1)
+    VPN_HOST_IP=$(docker inspect --format '{{ range index .NetworkSettings.Ports "4444/tcp" }}{{ .HostIp}}{{end}}' ${STACK}_vpn_1)
   else
     2> echo Error: cannot determine how you expect this to work without docker setup -- exiting
     exit 1
   fi
   SSH_CONTAINER_IP=$(docker inspect --format "{{ .NetworkSettings.Networks.${NETWORK}.IPAddress }}" ${STACK}_vpn_1)
   SOCTUN_PORT=$(docker inspect --format '{{ range index .NetworkSettings.Ports "4444/tcp" }}{{ .HostPort}}{{end}}' ${STACK}_vpn_1)
-  sudo bin/soctun -t $NET -h localhost -p $SOCTUN_PORT & sleep 1
-  sudo ipconfig set utun$NET manual ${SUBSUBNET}.1.1 255.255.0.0
-  docker exec -i ${STACK}_vpn_1 sh -c "ip link set tun0 up && ip addr add $SSH_CONTAINER_IP/16 peer ${SUBSUBNET}.1.1 dev tun0 && arp -sD  ${SUBSUBNET}.1.1 eth0 pub"
-  #sudo route -n add $SUBNET -interface $NEXT_TUN
+  sudo bin/soctun -t $NET -h $VPN_HOST_IP -p $SOCTUN_PORT & sleep 1
+  sudo ifconfig utun$NET inet ${SUBSUBNET}.1.1 $SSH_CONTAINER_IP mtu 1500 up
+  docker exec -i ${STACK}_vpn_1 sh -c "ip link set tun0 up && ifconfig tun0 mtu 1500 up && ip addr add $SSH_CONTAINER_IP/16 peer ${SUBSUBNET}.1.1 dev tun0 && arp -sD  ${SUBSUBNET}.1.1 eth0 pub"
+  sudo route -n add $SUBNET $SSH_CONTAINER_IP
 fi
