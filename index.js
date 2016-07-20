@@ -8,7 +8,7 @@ var globals
 var servers
 var yaktor = {
   start: function (configuration, callback) {
-  	if (typeof configuration === 'function') {
+    if (typeof configuration === 'function') {
       callback = configuration
       configuration = {}
     }
