@@ -8,23 +8,10 @@ var globals
 var servers
 var yaktor = {
   start: function (configuration, callback) {
-    if (typeof configuration === 'function') {
+  	if (typeof configuration === 'function') {
       callback = configuration
       configuration = {}
     }
-    globals = require(path.resolve('config', 'global'))
-    servers = require(path.resolve('config', 'servers'))
-
-    // get default configuration values and put them on yaktor
-    _.merge(yaktor, getConfigDefaults())
-    debug('configuration defaults:')
-    debug(JSON.stringify(yaktor, 0, 2))
-
-    // now override from environment variables
-    _.merge(yaktor, getConfigEnvironmentVariables(yaktor))
-    debug('configuration after overriding from environment variables:')
-    debug(JSON.stringify(yaktor, 0, 2))
-
     // now override from given configuration parameter
     debug('supplied configuration object:')
     debug(JSON.stringify(configuration, 0, 2))
@@ -132,5 +119,19 @@ var getConfigEnvironmentVariables = function (object) {
   }
   return walkMappings(mappings)
 }
+
+// this is all static so load it now and make available early
+globals = require(path.resolve('config', 'global'))
+servers = require(path.resolve('config', 'servers'))
+
+// get default configuration values and put them on yaktor
+_.merge(yaktor, getConfigDefaults())
+debug('configuration defaults:')
+debug(JSON.stringify(yaktor, 0, 2))
+
+// now override from environment variables
+_.merge(yaktor, getConfigEnvironmentVariables(yaktor))
+debug('configuration after overriding from environment variables:')
+debug(JSON.stringify(yaktor, 0, 2))
 
 module.exports = yaktor
