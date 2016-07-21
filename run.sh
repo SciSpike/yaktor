@@ -1,2 +1,3 @@
 #!/bin/sh
-docker run -it -v "$PWD":/app --rm yaktor/yaktor:0.32.0 $@
+# should use the latest available image to validate, but not LATEST
+docker run -it --rm --user node -v "$PWD":/app yaktor/base:0.33.0 $@
