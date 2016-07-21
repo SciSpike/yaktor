@@ -1,9 +1,7 @@
 # yaktor
 
 [![Build Status](https://travis-ci.org/SciSpike/yaktor.svg?branch=master)](https://travis-ci.org/SciSpike/yaktor)
-
 [![Coverage Status](https://coveralls.io/repos/github/SciSpike/yaktor/badge.svg?branch=master)](https://coveralls.io/github/SciSpike/yaktor?branch=master)
-
 [![Join the chat at https://gitter.im/SciSpike/yaktor](https://badges.gitter.im/SciSpike/yaktor.svg)](https://gitter.im/SciSpike/yaktor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 DSL-based tool to produce an event-driven, asynchronous, distributed, multi-party state machine for Node.js.
