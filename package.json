@@ -48,7 +48,7 @@
     "gen-src": "find . -name '*.cl' -o -name '*.dm' | xargs yaktor-lang",
     "test": "mocha --color=true -R spec test/*.test.js && npm run lint",
     "test-cover": "istanbul cover _mocha -- --color=true -R spec test/*.test.js && npm run lint",
-    "ci": "istanbul cover _mocha -- --color=true -R spec test/*.test.js && npm run lint && grunt coveralls:ci",
+    "ci": "npm run test-cover && grunt coveralls:ci",
     "lint": "standard --verbose",
     "format": "standard-format -w",
     "clean": "rm -rf actions config/initializers/10_routes.js conversations doc public routes servers simulator src-gen",
