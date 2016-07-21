@@ -6,6 +6,7 @@ services:
 before_install:
   - docker pull yaktor/yaktor:0.32.0
   - ./run.sh npm install
+  - ./run.sh npm run gen-src
 
 script:
   - ./run.sh npm run ci
