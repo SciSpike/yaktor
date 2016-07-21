@@ -16,6 +16,11 @@ module.exports = function (grunt) {
   var master = grunt.option('source-branch') || 'master'
 
   var config = {
+    coveralls: {
+      ci: {
+        src: 'coverage/lcov.info'
+      }
+    },
     'basePath': basePath,
     'dir': dir,
     bump: {

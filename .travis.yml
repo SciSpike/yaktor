@@ -1,0 +1,11 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker pull yaktor/yaktor:0.32.0
+  - ./run.sh npm install
+
+script:
+  - ./run.sh npm run ci
