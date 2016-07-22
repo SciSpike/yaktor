@@ -14,7 +14,7 @@ if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
     VERSION="0.0.0"
     LWD=$PWD
     if [ ! -f /tmp/soctun-${VERSION}.tar.gz ]; then
-      curl -L https://github.com/jkamke/soctun/releases/download/${VERSION}/soctun.tar.gz > /tmp/soctun-${VERSION}.tar.gz
+      curl -L https://github.com/SciSpike/soctun/releases/download/${VERSION}/soctun.tar.gz > /tmp/soctun-${VERSION}.tar.gz
     fi
     mkdir -p bin
     echo 'soctun' >> bin/.gitignore 
