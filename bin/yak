@@ -41,4 +41,4 @@ else
   CMD="bash -l"
 fi
 
-docker exec -it ${APP_NAME}-app bash -c ". /home/yaktor/.profile && $CMD"
+docker exec -it ${APP_NAME}-app bash -c ". ~/.profile && $CMD"

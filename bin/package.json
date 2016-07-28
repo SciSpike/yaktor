@@ -18,7 +18,7 @@
     "locale": "0.0.14",
     "node-uuid": "1.4.1",
     "method-override": "2.0.2",
-    "mongoose": "4.4.12",
+    "mongoose": "4.4.14",
     "mongoose-pagination": "1.0.0",
     "mongoose-shortid-nodeps": "0.6.5",
     "morgan": "1.1.1",
@@ -59,7 +59,7 @@
     "gen-views": "grunt gen-views",
     "gen-docs": "(cd doc/; ruby buildAll.rb;)",
     "gen-src": "find . -name '*.cl' -o -name '*.dm' -follow | xargs yaktor-lang",
-    "test": "LOG_LEVEL=warn istanbul cover _mocha -- --color=true -R spec",
+    "test": "LOG_LEVEL=warn istanbul cover _mocha -- --colors -R spec",
     "report": "find conversations/js  -name '*.js' | xargs plato -x '.gen.js|.def.js|\/types\/' -d plato",
     "envars": "cev --noprefix > config/custom-environment-variables.json"
   }

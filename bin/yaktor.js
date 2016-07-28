@@ -64,8 +64,6 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     }, function (done) {
       cpFiles(path.join(staticPath, 'public'), path.join(appDir, 'public'), true, done)
     }, function (done) {
-      cpFiles(path.join(staticPath, 'build'), path.join(appDir, 'build'), force, done)
-    }, function (done) {
       cpFiles(path.join(staticPath, 'docker'), path.join(appDir, 'docker'), force, done)
     }, function (done) {
       cpFiles(path.join(staticPath, 'test'), path.join(appDir, 'test'), force, done)
