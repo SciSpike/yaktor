@@ -11,9 +11,9 @@ if [ -n "$(echo -n "$YAKTOR_VERSION" | egrep '\-pre.*$')" ]; then
   exit 1
 fi
 
+git init
 git config user.email "yaktor@scispike.com"
 git config user.name "Yaktor"
-git init
 set +x
 echo "git remote add origin https://GITHUB_TOKEN@github.com/SciSpike/docker-yaktor.git"
 git remote add origin https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git
