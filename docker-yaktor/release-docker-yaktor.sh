@@ -15,7 +15,7 @@ git init
 git config user.email "yaktor@scispike.com"
 git config user.name "yaktor"
 git config --global credential.helper store
-echo 'https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git/' > ~/.git-credentials
+echo 'https://${GITHUB_TOKEN}:x-oauth-basic@github.com/SciSpike/docker-yaktor.git/' > ~/.git-credentials
 chmod go-rwx ~/.git-credentials
 
 set +x
