@@ -11,13 +11,13 @@ if [ -n "$(echo -n "$YAKTOR_VERSION" | egrep '\-pre.*$')" ]; then
   exit 1
 fi
 
-git init
+set +x
+echo "cloning https://@github.com/SciSpike/docker-yaktor.git with personal access token"
+git clone https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git
+set -x
+cd docker-yaktor
 git config user.email "yaktor@scispike.com"
 git config user.name "Yaktor"
-set +x
-echo "git remote add origin https://GITHUB_TOKEN@github.com/SciSpike/docker-yaktor.git"
-git remote add origin https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git
-set -x
 npm install semver
 YAKTOR_MAJOR=$(node -e "console.log(require('semver').major('$YAKTOR_VERSION'))")
 YAKTOR_MINOR=$(node -e "console.log(require('semver').minor('$YAKTOR_VERSION'))")
