@@ -11,6 +11,8 @@ if [ -n "$(echo -n "$YAKTOR_VERSION" | egrep '\-pre.*$')" ]; then
   exit 1
 fi
 
+git config user.email "yaktor@scispike.com"
+git config user.name "Yaktor"
 git init
 set +x
 echo "git remote add origin https://GITHUB_TOKEN@github.com/SciSpike/docker-yaktor.git"
@@ -57,6 +59,7 @@ fi
 # if we get this far, versions are synchronized & we're on the correct branch; fire in the hole...
 
 sed -i~ -r 's,yaktor@[0-9]+\.[0-9]+\.[0-9]+,yaktor@'$YAKTOR_VERSION',gm' Dockerfile
+git diff Dockerfile # just to be informative
 git add Dockerfile
 git commit -m "sync to yaktor@$YAKTOR_VERSION"
 
