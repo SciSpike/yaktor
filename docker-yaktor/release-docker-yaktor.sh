@@ -34,6 +34,7 @@ else
 fi
 
 git pull origin $BRANCH
+git branch --set-upstream origin/$BRANCH $BRANCH
 
 THIS_VERSION=$(node -e "console.log(require('./package.json').version)")
 THIS_MAJOR=$(node -e "console.log(require('semver').major('$THIS_VERSION'))")
