@@ -63,6 +63,6 @@ git add Dockerfile
 git commit -m "sync to yaktor@$YAKTOR_VERSION"
 
 npm install
-grunt release-$LEVEL
+$(npm bin)/grunt release-$LEVEL
 
 cd "$PREVDIR"
