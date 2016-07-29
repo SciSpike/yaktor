@@ -14,6 +14,10 @@ fi
 git init
 git config user.email "yaktor@scispike.com"
 git config user.name "yaktor"
+git config --global credential.helper store
+echo 'https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git/' > ~/.git-credentials
+chmod go-rwx ~/.git-credentials
+
 set +x
 echo "git remote add origin https://XXX@github.com/SciSpike/docker-yaktor.git"
 git remote add origin https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git
