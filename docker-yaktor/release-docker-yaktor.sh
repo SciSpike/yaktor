@@ -6,7 +6,7 @@ WORKDIR="${WORKDIR:-$(mktemp -d -t docker-yaktor.XXXXXX)}"
 mkdir -p "$WORKDIR"
 cd "$WORKDIR"
 
-if [ -n $(echo "$YAKTOR_VERSION" | egrep '\-pre.*$') ]; then
+if [ -n "$(echo -n "$YAKTOR_VERSION" | egrep '\-pre.*$')" ]; then
   echo "yaktor version '$YAKTOR_VERSION' is a prerelease -- can't determine which branch to checkout; failing." >&2
   exit 1
 fi

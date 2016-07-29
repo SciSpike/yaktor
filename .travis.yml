@@ -19,6 +19,7 @@ after_success:
   - # Cause a new version of Docker image yaktor/yaktor to be published
   - docker build -t bobthebuilder:canwebuildit docker-yaktor
   - export YAKTOR_VERSION=$(node -e "process.stdout.write(require('./package.json').version)")
+  - echo YAKTOR_VERSION=$YAKTOR_VERSION
   - docker run -it --rm
     -e YAKTOR_VERSION="$YAKTOR_VERSION"
     -e GITHUB_TOKEN="$GITHUB_TOKEN"
