@@ -2,6 +2,10 @@ sudo: required
 
 services:
   - docker
+env:
+  global:
+    - # GITHUB_TOKEN
+    - secure: "YxK0UaSfKJ1Xp/oud+/mLPvlnwaHEhPkelLX48GqMSdowC8rZpsmXG+oQV7qkorJ7zxrzUCiN6au/uJQcs7mQxataaicxoId6dG7VA4nvEbAakKIYm2nUrkGeeatMfEIA2ZdkUG0Pa0fD/BbS4c++eIVM73OcBE477KZaklrzXpO1Mw1QZ0/NkVaGA153ePP+Xp+6xEhHPvEqeONDvahh6R4LThRnGKiwjYYNHELwQ70L434+WQFmmuDIX4RN3YzHlxs0+opzhZHypIgY1oIL+6HZehTa6JI7D0GmmPaI+AqY8RAKNoCp2WkRF1WR07QhuaUp5vdqQZAYf1azFBK6qRp7IE5v5SJBjJNOYZ4so19iDto6xdMbr7rJ6QAJ/TuEHBTuHuWG+wfv7/b+UeCwfwDB/KLD0bnHovirUGeLOjZaSTeHbptQeCMCIlO+LlU3IjLGpyhRydHRn7AFNSFTjG7HlhzGChwWVs3CPK6XRMVnTdA3aVbkH9QE+xc/CHKqWzKTANTEBZ2mykbW0DtopH6ivMW3wuvySRZKoCAMzQezVDyPGzJDU1jwcVrYjWt75/9RSBhuhKKR4Ww9IKDh+nT7GHBP6A36XKLJwgoCziwbuUpGaazAILUs0xjfmQdeWGVEi0CzAGvc+JxOOCvshaoQ97kV+QqC9H92ljpRzY="
 
 before_install:
   - docker pull yaktor/yaktor:0.32.0
@@ -10,3 +14,14 @@ before_install:
 
 script:
   - ./run.sh npm run ci
+
+after_success:
+  - # Cause a new version of Docker image yaktor/yaktor to be published
+  - docker build -t bobthebuilder:canwebuildit docker-yaktor
+  - export YAKTOR_VERSION=$(node -e "process.stdout.write(require('./package.json').version)")
+  - docker run -it --rm
+    -e YAKTOR_VERSION="$YAKTOR_VERSION"
+    -e GITHUB_TOKEN="$GITHUB_TOKEN"
+    -v $PWD:/yaktor
+    bobthebuilder:canwebuildit
+    /yaktor/docker-yaktor/release-docker-yaktor.sh
