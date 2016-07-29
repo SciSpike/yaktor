@@ -58,11 +58,7 @@ fi
 
 # if we get this far, versions are synchronized & we're on the correct branch; fire in the hole...
 
-sed -i~ -r 's,yaktor@[0-9]+\.[0-9]+\.[0-9]+,yaktor@'$YAKTOR_VERSION',gm' Dockerfile
-git add Dockerfile
-git commit -m "sync to yaktor@$YAKTOR_VERSION"
-
 npm install
-$(npm bin)/grunt release-$LEVEL
+$(npm bin)/grunt release-$LEVEL --yaktor-version=$YAKTOR_VERSION
 
 cd "$PREVDIR"
