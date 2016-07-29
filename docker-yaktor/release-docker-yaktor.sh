@@ -17,9 +17,9 @@ echo "git remote add origin https://GITHUB_TOKEN@github.com/SciSpike/docker-yakt
 git remote add origin https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git
 set -x
 npm install semver
-YAKTOR_MAJOR=$(node -e "process.stdout.write(require('semver').major('$YAKTOR_VERSION'))")
-YAKTOR_MINOR=$(node -e "process.stdout.write(require('semver').minor('$YAKTOR_VERSION'))")
-YAKTOR_PATCH=$(node -e "process.stdout.write(require('semver').patch('$YAKTOR_VERSION'))")
+YAKTOR_MAJOR=$(node -e "console.log(require('semver').major('$YAKTOR_VERSION'))")
+YAKTOR_MINOR=$(node -e "console.log(require('semver').minor('$YAKTOR_VERSION'))")
+YAKTOR_PATCH=$(node -e "console.log(require('semver').patch('$YAKTOR_VERSION'))")
 
 # see if we need to checkout master or a maintenance branch
 if [ "$YAKTOR_PATCH" == "0" ]; then
@@ -33,11 +33,11 @@ fi
 
 git pull origin $BRANCH
 
-THIS_VERSION=$(node -e "process.stdout.write(require('./package.json').version)")
-THIS_MAJOR=$(node -e "process.stdout.write(require('semver').major('$THIS_VERSION'))")
-THIS_MINOR=$(node -e "process.stdout.write(require('semver').minor('$THIS_VERSION'))")
-THIS_PATCH=$(node -e "process.stdout.write(require('semver').patch('$THIS_VERSION'))")
-THIS_PRE=$(node -e "var pre = require('semver').prerelease('$THIS_VERSION'); process.stdout.write(pre ? ('-' + pre.join('.')) : '')")
+THIS_VERSION=$(node -e "console.log(require('./package.json').version)")
+THIS_MAJOR=$(node -e "console.log(require('semver').major('$THIS_VERSION'))")
+THIS_MINOR=$(node -e "console.log(require('semver').minor('$THIS_VERSION'))")
+THIS_PATCH=$(node -e "console.log(require('semver').patch('$THIS_VERSION'))")
+THIS_PRE=$(node -e "var pre = require('semver').prerelease('$THIS_VERSION'); console.log(pre ? ('-' + pre.join('.')) : '')")
 
 # yaktor version i.j.k requires this version i.j.k-pre.n in order to be considered "synchronized"
 # first, check the -pre.n suffix
