@@ -13,11 +13,12 @@ fi
 
 git init
 git config user.email "yaktor@scispike.com"
-git config user.name "Yaktor"
+git config user.name "yaktor"
 set +x
 echo "git remote add origin https://XXX@github.com/SciSpike/docker-yaktor.git"
 git remote add origin https://${GITHUB_TOKEN}@github.com/SciSpike/docker-yaktor.git
 set -x
+
 npm install semver
 YAKTOR_MAJOR=$(node -e "console.log(require('semver').major('$YAKTOR_VERSION'))")
 YAKTOR_MINOR=$(node -e "console.log(require('semver').minor('$YAKTOR_VERSION'))")
@@ -30,11 +31,10 @@ if [ "$YAKTOR_PATCH" == "0" ]; then
 else
   LEVEL=patch
   BRANCH=v$YAKTOR_MAJOR.$YAKTOR_MINOR.x
-  git checkout -b $BRANCH
 fi
 
-git pull origin $BRANCH
-git branch --set-upstream origin/$BRANCH $BRANCH
+git fetch origin
+git checkout -b $BRANCH --track origin/$BRANCH
 
 THIS_VERSION=$(node -e "console.log(require('./package.json').version)")
 THIS_MAJOR=$(node -e "console.log(require('semver').major('$THIS_VERSION'))")
