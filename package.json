@@ -1,6 +1,6 @@
 {
   "name": "yaktor",
-  "version": "0.53.1",
+  "version": "0.53.2-pre.0",
   "license": "Apache-2.0",
   "main": "index.js",
   "dependencies": {
