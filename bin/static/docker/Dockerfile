@@ -1,4 +1,4 @@
-FROM yaktor/yaktor:0.34
+FROM yaktor/yaktor:0.35
 
 RUN echo 'PS1="\u@\h:\w$ "' >> ~/.bash_profile
 RUN echo '. ~/.profile' >> ~/.bash_profile
