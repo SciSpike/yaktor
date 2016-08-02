@@ -16,16 +16,17 @@ It is also an application generator for building an application based on yaktor.
 
 ## Usage
 
-Typically, you'll want to
+Typically, you'll want to do something like
 
 ```
-$ docker run -it -v "$PWD":/app --rm yaktor/yaktor yaktor create myapp
+$ mkdir myapp && cd "$_"
+$ docker run -it -v "$PWD":/app --rm --entrypoint bash yaktor/base:0.34.1 -c 'npm install yaktor@latest && npm init && $(npm bin)/yaktor migrate'
 ```
+> Note: you can add -f to `npm init` and/or  `yaktor migrate`
 
-which will use Docker to pull the latest yaktor image and create a yaktor-based application called `myapp`.  Then, when the command completes,
+which will use Docker to pull the yaktor image and create a yaktor-based application in `myapp`.  Then, when the command completes,
 
 ```
-$ cd myapp
 $ yak gen-src gen-views start
 ```
 

@@ -24,7 +24,8 @@ if [ -n "$(route get $SUBNET | grep 'destination: default')" ]; then
     rm -rf /tmp/soctun/
     cd $LWD
   fi
-  if [ -n "$(which docker-machine)" ] && docker-machine ip $YAKTOR_DOCKER_MACHINE &> /dev/null; then
+  DOCKER_MACHINE=$(docker info 2> /dev/null | grep Name: | awk '{print $2}') 
+  if [ -n "$(which docker-machine)" ] && [ "$YAKTOR_DOCKER_MACHINE" = "$DOCKER_MACHINE" ]; then
     VPN_HOST_IP=$(docker-machine ip $YAKTOR_DOCKER_MACHINE)
   elif [ -n "$(which dlite)" ] && [ -n "$(dlite ip 2> /dev/null)" ]; then
     VPN_HOST_IP=$(dlite ip)

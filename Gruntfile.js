@@ -7,6 +7,7 @@ module.exports = function (grunt) {
   })
   var dir = null
   var basePath = grunt.option('basePath') || './'
+  var yaktorBaseVersion = grunt.option('yaktor-base-version') || './'
   var path = require('path')
   var packageJson = require(path.resolve('package.json'))
   var rawVersion = packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
@@ -14,7 +15,7 @@ module.exports = function (grunt) {
   var tag = 'v' + rawVersion
   var newTag = 'v' + minor + '.x'
   var master = grunt.option('source-branch') || 'master'
-
+  var yaktorBaseFiles = ['bin/static/docker/Dockerfile', 'README.md', '.travis.yml', 'run.sh']
   var config = {
     coveralls: {
       ci: {
@@ -52,13 +53,13 @@ module.exports = function (grunt) {
       'create-tag': {
         command: 'git tag v' + packageJson.version
       },
-      'sync-dockerfile': {
+      'sync-yaktor-base-version': {
         command: [
-          'sed -i~ \'s,yaktor/yaktor:.*,yaktor/yaktor:' + minor + ',\' bin/static/docker/Dockerfile',
-          'rm bin/static/docker/Dockerfile~',
-          'git commit -o -m "sync-dockerfile" -- bin/static/docker/Dockerfile '
+          'sed -i~ \'s|yaktor/base:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/base:' + yaktorBaseVersion + '|\' ' + yaktorBaseFiles.join(' '),
+          'rm ' + yaktorBaseFiles.concat('').join('~ '),
+          'git commit -o -m "sync-yaktor-base-version" -- ' + yaktorBaseFiles.join(' ')
         ].join('&&'),
-        usage: 'Ensures the Dockerfile matches our minor version.'
+        usage: 'Ensures all references to yaktor/base are the same version.'
       },
       'release-minor': {
         'command': [
@@ -68,11 +69,9 @@ module.exports = function (grunt) {
           'grunt bump:minor',
           'grunt shell:publish',
           'grunt shell:create-maintenance-branch',
-          'grunt shell:sync-dockerfile',
           'grunt bump:prepatch --no-tag',
           'git checkout master',
-          'grunt bump:preminor --no-tag',
-          'grunt shell:sync-dockerfile'
+          'grunt bump:preminor --no-tag'
         ].join('&&'),
         usage: 'Make a new release. You must do this in a clean working directory from the ' + master + ' branch.'
       },

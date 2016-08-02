@@ -8,7 +8,7 @@ env:
     - secure: "YxK0UaSfKJ1Xp/oud+/mLPvlnwaHEhPkelLX48GqMSdowC8rZpsmXG+oQV7qkorJ7zxrzUCiN6au/uJQcs7mQxataaicxoId6dG7VA4nvEbAakKIYm2nUrkGeeatMfEIA2ZdkUG0Pa0fD/BbS4c++eIVM73OcBE477KZaklrzXpO1Mw1QZ0/NkVaGA153ePP+Xp+6xEhHPvEqeONDvahh6R4LThRnGKiwjYYNHELwQ70L434+WQFmmuDIX4RN3YzHlxs0+opzhZHypIgY1oIL+6HZehTa6JI7D0GmmPaI+AqY8RAKNoCp2WkRF1WR07QhuaUp5vdqQZAYf1azFBK6qRp7IE5v5SJBjJNOYZ4so19iDto6xdMbr7rJ6QAJ/TuEHBTuHuWG+wfv7/b+UeCwfwDB/KLD0bnHovirUGeLOjZaSTeHbptQeCMCIlO+LlU3IjLGpyhRydHRn7AFNSFTjG7HlhzGChwWVs3CPK6XRMVnTdA3aVbkH9QE+xc/CHKqWzKTANTEBZ2mykbW0DtopH6ivMW3wuvySRZKoCAMzQezVDyPGzJDU1jwcVrYjWt75/9RSBhuhKKR4Ww9IKDh+nT7GHBP6A36XKLJwgoCziwbuUpGaazAILUs0xjfmQdeWGVEi0CzAGvc+JxOOCvshaoQ97kV+QqC9H92ljpRzY="
 
 before_install:
-  - docker pull yaktor/yaktor:0.32.0
+  - docker pull yaktor/base:0.34.1
   - ./run.sh npm install
   - ./run.sh npm run gen-src
 
