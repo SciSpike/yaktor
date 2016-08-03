@@ -14,18 +14,7 @@ fi
 export YAKTOR_DOCKER_MACHINE=${YAKTOR_DOCKER_MACHINE-default}
 
 if [ "$(uname)" == "Darwin" ]; then
-  if [ -n $(which docker-machine) ] && docker-machine ip $YAKTOR_DOCKER_MACHINE &> /dev/null; then
-    docker-machine start $YAKTOR_DOCKER_MACHINE
-    eval $(docker-machine env $YAKTOR_DOCKER_MACHINE)
-    ./osx-route.sh
-  elif [ -n $(which dlite) ] && [ -n $(dlite ip 2> /dev/null) ]; then
-    ./osx-route.sh
-  elif [ -n $(docker info 2> /dev/null) ]; then
-    ./osx-route.sh
-  else
-    echo Error: cannot determine how you expect this to work without docker setup -- exiting
-    exit 1
-  fi
+  ./osx-route.sh
 fi
 
 if [ "$#" -eq 0 ]; then
