@@ -15,7 +15,7 @@ module.exports = function (grunt) {
   var tag = 'v' + rawVersion
   var newTag = 'v' + minor + '.x'
   var master = grunt.option('source-branch') || 'master'
-  var yaktorBaseFiles = ['bin/static/docker/Dockerfile', 'README.md', '.travis.yml', 'run.sh']
+  var yaktorBaseFiles = [ 'bin/static/docker/Dockerfile', 'README.md', '.travis.yml', 'run.sh' ]
   var config = {
     coveralls: {
       ci: {
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
         command: [
           'sed -i~ \'s|yaktor/base:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/base:' + yaktorBaseVersion + '|\' ' + yaktorBaseFiles.join(' '),
           'rm ' + yaktorBaseFiles.concat('').join('~ '),
-          'git commit -o -m "sync-yaktor-base-version" -- ' + yaktorBaseFiles.join(' ')
+          'git commit -o -m "sync-yaktor-base-version to yaktor/base' + yaktorBaseVersion + '" -- ' + yaktorBaseFiles.join(' ')
         ].join('&&'),
         usage: 'Ensures all references to yaktor/base are the same version.'
       },
