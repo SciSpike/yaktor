@@ -25,11 +25,11 @@ describe(path.basename(__filename), function () {
         }
       }
     })
-    process.env.C = 'env-c'
+    proc.env.C = 'env-c'
     var yaktor = proxyquire(path.resolve('index'), proxies)
     assert.equal(yaktor.a, global.settings.a)
     assert.equal(yaktor.b, global.settings.b)
     assert.equal(yaktor.servers.bob.a, servers.bob.settings.a)
-    assert.equal(yaktor.c, process.env.C)
+    assert.equal(yaktor.c, proc.env.C)
   })
 })

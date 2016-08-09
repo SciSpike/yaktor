@@ -7,7 +7,7 @@ module.exports = function (grunt) {
   })
   var dir = null
   var basePath = grunt.option('basePath') || './'
-  var yaktorBaseVersion = grunt.option('yaktor-base-version') || './'
+  var yaktorBaseVersion = grunt.option('yaktor-base-version')
   var path = require('path')
   var packageJson = require(path.resolve('package.json'))
   var rawVersion = packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
@@ -53,11 +53,12 @@ module.exports = function (grunt) {
       'create-tag': {
         command: 'git tag v' + packageJson.version
       },
-      'sync-yaktor-base-version': {
+      'use-yaktor-base-version': {
         command: [
+          '[ -n "' + yaktorBaseVersion + '" ]',
           'sed -i~ \'s|yaktor/base:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/base:' + yaktorBaseVersion + '|\' ' + yaktorBaseFiles.join(' '),
           'rm ' + yaktorBaseFiles.concat('').join('~ '),
-          'git commit -o -m "sync-yaktor-base-version to yaktor/base' + yaktorBaseVersion + '" -- ' + yaktorBaseFiles.join(' ')
+          'git commit -o -m "use yaktor/base:' + yaktorBaseVersion + '" -- ' + yaktorBaseFiles.join(' ')
         ].join('&&'),
         usage: 'Ensures all references to yaktor/base are the same version.'
       },
