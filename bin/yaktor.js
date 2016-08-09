@@ -171,7 +171,7 @@ function createRootFiles (name, appDir, options) {
   Object.keys(files).forEach(function (file) {
     var pathname = path.join(appDir, file)
     if (fs.existsSync(pathname) && options.safe) {
-      console.error('File ' + pathname + ' exists.  Failing.')
+      console.error('File ' + pathname + ' exists: failing.')
       return process.exit(-1)
     }
 
@@ -213,7 +213,7 @@ function create (name, options) {
   var appDir = path.resolve(dir, name)
   if (fs.existsSync(appDir)) {
     if (options.safe) {
-      console.error('Directory "%s" already exists. Resisting the urge.', name)
+      console.error('Directory "%s" already exists: failing.', name)
       return process.exit(-1)
     }
   } else {
