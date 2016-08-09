@@ -56,7 +56,7 @@ module.exports = function (grunt) {
       'use-yaktor-base-version': {
         command: [
           '[ -n "' + yaktorBaseVersion + '" ]',
-          'sed -i~ \'s|yaktor/base:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/base:' + yaktorBaseVersion + '|\' ' + yaktorBaseFiles.join(' '),
+          "sed -i~ 's|yaktor/base:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/base:" + yaktorBaseVersion + "|' " + yaktorBaseFiles.join(' '),
           'rm ' + yaktorBaseFiles.concat('').join('~ '),
           'git commit -o -m "use yaktor/base:' + yaktorBaseVersion + '" -- ' + yaktorBaseFiles.join(' ')
         ].join('&&'),
@@ -85,7 +85,7 @@ module.exports = function (grunt) {
           'grunt shell:publish',
           'grunt bump:prepatch --no-tag'
         ].join('&&'),
-        usage: 'Release a patch. You must do this in a clean working directory from a release branch, like \'v0.1.x\'.'
+        usage: "Release a patch. You must do this in a clean working directory from a release branch, like 'v0.1.x'."
       },
       'release-pre': {
         'command': [

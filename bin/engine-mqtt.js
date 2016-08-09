@@ -74,8 +74,8 @@ var createREPL = function (opts) {
     prompt: getPrompt(opts),
     // ignoreUndefined:true,
     useGlobal: true,
-    input: proc.stdin,
-    output: proc.stdout
+    input: process.stdin,
+    output: process.stdout
   })
 }
 program.command('agent')
@@ -89,7 +89,7 @@ program.command('agent')
     function (opts) {
       var local = createREPL(opts)
       var aa = opts.agentName.split('.')
-      var agent = require(path.join(proc.cwd(), 'public', 'api', aa[ 0 ], aa[ 1 ]))
+      var agent = require(path.join(process.cwd(), 'public', 'api', aa[ 0 ], aa[ 1 ]))
 
       /**
        * Connect and auth
@@ -165,4 +165,4 @@ program.command('agent')
       }
       var actions = getActions(agent)
     })
-program.parse(proc.argv)
+program.parse(process.argv)

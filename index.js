@@ -23,7 +23,7 @@ var yaktor = {
 
     // initialize logger
     var log = require('./logger').yaktorInit(yaktor)
-    proc.on('uncaughtException', function (err) {
+    process.on('uncaughtException', function (err) {
       log.error('uncaught exception', err.stack)
     })
 
@@ -98,7 +98,7 @@ var getConfigEnvironmentVariables = function (object) {
       switch (typeof mappings[ key ]) {
         case 'string':
           var envarName = mappings[ key ]
-          var envarValue = proc.env[ envarName ]
+          var envarValue = process.env[ envarName ]
           if (envarValue) {
             mappings[ key ] = envarValue
             debug('replaced configuration setting "' + configPrefix.concat(key).join('.') + '" with value "' + envarValue + '" from environment variable "' + envarName + '"')

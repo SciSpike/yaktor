@@ -11,7 +11,7 @@ module.exports = function (ctx, done) {
   app.use(serveStatic(path.resolve('public')))
 
   // setup the error handling for development mode (prints the error stacktrace in browser)
-  if (proc.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     app.use(require('errorhandler')())
     app.get('/dump', function (req, res) { // TODO: make configurable?
       var heapdump = require('heapdump')

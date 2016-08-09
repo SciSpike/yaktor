@@ -38,7 +38,7 @@ var times = function (times, task, callback) {
   var pt = function () {
     if (!stop && count++ < times) {
       task(count, cb)
-      proc.nextTick(pt)
+      process.nextTick(pt)
     }
   }
   pt()

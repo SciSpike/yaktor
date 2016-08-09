@@ -1,5 +1,5 @@
 /* global describe, it */
-proc.env.NODE_CONFIG = JSON.stringify({
+process.env.NODE_CONFIG = JSON.stringify({
   yaktor: {
     log: {
       stdout: true,
