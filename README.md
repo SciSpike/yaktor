@@ -20,7 +20,7 @@ Typically, you'll want to do something like
 $ mkdir myapp
 $ cd myapp
 $ docker run -it -v "$PWD":/app --rm --entrypoint bash yaktor/node:0.37.0 \
-    -c 'npm install yaktor && yaktor init'
+    -c 'npm install yaktor && $(npm bin)/yaktor init'
 ```
 
 which will use Docker to pull the yaktor Node.js image and create a yaktor-based application in `myapp`.  Then, when the command completes,
@@ -29,7 +29,7 @@ which will use Docker to pull the yaktor Node.js image and create a yaktor-based
 $ yak gen-src gen-views start
 ```
 
-After that, you can navigate to the `myapp`'s UI at `http://myapp.yaktor`.
+After that, you can navigate to the `myapp`'s UI at [`http://myapp.yaktor`](http://myapp.yaktor).
 
 > Note: If you're on Mac with `docker-machine` installed, you'll have to use the IP address instead of `myapp.yaktor` that's echoed to the terminal when `yak start` runs.
 
