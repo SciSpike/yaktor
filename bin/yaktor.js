@@ -8,7 +8,7 @@ var path = require('path')
 var async = require('async')
 var util = require('util')
 var fs = require('fs-extra')
-var cp = require('child_process')
+var childProcess = require('child_process')
 var os = require('os')
 var which = require('which')
 var semver = require('semver')
@@ -23,7 +23,7 @@ var cpFiles = function (dir, destDir, force, cb) {
 var packageFile = path.join(__dirname, '../package.json')
 var packageJson = require(packageFile)
 
-var shared = function (appDir, force, developerRole, yaktorVersion) {
+var shared = function (appDir, force) {
   var processFiles = function (cb) {
     var currentPackageJson = require('./package.json')
 
@@ -51,9 +51,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
       theirPackageJson[ d.sub ][ d.name ] = packageJson[ d.sub ][ d.name ]
     })
 
-    if (yaktorVersion) {
-      theirPackageJson.dependencies.yaktor = yaktorVersion
-    }
+    theirPackageJson.dependencies.yaktor = packageJson.version
 
     fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
 
@@ -89,7 +87,7 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
           if (!err) return next()
 
           // else try to install from location next to this very yaktor
-          var yaktorLangDir = path.resolve(__dirname, '..') + '-lang'
+          var yaktorLangDir = path.resolve(__dirname, '..', 'yaktor-dsl-xtext', 'target', 'npm')
           if (fs.existsSync(yaktorLangDir) &&
             semver.satisfies(require(path.resolve(path.join(yaktorLangDir, 'package.json'))).version, yaktorLangRequiredVersion)) {
             console.log('WARNING: ignore previous error; installing yaktor-lang@%s instead from directory %s', yaktorLangRequiredVersion, yaktorLangDir)
@@ -110,7 +108,6 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
     })
   } else {
     async.series([
-      async.apply(exec, 'npm', [ 'install', 'yaktor@' + yaktorVersion ]),
       async.apply(processFiles),
       async.apply(exec, 'npm', [ 'install' ])
     ], function (err) {
@@ -124,24 +121,108 @@ var shared = function (appDir, force, developerRole, yaktorVersion) {
   }
 }
 
-argv.command('migrate [path]')
-  .description('migrate app at [path] to current yaktor version')
-  // .option("-x, --install", "$ npm install")
-  .option('-f, --force', 'resistance is futile')
-  .option('-V, --version [version]', 'the yaktor version to update to (deprecated; use -y or --yaktor-version)', packageJson.version)
-  .option('-y, --yaktor-version [version]', 'version of yaktor to update to', packageJson.version)
-  .option('-d, --developer-role', 'ensure npm link of engine-ui and conversation')
-  .option('-F, --really-force', 'not implemented, just for giggles.')
-  .action(function (appDir, options) {
-    console.log('migrating %s', appDir || './')
-    if (appDir) {
-      appDir = path.resolve(appDir)
-      process.chdir(appDir)
+function createRootFiles (name, appDir, options) {
+  var gitignore = [
+    '*.def.js',
+    '*.gen.js',
+    '/conversations/types',
+    '/conversations/ejs',
+    '/conversations/security',
+    '/actions',
+    '/coverage',
+    '/doc',
+    '/public/*',
+    '!/public/socketApi.js',
+    '/routes',
+    '/servers',
+    '/simulator',
+    '/src-gen',
+    'node_modules',
+    'bower_components'
+  ].join(os.EOL)
+
+  var dotProject = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<projectDescription>',
+    '  <name>' + name + '</name>',
+    '  <comment></comment>',
+    '  <projects>',
+    '  </projects>',
+    '  <buildSpec>',
+    '    <buildCommand>',
+    '      <name>org.eclipse.xtext.ui.shared.xtextBuilder</name>',
+    '      <arguments>',
+    '      </arguments>',
+    '    </buildCommand>',
+    '  </buildSpec>',
+    '  <natures>',
+    '    <nature>org.eclipse.xtext.ui.shared.xtextNature</nature>',
+    '  </natures>',
+    '</projectDescription>'
+  ].join(os.EOL)
+
+  var files = {
+    '.project': dotProject,
+    '.gitignore': gitignore,
+    '.npmignore': ''
+  }
+  Object.keys(files).forEach(function (file) {
+    var pathname = path.join(appDir, file)
+    if (fs.existsSync(pathname) && options.safe) {
+      console.error('File ' + pathname + ' exists: failing.')
+      return process.exit(-1)
     }
-    appDir = appDir || dir
-    options.yaktorVersion = options.version || options.yaktorVersion
-    shared(appDir, options.force, options.developerRole, options.yaktorVersion)
+
+    fs.writeFileSync(pathname, files[ file ])
   })
+}
+
+function init (appDir, options) {
+  appDir = path.resolve(appDir || dir)
+  console.log('yaktorizing %s', appDir)
+  process.chdir(appDir)
+  var theirPackageJson = path.join(appDir, 'package.json')
+  var theirJson
+  if (fs.existsSync(theirPackageJson)) {
+    if (options.safe) {
+      console.error('File ' + theirPackageJson + ' exists.  Failing.')
+      process.exit(-1)
+    }
+    theirJson = require(theirPackageJson)
+  } else {
+    theirJson = {
+      private: true
+    }
+  }
+  theirJson.version = options.initialVersion
+  theirJson.dependencies = theirJson.dependencies || {}
+  theirJson.devDependencies = theirJson.devDependencies || {}
+  theirJson.scripts = theirJson.scripts || {}
+
+  fs.writeFileSync(theirPackageJson, JSON.stringify(theirJson, null, 2))
+  if (!options.noNpmInit) {
+    childProcess.execSync('npm init -y', { stdio: 'inherit' })
+  }
+  createRootFiles(options.name || path.basename(appDir), appDir, options)
+  shared(appDir, !options.safe)
+}
+
+function create (name, options) {
+  var appDir = path.resolve(dir, name)
+  if (fs.existsSync(appDir)) {
+    if (options.safe) {
+      console.error('Directory "%s" already exists: failing.', name)
+      return process.exit(-1)
+    }
+  } else {
+    fs.mkdirSync(appDir)
+  }
+  process.chdir(appDir)
+  console.log('create %s %s using yaktor@%s', name, options.initialVersion, packageJson.version)
+  options.name = name
+  init(appDir, options)
+}
+
 argv.command('cassandra')
   .description('add cassandra support and logging')
   .action(function () {
@@ -154,88 +235,29 @@ argv.command('cassandra')
     exec('npm', [ 'install' ])
     fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
   })
+
+argv.command('init [path]')
+  .description('initialize yaktor app at [path] to current yaktor version')
+  .option('-s, --safe', 'do not force initialization if files already exist')
+  .option('-x, --no-npm-init', 'do not run `npm init` even if necessary')
+  .option('-i, --initial-version [version]', 'initial version for the created app', '0.0.1')
+  .option('-x, --no-install', 'do not perform `npm install`')
+  .action(init)
+
 argv.command('create <appName>')
   .description('create a yaktor app in a new directory named <appName>')
+  .option('-s, --safe', 'do not force initialization if files already exist')
   .option('-i, --initial-version [version]', 'initial version for the created app', '0.0.1')
-  .option('-d, --developer-role', 'ensure npm link of engine-ui and conversation')
-  .option('-f, --force', 'resistance is futile')
-  .option('-F, --really-force', 'not implemented, just for giggles.')
-  .option('-x, --install', '$ npm install')
-  .action(function (name, options) {
-    var appDir = path.join(dir, name)
-    if (fs.existsSync(appDir)) {
-      if (!options.force) {
-        console.log('Directory "%s" already exists. Resisting the urge.', name)
-        return process.exit(-1)
-      }
-    } else {
-      fs.mkdirSync(appDir)
-    }
-    process.chdir(appDir)
+  .option('-x, --no-install', 'do not perform `npm install`')
+  .action(create)
 
-    var version = options.initialVersion
-    var theirPackageJson = {
-      name: name,
-      private: true,
-      version: version,
-      dependencies: {},
-      devDependencies: {},
-      scripts: {}
-    }
-    var gitignore = [
-      '*.def.js',
-      '*.gen.js',
-      '/conversations/types',
-      '/conversations/ejs',
-      '/conversations/security',
-      '/actions',
-      '/coverage',
-      '/doc',
-      '/public/*',
-      '!/public/socketApi.js',
-      '/routes',
-      '/servers',
-      '/simulator',
-      '/src-gen',
-      'node_modules',
-      'bower_components'
-    ].join(os.EOL)
-    var dotProject = [
-      '<?xml version="1.0" encoding="UTF-8"?>',
-      '<projectDescription>',
-      '  <name>' + name + '</name>',
-      '  <comment></comment>',
-      '  <projects>',
-      '  </projects>',
-      '  <buildSpec>',
-      '    <buildCommand>',
-      '      <name>org.eclipse.xtext.ui.shared.xtextBuilder</name>',
-      '      <arguments>',
-      '      </arguments>',
-      '    </buildCommand>',
-      '  </buildSpec>',
-      '  <natures>',
-      '    <nature>org.eclipse.xtext.ui.shared.xtextNature</nature>',
-      '  </natures>',
-      '</projectDescription>'
-    ].join(os.EOL)
-
-    fs.writeFileSync(path.join(appDir, '.project'), dotProject)
-    fs.writeFileSync(path.join(appDir, '.gitignore'), gitignore)
-    fs.writeFileSync(path.join(appDir, '.npmignore'), '')
-    fs.writeFileSync(path.join(appDir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
-
-    console.log('create %s %s using yaktor@%s', name, version, packageJson.version)
-
-    shared(appDir, options.force, options.developerRole, packageJson.version)
-  })
 argv.command('help [subCommand]')
   .description('alias to [subCommand] -h')
   .action(function (subCommand) {
     if (subCommand) {
-      cp.fork(__filename, [ subCommand, '-h' ])
+      childProcess.fork(__filename, [ subCommand, '-h' ])
     } else {
-      cp.fork(__filename, [ '-h' ])
+      childProcess.fork(__filename, [ '-h' ])
     }
   })
 
@@ -250,9 +272,9 @@ argv.parse(process.argv)
 
 function exec (cmd, args, cb) {
   console.log([ cmd ].concat(args).join(' '))
-  var proc = cp.spawn(which.sync(cmd), args || [], { stdio: 'inherit' })
+  var p = childProcess.spawn(which.sync(cmd), args || [], { stdio: 'inherit' })
   if (cb) {
-    proc.on('close', cb)
+    p.on('close', cb)
   }
-  return proc
+  return p
 }
