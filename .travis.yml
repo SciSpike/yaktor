@@ -4,7 +4,7 @@ services:
   - docker
 
 before_install:
-  - docker pull yaktor/node:0.38.0
+  - docker pull yaktor/node:0.39.0
   - ./run.sh npm install
   - ./run.sh npm run gen-src
 
