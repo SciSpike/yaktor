@@ -23,7 +23,7 @@ var cpFiles = function (dir, destDir, force, cb) {
 var packageFile = path.join(__dirname, '../package.json')
 var packageJson = require(packageFile)
 
-var shared = function (appDir, force) {
+var shared = function (appDir, force, install) {
   var processFiles = function (cb) {
     var currentPackageJson = require('./package.json')
 
@@ -111,7 +111,13 @@ var shared = function (appDir, force) {
           next()  // don't install it again
         }
       },
-      async.apply(exec, 'npm', [ 'install' ])
+      function (next) {
+        if (install) {
+          exec ('npm', [ 'install' ], next)
+        } else {
+          next()
+        }
+      }
     ], function (err) {
       if (err) {
         console.log(err.stack)
@@ -137,6 +143,7 @@ var shared = function (appDir, force) {
 
 function createRootFiles (name, appDir, options) {
   var gitignore = [
+    '*.log',
     '*.def.js',
     '*.gen.js',
     '/conversations/types',
@@ -214,11 +221,11 @@ function init (appDir, options) {
   theirJson.scripts = theirJson.scripts || {}
 
   fs.writeFileSync(theirPackageJson, JSON.stringify(theirJson, null, 2))
-  if (!options.noNpmInit) {
+  if (options.npmInit) {
     childProcess.execSync('npm init -y', { stdio: 'inherit' })
   }
   createRootFiles(options.name || path.basename(appDir), appDir, options)
-  shared(appDir, !options.safe)
+  shared(appDir, !options.safe, options.install)
 }
 
 function create (name, options) {
@@ -253,7 +260,7 @@ argv.command('cassandra')
 argv.command('init [path]')
   .description('initialize yaktor app at [path] to current yaktor version')
   .option('-s, --safe', 'do not force initialization if files already exist')
-  .option('-x, --no-npm-init', 'do not run `npm init` even if necessary')
+  .option('-n, --no-npm-init', 'do not run `npm init` even if necessary')
   .option('-i, --initial-version [version]', 'initial version for the created app', '0.0.1')
   .option('-x, --no-install', 'do not perform `npm install`')
   .action(init)

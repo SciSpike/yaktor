@@ -15,7 +15,9 @@ fi
 export YAKTOR_DOCKER_MACHINE=${YAKTOR_DOCKER_MACHINE-default}
 
 if [ "$(uname)" == "Darwin" ]; then
-  ./osx-route.sh
+  if ! ./osx-route.sh 2> osx-route.log ; then
+    cat osx-route.log
+  fi
 fi
 
 if [ "$#" -eq 0 ]; then

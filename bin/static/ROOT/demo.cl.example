@@ -7,45 +7,46 @@
  */ 
 conversation demo {
 
-	/*
-	 * The Circuit is what we call a `conversation type`. 
-	 * Agents collaborate over the same instance of an object; here, the object is an instance of a Circuit.
-	 */
-	type Circuit {
-		String name!
-	}
+  /*
+   * The Circuit is what we call a `conversation type`. 
+   * Agents collaborate over the same instance of an object; here, the object is an instance of a Circuit.
+   */
+  type Circuit {
+    String name!
+  }
 
-	/*
-	 * A simple switch agent
-	 */
-	infinite agent Switch concerning Circuit {
-		privately receives flip
-		sends turnOn
-		sends turnOff
+  /*
+   * A simple switch agent
+   */
+  infinite agent Switch concerning Circuit {
+    privately receives flip
+    sends turnOn
+    sends turnOff
 
-		initially becomes off {
-			on {
-				flip -> off > turnOff
-			}
-			off {
-				flip -> on > turnOn
-			}
-		}
-	}
+    initially becomes off {
+      on {
+        flip -> off > turnOff
+      }
+      off {
+        flip -> on > turnOn
+      }
+    }
+  }
 
-	/*
-	 * A simple electrical outlet agent
-	 */
-	infinite agent Outlet concerning Circuit {
+  /*
+   * A simple electrical outlet agent
+   */
+  infinite agent Outlet concerning Circuit {
 
-		initially becomes off {
-			off {
-				Switch.turnOn -> flowing
-			}
-			flowing {
-				Switch.turnOff -> off
-			}
-		}
-	}
+    initially becomes off {
+      off {
+        Switch.turnOn -> flowing
+      }
+      flowing {
+        Switch.turnOff -> off
+      }
+    }
+  }
+  resource /circuit for demo.Circuit offers anonymous ( create read update delete find ) interchanges ( json )
 
 }

@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "amqp-eventemitter": "0.5.1",
     "async": "1.5.2",
     "backo": "1.0.1",
     "bcrypt": "0.8.5",
@@ -29,7 +28,8 @@
     "tv4": "1.0.8",
     "underscore": "1.7.0",
     "websocket-stream": "3.1.0",
-    "winston": "0.7.1"
+    "winston": "0.7.1",
+    "zmq": "2.15.3"
   },
   "devDependencies": {
     "bluebird": "3.3.4",

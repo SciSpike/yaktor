@@ -3,7 +3,8 @@ var fs = require('fs')
 var async = require('async')
 
 var settings = {
-  hostname: 'localhost'
+  hostname: 'localhost',
+  stack: 'app'
 }
 fs.readdirSync(__dirname).forEach(function (file) {
   var pathname = path.join(__dirname, file)

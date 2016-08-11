@@ -1,4 +1,5 @@
 module.exports = {
-  port: 4000,
+  port: 5000,
+  url: 'tcp://%s:%s',
   updateIntervalMillis: 60000
 }
