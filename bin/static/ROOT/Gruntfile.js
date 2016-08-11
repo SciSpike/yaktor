@@ -58,7 +58,7 @@ module.exports = function (grunt) {
             maxBuffer: Infinity
           }
         },
-        command: [ 'npm install', '$(npm bin)/bower install' ].join(';')
+        command: [ 'npm install', '$(npm bin)/bower install --allow-root' ].join(';')
       },
       'gen-src': {
         usage: 'Produce JavaScript source files from the Yaktor DSLs',
