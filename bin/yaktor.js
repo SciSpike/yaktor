@@ -78,24 +78,38 @@ var shared = function (appDir, force) {
     console.log('NOTE: local development of yaktor detected; installing yaktor from ' + path.resolve(__dirname, '..'))
     async.series([
       async.apply(processFiles),
-      async.apply(exec, 'npm', [ 'install', path.resolve(__dirname, '..') ]), // install this very yaktor
+      function (next) {
+        if (__dirname.indexOf(dir) !== 0) {
+          exec('npm', [ 'install', path.resolve(__dirname, '..') ], next) // install this very yaktor
+        } else {
+          next() // don't install it again
+        }
+      },
       function (next) {
         var yaktorLangRequiredVersion = packageJson.devDependencies[ 'yaktor-lang' ]
-        console.log('INFO: trying to install required yaktor-lang@%s', yaktorLangRequiredVersion)
-
-        exec('npm', [ 'install', 'yaktor-lang@' + yaktorLangRequiredVersion ], function (err) {
-          if (!err) return next()
-
-          // else try to install from location next to this very yaktor
-          var yaktorLangDir = path.resolve(__dirname, '..', 'yaktor-dsl-xtext', 'target', 'npm')
-          if (fs.existsSync(yaktorLangDir) &&
-            semver.satisfies(require(path.resolve(path.join(yaktorLangDir, 'package.json'))).version, yaktorLangRequiredVersion)) {
-            console.log('WARNING: ignore previous error; installing yaktor-lang@%s instead from directory %s', yaktorLangRequiredVersion, yaktorLangDir)
-            exec('npm', [ 'install', yaktorLangDir ], next)
-          } else {
-            next(new Error('No yaktor-lang found that satisfies version requirement of ' + yaktorLangRequiredVersion))
-          }
-        })
+        var yaktorLangInstalledVersion
+        try {
+          yaktorLangInstalledVersion = require(path.join('yaktor-lang', 'package.json')).version
+        } catch (e) {
+          // not installed
+        }
+        if (!semver.satisfies(yaktorLangInstalledVersion, yaktorLangRequiredVersion)) {
+          console.log('INFO: trying to install required yaktor-lang@%s', yaktorLangRequiredVersion)
+          exec('npm', [ 'install', 'yaktor-lang@' + yaktorLangRequiredVersion ], function (err) {
+            if (!err) return next()
+            // else try to install from location next to this very yaktor
+            var yaktorLangDir = path.resolve(__dirname, '..', 'yaktor-dsl-xtext', 'target', 'npm')
+            if (fs.existsSync(yaktorLangDir) &&
+                semver.satisfies(require(path.resolve(path.join(yaktorLangDir, 'package.json'))).version, yaktorLangRequiredVersion)) {
+              console.log('WARNING: ignore previous error; installing yaktor-lang@%s instead from directory %s', yaktorLangRequiredVersion, yaktorLangDir)
+              exec('npm', [ 'install', yaktorLangDir ], next)
+            } else {
+              next(new Error('No yaktor-lang found that satisfies version requirement of ' + yaktorLangRequiredVersion))
+            }
+          })
+        } else {
+          next()  // don't install it again
+        }
       },
       async.apply(exec, 'npm', [ 'install' ])
     ], function (err) {
