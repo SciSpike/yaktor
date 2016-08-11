@@ -19,7 +19,7 @@ Typically, you'll want to do something like
 ```
 $ mkdir myapp
 $ cd myapp
-$ docker run -it -v "$PWD":/app --rm --entrypoint bash yaktor/node:0.37.0 \
+$ docker run -it -v "$PWD":/app --rm --entrypoint bash yaktor/node:0.38.0 \
     -c 'npm install yaktor && $(npm bin)/yaktor init'
 ```
 
