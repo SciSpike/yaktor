@@ -7,7 +7,7 @@ module.exports = function (grunt) {
   })
   var dir = null
   var basePath = grunt.option('basePath') || './'
-  var yaktorBaseVersion = grunt.option('yaktor-base-version')
+  var yaktorNodeVersion = grunt.option('yaktor-node-version') || ''
   var path = require('path')
   var packageJson = require(path.resolve('package.json'))
   var rawVersion = packageJson.version.match(/^(\d+\.\d+\.\d+).*$/)[ 1 ]
@@ -15,7 +15,7 @@ module.exports = function (grunt) {
   var tag = 'v' + rawVersion
   var newTag = 'v' + minor + '.x'
   var master = grunt.option('source-branch') || 'master'
-  var yaktorBaseFiles = [ 'bin/static/docker/Dockerfile', 'README.md', '.travis.yml', 'run.sh' ]
+  var yaktorNodeFiles = [ 'bin/static/docker/Dockerfile', 'README.md', '.travis.yml', 'run.sh' ]
   var config = {
     coveralls: {
       ci: {
@@ -53,14 +53,14 @@ module.exports = function (grunt) {
       'create-tag': {
         command: 'git tag v' + packageJson.version
       },
-      'use-yaktor-base-version': {
+      'use-yaktor-node-version': {
         command: [
-          '[ -n "' + yaktorBaseVersion + '" ]',
-          "sed -i~ 's|yaktor/base:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/base:" + yaktorBaseVersion + "|' " + yaktorBaseFiles.join(' '),
-          'rm ' + yaktorBaseFiles.concat('').join('~ '),
-          'git commit -o -m "use yaktor/base:' + yaktorBaseVersion + '" -- ' + yaktorBaseFiles.join(' ')
+          '[ -n "' + yaktorNodeVersion + '" ]',
+          "sed -i~ 's|yaktor/node:[0-9]*\\(\\.[0-9]*\\)\\{0,2\\}|yaktor/node:" + yaktorNodeVersion + "|' " + yaktorNodeFiles.join(' '),
+          'rm ' + yaktorNodeFiles.concat('').join('~ '),
+          'git commit -o -m "use yaktor/node:' + yaktorNodeVersion + '" -- ' + yaktorNodeFiles.join(' ')
         ].join('&&'),
-        usage: 'Ensures all references to yaktor/base are the same version.'
+        usage: 'Ensures all references to yaktor/node are the same version.'
       },
       'release-minor': {
         'command': [
@@ -129,4 +129,5 @@ module.exports = function (grunt) {
       console.log('    ' + name + '  ' + task.info)
     })
   })
+  grunt.registerTask('default', 'help')
 }
