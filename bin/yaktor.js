@@ -113,7 +113,7 @@ var shared = function (appDir, force, install) {
       },
       function (next) {
         if (install) {
-          exec ('npm', [ 'install' ], next)
+          exec('npm', [ 'install' ], next)
         } else {
           next()
         }
