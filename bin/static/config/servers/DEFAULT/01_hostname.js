@@ -6,9 +6,7 @@ module.exports = function (ctx, done) {
   var protocol = ctx.host.protocol
   var prefix = ctx.host.prefix
   ctx.host.hostname = ctx.host.hostname || require('yaktor').ip
-  if (ctx.urlPrefix) {
-    // NOOP
-  } else if (prefix) {
+  if (prefix) {
     ctx.urlPrefix = protocol + '://' + prefix
   } else {
     var hostname = ctx.host.hostname

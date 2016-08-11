@@ -37,7 +37,7 @@ module.exports = function (ctx, done) {
       hostname = referer.hostname
     }
     // we allow you as long as you match
-    var allowedOrigin = new RegExp('^' + yaktor.ip + '|' + ctx.host.hostname + '$').test(hostname) ? refHost : app.get('urlPrefix')
+    var allowedOrigin = new RegExp('^' + yaktor.ip + '|' + ctx.host.hostname + '$').test(hostname) ? refHost : ctx.urlPrefix
     res.header('Access-Control-Allow-Origin', allowedOrigin)
     res.header('Access-Control-Allow-Credentials', 'true')
     // * might not be doing what is expected so drop this one.
