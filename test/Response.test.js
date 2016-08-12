@@ -96,7 +96,7 @@ describe('Response', function () {
     })
   })
   describe('create', function () {
-    ;([['application/json', jsonParse, jsonStringify], ['text/html', xmlParse, xmlStringify], ['application/xhtml+xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
+    ;([['application/json', jsonParse, jsonStringify], ['text/xml', xmlParse, xmlStringify], ['application/xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
       var m = b[0]
       it('should not fail to produce valid ' + m, function (done) {
         var req = {
@@ -114,7 +114,7 @@ describe('Response', function () {
           end: function (resp) {
             var parsed = b[1](resp)
             assert.ok(parsed)
-            if (/xml|html/.test(m)) {
+            if (/xml/.test(m)) {
               parsed = parsed.response
             }
             assert.equal(b[2](parsed), b[2](data))
@@ -151,7 +151,7 @@ describe('Response', function () {
     })
   })
   describe('read', function () {
-    ;([['application/json', jsonParse, jsonStringify], ['text/html', xmlParse, xmlStringify], ['application/xhtml+xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
+    ;([['application/json', jsonParse, jsonStringify], ['text/xml', xmlParse, xmlStringify], ['application/xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
       var m = b[0]
       it('should not fail to produce valid ' + m, function (done) {
         var req = {
@@ -169,7 +169,7 @@ describe('Response', function () {
           end: function (resp) {
             var parsed = b[1](resp)
             assert.ok(parsed)
-            if (/xml|html/.test(m)) {
+            if (/xml/.test(m)) {
               parsed = parsed.response
             }
             assert.equal(b[2](parsed), b[2](data))
@@ -205,7 +205,7 @@ describe('Response', function () {
     })
   })
   describe('update', function () {
-    ;([['application/json', jsonParse, jsonStringify], ['text/html', xmlParse, xmlStringify], ['application/xhtml+xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
+    ;([['application/json', jsonParse, jsonStringify], ['text/xml', xmlParse, xmlStringify], ['application/xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
       var m = b[0]
       it('should not fail to produce valid ' + m, function (done) {
         var req = {
@@ -223,7 +223,7 @@ describe('Response', function () {
           end: function (resp) {
             var parsed = b[1](resp)
             assert.ok(parsed)
-            if (/xml|html/.test(m)) {
+            if (/xml/.test(m)) {
               parsed = parsed.response
             }
             assert.equal(b[2](parsed), b[2](data))
@@ -259,7 +259,7 @@ describe('Response', function () {
     })
   })
   describe('delete', function () {
-    ;([['application/json', jsonParse, jsonStringify], ['text/html', xmlParse, xmlStringify], ['application/xhtml+xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
+    ;([['application/json', jsonParse, jsonStringify], ['text/xml', xmlParse, xmlStringify], ['application/xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify], ['application/x-www-form-urlencoded', qsParse, qsStringify]]).forEach(function (b) {
       var m = b[0]
       it('should not fail with' + m, function (done) {
         var req = {
@@ -282,7 +282,7 @@ describe('Response', function () {
         Response.delete(req, res)(null, data)
       })
     })
-    ;([['application/json', jsonParse, jsonStringify], ['text/html', xmlParse, xmlStringify], ['application/xhtml+xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify]]).forEach(function (b) {
+    ;([['application/json', jsonParse, jsonStringify], ['text/xml', xmlParse, xmlStringify], ['application/xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify]]).forEach(function (b) {
       var m = b[0]
       it('should not fail to error with' + m, function (done) {
         var testMessage = 'find me'
@@ -300,7 +300,7 @@ describe('Response', function () {
           },
           end: function (resp) {
             var parsed
-            if (/xml|html/.test(m)) {
+            if (/xml/.test(m)) {
               parsed = b[1](resp).response
             } else {
               parsed = b[1](resp)
@@ -338,7 +338,7 @@ describe('Response', function () {
         }
       })(null, [])
     })
-    ;([['application/json', jsonParse, jsonStringify], ['text/html', xmlParse, xmlStringify], ['application/xhtml+xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify]]).forEach(function (b) {
+    ;([['application/json', jsonParse, jsonStringify], ['text/xml', xmlParse, xmlStringify], ['application/xml', xmlParse, xmlStringify], ['application/x-yaml', yamlParse, yamlStringify], ['text/yaml', yamlParse, yamlStringify]]).forEach(function (b) {
       var m = b[0]
       it('should not fail to produce valid ' + m, function (done) {
         var req = {
@@ -356,7 +356,7 @@ describe('Response', function () {
           },
           end: function (resp) {
             var parsed = b[1](resp)
-            if (/xml|html/.test(m)) {
+            if (/xml/.test(m)) {
               assert.ok(parsed.response.results)
               assert.equal(parsed.response.results.length, 2)
             } else {

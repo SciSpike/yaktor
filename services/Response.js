@@ -83,11 +83,9 @@ try {
               pageSize)
             ))
             break
-          case 'text/html':
-          case 'application/xhtml+xml':
+          case 'text/xml':
+          case 'application/xml':
             res.type(contentType)
-            // TODO an HTML or XHTML view
-            // res.render("error",{error:err})
             res.end(require('nice-xml').stringify({
               response: err
                 ? new Response.Failure(err)
@@ -125,11 +123,9 @@ try {
             res.type(contentType)
             res.end(JSON.stringify(err ? new Response.Failure(err) : data))
             break
-          case 'text/html':
-          case 'application/xhtml+xml':
+          case 'text/xml':
+          case 'application/xml':
             res.type(contentType)
-            // TODO an HTML or XHTML view
-            // res.render("error",{error:err})
             res.end(require('nice-xml').stringify({
               response: err ? new Response.Failure(err) : data
             }))
@@ -158,11 +154,9 @@ try {
             res.type(contentType)
             res.end(JSON.stringify(err ? new Response.Failure(err) : data))
             break
-          case 'text/html':
-          case 'application/xhtml+xml':
+          case 'text/xml':
+          case 'application/xml':
             res.type(contentType)
-            // TODO an HTML or XHTML view
-            // res.render("error",{error:err})
             res.end(require('nice-xml').stringify({
               response: err ? new Response.Failure(err) : data
             }))
@@ -192,11 +186,9 @@ try {
               res.type(contentType)
               res.end(JSON.stringify(new Response.Failure(err)))
               break
-            case 'text/html':
-            case 'application/xhtml+xml':
+            case 'text/xml':
+            case 'application/xml':
               res.type(contentType)
-              // TODO an HTML or XHTML view
-              // res.render("error",{error:err})
               res.end(require('nice-xml').stringify({
                 response: new Response.Failure(err)
               }))
@@ -228,11 +220,9 @@ try {
             res.type(contentType)
             res.end(JSON.stringify(err ? new Response.Failure(err) : data))
             break
-          case 'text/html':
-          case 'application/xhtml+xml':
+          case 'text/xml':
+          case 'application/xml':
             res.type(contentType)
-            // TODO an HTML or XHTML view
-            // res.render("error",{error:err})
             res.end(require('nice-xml').stringify({
               response: err ? new Response.Failure(err) : data
             }))
