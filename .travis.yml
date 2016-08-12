@@ -4,6 +4,7 @@ services:
   - docker
 
 before_install:
+  - env | grep TRAVIS > .env
   - docker pull yaktor/node:0.39.0
   - ./run.sh npm install
   - ./run.sh npm run gen-src
