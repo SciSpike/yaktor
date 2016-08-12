@@ -1,7 +1,20 @@
 var logger = require('../logger')
 var BadRequest = require('./BadRequest')
+var path = require('path')
+try {
+  var xmlWriter = require(path.join('nice-xml', 'lib', 'writer'))
+  var pushElement = xmlWriter.prototype.pushElement
+  xmlWriter.prototype.pushElement = function (name, value) {
+    if (value.replace) {
+      value = value.replace(/([<>"'&])/g, function (v) {
+        return '&#' + v.charCodeAt(0) + ';'
+      })
+    }
+    return pushElement.call(this, name, value)
+  }
+} catch (e) {
+}
 
-  ;
 (function () {
   'use strict'
   var Response = {
