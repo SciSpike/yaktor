@@ -1,16 +1,17 @@
-# yaktor
+[![Yakor Logo](http://yaktor.io/pics/yaktor-logo.png)](https://github.com/Scispike/yaktor) 
 
-[![Travis branch](https://img.shields.io/travis/SciSpike/yaktor/master.svg?maxAge=2592000)](https://travis-ci.org/SciSpike/yaktor/builds)
-[![Coveralls branch](https://img.shields.io/coveralls/SciSpike/yaktor/master.svg?maxAge=2592000)](https://coveralls.io/github/SciSpike/yaktor?branch=master)
-[![license](https://img.shields.io/github/license/SciSpike/yaktor.svg?maxAge=2592000)](https://github.com/SciSpike/yaktor/blob/master/LICENSE)
-[![Gitter](https://img.shields.io/gitter/room/SciSpike/yaktor.svg?maxAge=2592000)](https://gitter.im/SciSpike/yaktor)
-[![npm](https://img.shields.io/npm/v/yaktor.svg?maxAge=2592000)](https://www.npmjs.com/package/yaktor)
+Event-driven, asynchronous, distributed, multi-party state-machine targeting the Node.js platform.
 
-DSL-based tool to produce an event-driven, asynchronous, distributed, multi-party state machine on the Node.js platform.
+[![Travis status](https://img.shields.io/travis/SciSpike/yaktor/master.svg?maxAge=3600)](https://travis-ci.org/SciSpike/yaktor/builds)
+[![Coveralls status](https://img.shields.io/coveralls/SciSpike/yaktor/master.svg?maxAge=3600)](https://coveralls.io/github/SciSpike/yaktor?branch=master)
+[![license](https://img.shields.io/github/license/SciSpike/yaktor.svg?maxAge=3600)](https://github.com/SciSpike/yaktor/blob/master/LICENSE)
+[![Gitter](https://img.shields.io/gitter/room/SciSpike/yaktor.svg?maxAge=3600)](https://gitter.im/SciSpike/yaktor)
+[![npm](https://img.shields.io/npm/v/yaktor.svg?maxAge=3600)](https://www.npmjs.com/package/yaktor)
+
 
 ## Description
 
-[Yakor](https://github.com/Scispike/yaktor) leverages our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1) to produce an event-driven, asynchronous, distributed, multi-party state-machine targetting the Node.js platform.
+Leveraging our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1). 
 
 ## Usage
 
