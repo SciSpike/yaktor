@@ -48,7 +48,7 @@ if [ -z "$ROUTE" ] || [ -n "$(echo "$ROUTE" | grep 'destination: default')" ]; t
   SSH_CONTAINER_IP=$(docker inspect --format "{{ .NetworkSettings.Networks.${NETWORK}.IPAddress }}" $VPN_SERVICE)
   SOCTUN_PORT=$(docker inspect --format '{{ range index .NetworkSettings.Ports "4444/tcp" }}{{ .HostPort}}{{end}}' $VPN_SERVICE)
   MTU=1500
-  sudo bin/soctun -t $NET -h localhost -p $SOCTUN_PORT -m $MTU & sleep 1
+  sudo bin/soctun -t $NET -h $VPN_HOST_IP -p $SOCTUN_PORT -m $MTU & sleep 1
   sudo ifconfig utun$NET inet ${SUBSUBNET}.1.1 $SSH_CONTAINER_IP mtu $MTU up
   docker exec -i $VPN_SERVICE sh -c "ip link set tun0 up && ip link set mtu $MTU tun0 && ip addr add $SSH_CONTAINER_IP/16 peer ${SUBSUBNET}.1.1 dev tun0 && arp -sD  ${SUBSUBNET}.1.1 eth0 pub"
   sudo route -n add $SUBNET -interface utun$NET #$SSH_CONTAINER_IP
