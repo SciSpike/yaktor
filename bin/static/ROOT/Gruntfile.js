@@ -62,7 +62,12 @@ module.exports = function (grunt) {
       },
       'gen-src': {
         usage: 'Produce JavaScript source files from the Yaktor DSLs',
-        command: 'npm run gen-src'
+        command: 'npm run gen-src',
+        'options': {
+          execOptions: {
+            maxBuffer: Infinity
+          }
+        }
       },
       'generate-views': {
         command: '$(npm bin)/yaktor-ui generate',
@@ -92,15 +97,30 @@ module.exports = function (grunt) {
       },
       start: {
         usage: 'Starts the yaktor app',
-        command: 'LOG_LEVEL=silly npm start'
+        command: 'LOG_LEVEL=silly npm start',
+        'options': {
+          execOptions: {
+            maxBuffer: Infinity
+          }
+        }
       },
       rebuild: {
         usage: 'Rebuilds npm modules',
-        command: 'npm rebuild'
+        command: 'npm rebuild',
+        'options': {
+          execOptions: {
+            maxBuffer: Infinity
+          }
+        }
       },
       install: {
         usage: 'Installs npm modules',
-        command: 'npm install'
+        command: 'npm install',
+        'options': {
+          execOptions: {
+            maxBuffer: Infinity
+          }
+        }
       }
     }
   }
