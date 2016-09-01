@@ -1,4 +1,4 @@
-[![Yakor Logo](http://yaktor.io/pics/yaktor-logo.png)](https://github.com/Scispike/yaktor) 
+[![Yakor Logo](http://yaktor.io/pics/yaktor-logo.png)](https://github.com/Scispike/yaktor)
 
   Event-driven, asynchronous, distributed, multi-party state-machine targeting the Node.js platform.
 
@@ -8,7 +8,7 @@
 [![Gitter](https://img.shields.io/gitter/room/SciSpike/yaktor.svg?maxAge=3600)](https://gitter.im/SciSpike/yaktor)
 [![npm](https://img.shields.io/npm/v/yaktor.svg?maxAge=3600)](https://www.npmjs.com/package/yaktor)
 
-  Leveraging our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1). 
+Leverages our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1).
 
 ## Usage
 
@@ -24,7 +24,7 @@ $ docker run -it -v "$PWD":/app --rm --entrypoint bash yaktor/node:0.39.0 \
 which will use Docker to pull the yaktor Node.js image and create a yaktor-based application in `myapp`.  Then, when the command completes,
 
 ```
-$ yak gen-src gen-views start
+$ ./yak gen-src gen-views start
 ```
 
 After that, you can navigate to the `myapp`'s UI at [`http://myapp.yaktor`](http://myapp.yaktor).
