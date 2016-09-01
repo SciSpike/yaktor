@@ -1,6 +1,6 @@
 {
   "name": "yaktor",
-  "version": "0.56.2",
+  "version": "0.56.3-pre.0",
   "description": "Event-driven, asynchronous, distributed, multi-party state-machine",
   "license": "Apache-2.0",
   "main": "index.js",
