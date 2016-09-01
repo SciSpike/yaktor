@@ -3,4 +3,4 @@ if [ ! -d node_modules ]; then
   docker-compose exec app npm install
 fi
 
-node_modules/.bin/yak
+node_modules/.bin/yak $@
