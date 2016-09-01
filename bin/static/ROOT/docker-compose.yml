@@ -13,6 +13,8 @@ services:
     build:
       context: ./docker
     image: ${APP_NAME}:${APP_TAG}
+    cap_add:
+      - NET_ADMIN
     environment:
       MONGO_HOST: mongo
       SERVERS_DEFAULT_HOST_HOSTNAME: www.${APP_NAME}.yaktor
