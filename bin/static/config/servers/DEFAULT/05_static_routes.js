@@ -7,7 +7,6 @@ var serveStatic = require('serve-static')
 
 module.exports = function (ctx, done) {
   var app = ctx.app
-  app.use(serveStatic(path.resolve(path.join('node_modules', 'tv4'))))
   app.use(serveStatic(path.resolve('public')))
 
   // setup the error handling for development mode (prints the error stacktrace in browser)
@@ -33,22 +32,6 @@ module.exports = function (ctx, done) {
       } else {
         res.end('Initialized session: ' + req.sessionID)
       }
-    })
-  })
-  app.get('/emitter.js', function (req, res) { // TODO: make configurable?
-    var path = require.resolve('emitter-component')
-    var stat = fs.statSync(path)
-    var header = '(function(global){var exports=null,module = {exports:exports};'
-    var trailer = ';exports=exports||module.exports;global.emitter=exports;})(this)'
-    res.writeHead(200, {
-      'Content-Type': 'text/javascript',
-      'Content-Length': header.length + stat.size + trailer.length
-    })
-    var rs = fs.createReadStream(path)
-    res.write(header)
-    rs.pipe(res, false)
-    rs.on('end', function () {
-      res.end(trailer)
     })
   })
 
