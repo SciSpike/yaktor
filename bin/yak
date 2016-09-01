@@ -25,11 +25,10 @@ if [ "$#" -eq 0 ]; then
 else
   CMD="$@"
 fi
-if [ ! "$CMD" == 'bash' ]; then
-  if [[ ! "$CMD" =~ ^yaktor ]]; then
-    CMD="grunt $CMD"
-  fi
-else
+
+if [[ ! "$CMD" =~ ^(bash|yaktor|npm|node) ]]; then
+  CMD="grunt $CMD"
+elif [ "$CMD" == 'bash' ]; then
   CMD="bash -l"
 fi
 
