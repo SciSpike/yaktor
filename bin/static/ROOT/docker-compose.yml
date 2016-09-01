@@ -33,6 +33,7 @@ services:
           - www.${APP_NAME}.yaktor
     working_dir: /app
   mongo:
+    command: --smallfiles
     image: mongo:3.0.4
     networks:
       default:
