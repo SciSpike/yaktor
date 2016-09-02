@@ -73,7 +73,7 @@ module.exports = function (ctx, done) {
       fs.readdirSync(serverPath).forEach(function (file) {
         var schema = require(path.join(serverPath, file))
         if (!sprocessed[req.params.id]) {
-          sprocessed[req.params.id] = schema;
+          sprocessed[req.params.id] = schema
         } else {
           util._extend(sprocessed[req.params.id].paths, schema.paths)
           sprocessed[req.params.id].tags = sprocessed[req.params.id].tags.concat(schema.tags)
