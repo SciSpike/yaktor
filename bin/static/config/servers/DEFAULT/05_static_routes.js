@@ -74,7 +74,7 @@ module.exports = function (ctx, done) {
         var schema = require(path.join(serverPath, file))
         if (!sprocessed[req.params.id]) {
           sprocessed[req.params.id] = schema;
-        }else{
+        } else {
           util._extend(sprocessed[req.params.id].paths, schema.paths)
           sprocessed[req.params.id].tags = sprocessed[req.params.id].tags.concat(schema.tags)
           util._extend(sprocessed[req.params.id].definitions, schema.definitions)
