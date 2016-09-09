@@ -55,9 +55,13 @@ module.exports = function (ctx, done) {
       var serverPath = path.resolve('public/swagger_api/' + req.params.id)
       fs.readdirSync(serverPath).forEach(function (file) {
         var schema = require(path.join(serverPath, file))
-        sprocessed[req.params.id] = sprocessed[req.params.id] || schema
-        util._extend(sprocessed[req.params.id].paths, schema.paths)
-        sprocessed[req.params.id].tags = sprocessed[req.params.id].tags.concat(schema.tags)
+        if (!sprocessed[req.params.id]) {
+          sprocessed[req.params.id] = schema
+        } else {
+          util._extend(sprocessed[req.params.id].paths, schema.paths)
+          sprocessed[req.params.id].tags = sprocessed[req.params.id].tags.concat(schema.tags)
+          util._extend(sprocessed[req.params.id].definitions, schema.definitions)
+        }
       })
     }
     var server = require('yaktor').serverContexts[ req.params.id ]
