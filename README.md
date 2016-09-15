@@ -33,6 +33,6 @@ After that, you can navigate to the `myapp`'s UI at http://www.myapp.yaktor.
 
 ## Edit
 
-Once you're running, you can use any text editor you want to work on your application, but you might consider using our eclipse plugins, available at eclipse update site http://yaktor.io/eclipse.  They include a yaktor DSL-aware editor for `*.cl` and `*.dm` files that provide syntax highlighting and completion.
+Once you're running, you can use any text editor you want to work on your application, but you might consider using our eclipse plugins, available at eclipse update site http://yaktor.io/eclipse.  They include a yaktor DSL-aware editor for `*.yc` and `*.ydm` files that provide syntax highlighting and completion.
 
 For more information, see the full yaktor documentation.
