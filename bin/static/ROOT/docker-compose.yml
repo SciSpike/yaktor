@@ -23,6 +23,7 @@ services:
 #      CASSANDRA_HOSTS: cassandra
     depends_on:
       - mongo
+#      - cassandra
     volumes:
       - ./:/app
       - ~/.npmrc:/home/docker/.npmrc
@@ -45,7 +46,8 @@ services:
       - NET_ADMIN
     command: --max-cache-ttl=30 --max-ttl=30
 #  cassandra:
-#    image: cassandra:2.1
+#    image: scylladb/scylla:1.3.0 # choose scylla
+#    image: cassandra:2.1         #     or cassandra
 #    networks:
 #      default:
 #        aliases:
