@@ -373,5 +373,17 @@ var converter = module.exports = {
     })
   }
 }
+converter.Type.prototype = {
+  find: function(query, callback) {
+    mongoose.model(this.typeName).find(query, function(err, data) {
+      converter.doToDto(this,data,callback);
+    });
+  },
+  findOne:function(query, callback) {
+    mongoose.model(this.typeName).findOne(query, function(err, data) {
+      converter.doFromDto(this, data, callback);
+    });
+  }
+}
 converter.to = converter.toDto
 converter.from = converter.fromDto
