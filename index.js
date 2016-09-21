@@ -7,9 +7,9 @@ var debug = require('debug')('yaktor:config')
 var globals
 var servers
 var yaktor = {
-  start: function (configuration, callback) {
+  start: function (configuration, startDone) {
     if (typeof configuration === 'function') {
-      callback = configuration
+      startDone = configuration
       configuration = {}
     }
     // now override from given configuration parameter
@@ -21,17 +21,11 @@ var yaktor = {
     debug('resolved yaktor configuration:')
     debug(JSON.stringify(yaktor, 0, 2))
 
-    // initialize logger
-    var log = require('./logger').yaktorInit(yaktor)
-    process.on('uncaughtException', function (err) {
-      log.error('uncaught exception', err.stack)
-    })
-
     async.series([
       async.apply(globals.init, yaktor), // call global initializers
-      function (next) { // initialize all the servers
+      function (serversDone) { // initialize all the servers
         yaktor.serverContexts = {}
-        async.eachSeries(Object.keys(yaktor.servers), function (serverName, next) {
+        async.eachSeries(Object.keys(yaktor.servers), function (serverName, nextServer) {
           var server = yaktor.servers[ serverName ]
           var ctx = _.cloneDeep(server)
           // this allows a server to get at other servers' contexts via require('yaktor').serverContexts['...']....
@@ -49,21 +43,13 @@ var yaktor = {
                 return
             }
           })
-          servers[ serverName ].init(ctx, function (err) {
-            if (err) log.error(new Error((err.stack ? err.stack : err.toString()) + '\nRethrown:').stack)
-            next(err)
-          })
-        }, function (err) {
-          if (err) next(err)
-
-          require('./engine')([ path.resolve('conversations', 'js') ], function (err) {
-            callback(err)
-          })
-        })
+          servers[ serverName ].init(ctx, nextServer)
+        },serversDone)
+      },
+      function (engineDone) {
+        require('./engine')([ path.resolve('conversations', 'js') ], engineDone)
       }
-    ], function (err) {
-      callback(err)
-    })
+    ], startDone)
   }
 }
 
