@@ -29,8 +29,9 @@ var compile = function (type) {
 var converter = module.exports = {
   obscure: function (data, cb) {
     return bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-      if (err)
+      if (err) {
         return cb(err)
+      }
       bcrypt.hash(data, salt, cb)
     })
   },
@@ -135,18 +136,15 @@ var converter = module.exports = {
     }
     this.queryFrom = function (value, cb) {
       var that = this
-      // eslint-disable-next-line handle-callback-err
-      this
-          .valueFromDto(
-              value,
-              function (err, value) {
-                if ((that.typeName === 'StringField' || that.typeName === 'ShortIdField' || ((that.typeName === 'AssociationEnd' || that.typeName === 'EntityReferenceField') && !that.type))
-                    && value.match && value.match(/^\/.*\/$/)) {
-                  cb(null, new RegExp(value.substr(1, value.length - 2)))
-                } else {
-                  cb(null, value)
-                }
-              })
+      this.valueFromDto(value, function (ignoreErr, value) {
+        if ((that.typeName === 'StringField' || that.typeName === 'ShortIdField' || //
+        ((that.typeName === 'AssociationEnd' || that.typeName === 'EntityReferenceField') && !that.type)) && //
+        value.match && value.match(/^\/.*\/$/)) {
+          cb(null, new RegExp(value.substr(1, value.length - 2)))
+        } else {
+          cb(null, value)
+        }
+      })
     }
   },
   types: {},
@@ -349,7 +347,7 @@ var converter = module.exports = {
    * <code>cb</code> is called with error (if there was one) and the outbound
    * dto (if there was no error).</li>
    * </ul>
-   * 
+   *
    * @param type
    *          The fully qualified name of the type used by the converter.
    * @param dtoIn
@@ -369,11 +367,13 @@ var converter = module.exports = {
    */
   sandwich: function (type, dtoIn, fn, cb) {
     converter.from(type, dtoIn, function (errIn, domainIn) {
-      if (errIn)
+      if (errIn) {
         return cb(errIn)
+      }
       fn(domainIn, function (errFn, domainOut) {
-        if (errFn)
+        if (errFn) {
           return cb(errFn)
+        }
         converter.to(type, domainOut, function (errOut, dtoOut) {
           cb(errOut, dtoOut)
         })
@@ -383,12 +383,12 @@ var converter = module.exports = {
 }
 converter.Type.prototype = {
   find: function (query, callback) {
-    mongoose.model(this.typeName).find(query, function (err, data) {
+    mongoose.model(this.typeName).find(query, function (ignoredErr, data) {
       converter.doToDto(this, data, callback)
     })
   },
   findOne: function (query, callback) {
-    mongoose.model(this.typeName).findOne(query, function (err, data) {
+    mongoose.model(this.typeName).findOne(query, function (ignoredErr, data) {
       converter.doFromDto(this, data, callback)
     })
   }

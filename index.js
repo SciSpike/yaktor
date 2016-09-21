@@ -44,7 +44,7 @@ var yaktor = {
             }
           })
           servers[ serverName ].init(ctx, nextServer)
-        },serversDone)
+        }, serversDone)
       },
       function (engineDone) {
         require('./engine')([ path.resolve('conversations', 'js') ], engineDone)
