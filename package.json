@@ -46,9 +46,10 @@
   "scripts": {
     "patch": "grunt release-patch",
     "minor": "grunt release-minor",
-    "gen-src": "find test/dsls -name '*.yc' -o -name '*.ydm' | xargs yaktor-lang",
+    "gen-src": "find . test/dsls  -maxdepth 1 -name '*.yc' -o -name '*.ydm' | xargs yaktor-lang",
     "test": "mocha --color=true -R spec test/*.test.js && npm run lint",
     "test-cover": "istanbul cover _mocha -- --colors -R spec test/*.test.js && npm run lint",
+    "pre-commit": "npm run clean && npm run gen-src && npm run test-cover",
     "ci": "npm run test-cover && grunt coveralls:ci",
     "lint": "standard --verbose",
     "format": "standard --fix",
