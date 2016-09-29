@@ -1,4 +1,4 @@
-conversation test3 {
+conversation test4 {
   type obj {
   }
   type control {
@@ -10,25 +10,27 @@ conversation test3 {
     String obj
   }
   agent obj concerning obj {
-    privately receives signal: sync
-    receives stop: stop
     sends sync: sync
 
-    initially receives signal -> running > sync {
+    initially receives signal: sync -> running > sync {
       terminated {
       }
       running {
-        stop [ stop.obj ] -> terminated
-        signal -> terminated
+        control.stop [ stop.obj ] -> terminated
+        signal: sync -> terminated
       }
     }
   }
   agent control concerning control {
-    privately receives stop: stop
+    sends stop: stop
+    sends stopping: stop
 
     initially receives obj.sync [ sync.control ] -> controlling {
-      controlling {
-        stop -> ^end > obj.stop
+      decision controlling {
+        stop -> stopping > stopping
+      }
+      decision stopping {
+        stop: stop -> ^end > stop
       }
       ^end {
       }

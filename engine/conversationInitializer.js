@@ -3,12 +3,13 @@ var async = require('async')
 var path = require('path')
 var messageService = require(path.join('..', 'services', 'messageService'))
 var localEmitter = require(path.join('..', 'services', 'localEmitter'))
+var events = require('events')
+var privateEmitter = new events.EventEmitter()
 var socketService = require(path.join('..', 'services', 'socketService'))
 var logger = require(path.join('..', 'logger'))
 var conversationService = require('./conversationService')
 var util = require('util')
-require('winston/node_modules/colors')
-var agentConversationModel = require('mongoose').model('AgentConversation')
+var AgentConversation = require('mongoose').model('AgentConversation')
 var getAgentConversation = conversationService.restoreAgentConversation
 var yaktor = require('../index')
 
@@ -23,6 +24,7 @@ var noMessageAuth = function (user, event, meta, reqData, cb) {
 var checkAuth = function (authorized, cb) {
   cb(authorized ? null : new Error('not authorized'))
 }
+
 var socketEventHandler = function (agent, reqData, event, qId, conversation, user, callback) {
   reqData = reqData || {}
   var meta = {}
@@ -52,6 +54,10 @@ var logError = function (error) {
 var fireEvent = function (meta, data, event, agentName, state) {
   auditLogger.event(meta, new Date(), JSON.stringify(data), agentName, event, state)
   localEmitter.emit(event, meta, data)
+}
+var firePrivateEvent = function (meta, data, event, agentName, state) {
+  auditLogger.event(meta, new Date(), JSON.stringify(data), agentName, event, state)
+  privateEmitter.emit(event, meta, data)
 }
 
 var doTransitionActivationHandler = function (transition, agentConversation, meta, data, done) {
@@ -98,7 +104,7 @@ var doDecision = function (agentName, state, meta, data, decision, cb) {
   var ts = state.transitions
   if (ts && ts[ decision ]) {
     logger.silly('%s in %s; while %s %s to %s;', agentName.blue, meta.agentDataId.yellowBG, state.name.magenta, 'decided'.cyan, decision.yellow)
-    fireEvent(meta, data, ts[ decision ].on, agentName, state.name)
+    firePrivateEvent(meta, data, ts[ decision ].on, agentName, state.name)
   }
   cb(null, data)
 }
@@ -119,17 +125,10 @@ var doState = function (agentName, state, transition, agentConversation, meta, o
       util._extend(docToSave, doc)
     }
     delete docToSave._id
-    agentConversationModel.findOneAndUpdate({
+    AgentConversation.findOneAndUpdate({
       _id: id
     }, docToSave, cb)
   }
-  //  if (Object.keys(transition.to.transitions).length<1) {
-  //    logger.silly("ending agent %s", agentName)
-  //    action = function(doc, cb) {
-  //      agentConversationModel.remove({_id:doc._id}, cb)
-  //    }
-  //    agentConversation.disposition = "0"
-  //  }
   action(agentConversation, function (err, agentConversation) {
     logger.silly('%s in %s; was %s %s %s;', agentName.blue, meta.agentDataId.yellowBG, oldState.magenta, 'becomes'.cyan, transition.to.name.magenta)
     if (err) {
@@ -138,7 +137,7 @@ var doState = function (agentName, state, transition, agentConversation, meta, o
       doToState(agentName, oldState, transition.to, meta, data, function (err, toData, decision) {
         emitSocketState(agentName, oldState, transition.to, meta, toData)
         if (!err && decision) {
-          doPostTransitionTrigger(transition, meta, toData, agentName, oldState, function () { // eslint-disable-line handle-callback-err
+          doPostTransitionTrigger(transition, meta, toData, agentName, oldState, function () {
             doDecision(agentName, transition.to, meta, toData, decision, done)
           })
         } else if (!err) {
@@ -167,15 +166,6 @@ var initAgent = function (agent, meta, socket, data, cb) {
     cb(null, agentConversation)
   })
 }
-var comparator = function (a, b) { // eslint-disable-line no-unused-vars
-  if (a === 'null') {
-    return 1
-  } else if (b === 'null') {
-    return -1
-  } else {
-    return a.localeCompare(b)
-  }
-}
 module.exports = function (conversation, done) {
   var conversationName = conversation.name
   logger.silly('loading conversation %s', conversationName)
@@ -196,8 +186,8 @@ module.exports = function (conversation, done) {
       agents[ agentName ] = true
       async.each(Object.keys(transitionEvents), function (eventName, transConfigDone) {
         var event = transitionEvents[ eventName ]
-        // var prioritizedStates = event.states.slice(0).sort(comparator)
-        localEmitter.on(event.label, function (oldMeta, data) {
+        var emitter = eventName.indexOf('.') > -1 ? localEmitter : privateEmitter
+        emitter.on(event.label, function (oldMeta, data) {
           var keysMapped = {}
           var originalAgentDataId = oldMeta.agentDataId
           var doFullTrans = function (meta, agentConversation, ftcb) {
@@ -253,7 +243,7 @@ module.exports = function (conversation, done) {
                       keysMapped[ agentDataId ].indexOf(agent.initialState) > -1 ||
                       keysMapped[ agentDataId ].indexOf('null') > -1) {
                       // we have permission to init()
-                      initAgent(agent, meta, messageService, data, function (err, agentConversation) { // eslint-disable-line handle-callback-err
+                      initAgent(agent, meta, messageService, data, function (ignoredError, agentConversation) {
                         // now that we have a conversation do the transition.
                         doFullTrans(meta, agentConversation, dcb)
                       })
@@ -357,7 +347,7 @@ module.exports = function (conversation, done) {
             async.waterfall([
               async.apply(socketEventHandler, agent, data, initName, sessionId, conversation, user),
               function (meta, agentName, cb) {
-                registerClientListeners(agentDataId, function () { // eslint-disable-line handle-callback-err
+                registerClientListeners(agentDataId, function () {
                   cb(null, meta, agentName)
                 })
               },
@@ -398,7 +388,7 @@ module.exports = function (conversation, done) {
                 async.apply(socketEventHandler, agent, data, event + ':' + agentDataId, sessionId, conversation, user),
                 async.apply(getAgentConversation),
                 function (agentConversation, meta) {
-                  fireEvent(meta, socketData, event, agentName, agentConversation ? agentConversation.state : 'null')
+                  firePrivateEvent(meta, socketData, event, agentName, agentConversation ? agentConversation.state : 'null')
                 }
               ], socketEventComplete)
             })

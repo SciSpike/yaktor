@@ -38,7 +38,7 @@
     "standard": "8.0.0",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "0.50.x"
+    "yaktor-lang": "0.52.x"
   },
   "engines": {
     "node": ">=4.0.x"
@@ -46,9 +46,10 @@
   "scripts": {
     "patch": "grunt release-patch",
     "minor": "grunt release-minor",
-    "gen-src": "find . -name '*.cl' -o -name '*.dm' | xargs yaktor-lang",
+    "gen-src": "find . test/dsls  -maxdepth 1 -name '*.yc' -o -name '*.ydm' | xargs yaktor-lang",
     "test": "mocha --color=true -R spec test/*.test.js && npm run lint",
     "test-cover": "istanbul cover _mocha -- --colors -R spec test/*.test.js && npm run lint",
+    "pre-commit": "npm run clean && npm run gen-src && npm run test-cover",
     "ci": "npm run test-cover && grunt coveralls:ci",
     "lint": "standard --verbose",
     "format": "standard --fix",

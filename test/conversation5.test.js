@@ -102,7 +102,7 @@ objAgentType.states.running.on = function (meta, data, done) {
   data.running = 'running'
   done(null, data)
 }
-objAgentType.states.running.transitions[ 'stop' ].handler = function (causedByEventName, meta, data, done) {
+objAgentType.states.running.transitions[ 'control.stop' ].handler = function (causedByEventName, meta, data, done) {
   data = clone(data)
   assert.equal(data.controlling, 'controlling')
   assert.equal(data.controlling_stop, 'controlling_stop')

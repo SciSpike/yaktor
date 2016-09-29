@@ -69,7 +69,7 @@ var shared = function (appDir, force, install) {
       async.series([ function (next) {
         cpFiles(path.join(staticPath, 'ROOT'), path.join(appDir), force, next)
       }, function (next) {
-        fs.move(path.join(appDir, 'demo.cl.example'), path.join(appDir, 'demo.cl'), { clobber: force }, next)
+        fs.move(path.join(appDir, 'demo.yc.example'), path.join(appDir, 'demo.yc'), { clobber: force }, next)
       } ], done)
     } ], cb)
   }

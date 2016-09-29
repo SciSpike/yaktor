@@ -23,9 +23,9 @@ module.exports = function (yaktor, done) {
       var newDoc = doc.toObject()
       delete newDoc._id
       arguments[ 1 ] = newDoc
-      f1nU.apply(this, arguments)
+      return f1nU.apply(this, arguments)
     } else {
-      f1nU.apply(this, arguments)
+      return f1nU.apply(this, arguments)
     }
   }
 

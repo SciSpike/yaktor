@@ -1,0 +1,34 @@
+conversation test3 {
+  type obj {
+  }
+  type control {
+  }
+  type sync {
+    String control
+  }
+  type stop {
+    String obj
+  }
+  agent obj concerning obj {
+    sends sync: sync
+
+    initially receives signal: sync -> running > sync {
+      terminated {
+      }
+      running {
+        stop: stop -> terminated
+        signal: sync -> terminated
+      }
+    }
+  }
+  agent control concerning control {
+    sends stop: stop
+    initially receives obj.sync [ sync.control ] -> controlling {
+      controlling {
+        stop: stop -> ^end > stop
+      }
+      ^end {
+      }
+    }
+  }
+}

@@ -383,13 +383,15 @@ var converter = module.exports = {
 }
 converter.Type.prototype = {
   find: function (query, callback) {
-    mongoose.model(this.typeName).find(query, function (ignoredErr, data) {
-      converter.doToDto(this, data, callback)
+    var that = this
+    mongoose.model(that.typeName).find(query, function (ignoredErr, data) {
+      converter.doToDto(that, data, callback)
     })
   },
   findOne: function (query, callback) {
-    mongoose.model(this.typeName).findOne(query, function (ignoredErr, data) {
-      converter.doFromDto(this, data, callback)
+    var that = this
+    mongoose.model(that.typeName).findOne(query, function (ignoredErr, data) {
+      converter.doToDto(that, data, callback)
     })
   }
 }
