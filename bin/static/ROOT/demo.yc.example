@@ -19,7 +19,6 @@ conversation demo {
    * A simple switch agent
    */
   infinite agent Switch concerning Circuit {
-    privately receives flip
     sends turnOn
     sends turnOff
 

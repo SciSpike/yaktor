@@ -7,7 +7,7 @@ var config = {
 
 yaktor.start(config, function (err) {
   if (err) {
-    log.error(err)
+    log.error(err, err.stack)
     return process.exit(1)
   }
   log.info('yaktor started ok')

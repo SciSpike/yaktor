@@ -3,7 +3,8 @@ var SALT_WORK_FACTOR = 10
 var optional = function (module) {
   try {
     return require(module)
-  } catch (e) {}
+  } catch (e) {
+  }
 }
 var path = require('path')
 var mongoose = require(path.resolve('node_modules', 'mongoose'))
@@ -28,7 +29,9 @@ var compile = function (type) {
 var converter = module.exports = {
   obscure: function (data, cb) {
     return bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-      if (err) return cb(err)
+      if (err) {
+        return cb(err)
+      }
       bcrypt.hash(data, salt, cb)
     })
   },
@@ -133,10 +136,10 @@ var converter = module.exports = {
     }
     this.queryFrom = function (value, cb) {
       var that = this
-      // eslint-disable-next-line handle-callback-err
-      this.valueFromDto(value, function (err, value) {
-        if ((that.typeName === 'StringField' || that.typeName === 'ShortIdField' ||
-          ((that.typeName === 'AssociationEnd' || that.typeName === 'EntityReferenceField') && !that.type)) && value.match && value.match(/^\/.*\/$/)) {
+      this.valueFromDto(value, function (ignoreErr, value) {
+        if ((that.typeName === 'StringField' || that.typeName === 'ShortIdField' || //
+        ((that.typeName === 'AssociationEnd' || that.typeName === 'EntityReferenceField') && !that.type)) && //
+        value.match && value.match(/^\/.*\/$/)) {
           cb(null, new RegExp(value.substr(1, value.length - 2)))
         } else {
           cb(null, value)
@@ -186,7 +189,8 @@ var converter = module.exports = {
     if (dto instanceof Array) {
       var index = 0
       return async.mapSeries(dto, function (elem, cb) {
-        // XXX adding and removing the .index is probably going to confuse people
+        // XXX adding and removing the .index is probably going to confuse
+        // people
         converter.doToQuerySingle(type, elem, query, path + ((dto.length > 1) ? '.' + (index++) + '.' : '.'), cb)
       }, function (err) {
         callback(err, query)
@@ -363,13 +367,31 @@ var converter = module.exports = {
    */
   sandwich: function (type, dtoIn, fn, cb) {
     converter.from(type, dtoIn, function (errIn, domainIn) {
-      if (errIn) return cb(errIn)
+      if (errIn) {
+        return cb(errIn)
+      }
       fn(domainIn, function (errFn, domainOut) {
-        if (errFn) return cb(errFn)
+        if (errFn) {
+          return cb(errFn)
+        }
         converter.to(type, domainOut, function (errOut, dtoOut) {
           cb(errOut, dtoOut)
         })
       })
+    })
+  }
+}
+converter.Type.prototype = {
+  find: function (query, callback) {
+    var that = this
+    mongoose.model(that.typeName).find(query, function (ignoredErr, data) {
+      converter.doToDto(that, data, callback)
+    })
+  },
+  findOne: function (query, callback) {
+    var that = this
+    mongoose.model(that.typeName).findOne(query, function (ignoredErr, data) {
+      converter.doToDto(that, data, callback)
     })
   }
 }

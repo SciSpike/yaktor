@@ -57,7 +57,7 @@
     "migrate": "yaktor migrate",
     "gen-views": "grunt gen-views",
     "gen-docs": "(cd doc/; ruby buildAll.rb;)",
-    "gen-src": "find . -name '*.yc' -o -name '*.ydm' -follow | xargs yaktor-lang",
+    "gen-src": "find . node_modules/yaktor -maxdepth 1 -name '*.yc' -o -name '*.ydm' -follow | xargs yaktor-lang",
     "test": "LOG_LEVEL=warn istanbul cover _mocha -- --colors -R spec",
     "report": "find conversations/js  -name '*.js' | xargs plato -x '.gen.js|.def.js|\/types\/' -d plato",
     "envars": "cev --noprefix > config/custom-environment-variables.json"

@@ -1,3 +1,5 @@
+var logger = require('yaktor/logger')
+logger.info(__filename)
 var dns = require('dns')
 
 module.exports = function (yaktor, done) {
