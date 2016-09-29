@@ -10,29 +10,27 @@ conversation test5 {
     String obj
   }
   agent obj concerning obj {
-    privately receives signal: sync
-    receives stop: stop
     sends sync: sync
 
-    initially receives custom signal -> running > sync {
+    initially receives custom signal: sync -> running > sync {
       terminated {
       }
       custom running {
-        custom stop [ stop.obj ] -> terminated
-        signal -> terminated
+        custom control.stop [ stop.obj ] -> terminated
+        signal: sync -> terminated
       }
     }
   }
   agent control concerning control {
-    privately receives stop: stop
+    sends stop: stop
     sends stopping: stop
 
     initially receives custom obj.sync [ sync.control ] -> controlling {
       decision controlling {
-        custom stop -> stopping > stopping
+        custom stop: stop -> stopping > stopping
       }
       decision stopping {
-        custom stop -> ^end > obj.stop
+        custom stop: stop -> ^end > stop
       }
       ^end {
       }

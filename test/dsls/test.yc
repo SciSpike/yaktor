@@ -24,10 +24,7 @@ conversation test {
     Boolean isActive
   }
   agent test concerning Type {
-    privately receives begin: D
-    privately receives end
-
-    initially receives custom begin -> begun {
+    initially receives custom begin: D -> begun {
       begun {
         end -> end
       }
