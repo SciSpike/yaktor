@@ -256,7 +256,26 @@ argv.command('cassandra')
     exec('npm', [ 'install' ])
     fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify(theirPackageJson, null, 2))
   })
-
+argv.command('plugin <plugin>')
+  .description('install a <plugin> and execute it\'s plugin command')
+  .option('-n, --name <name>', 'use <name> instead of <plugin> command execution')
+  .action(function (plugin, options) {
+    // hack to workaround https://github.com/tj/commander.js/issues/582
+    var passThrough = false
+    var remainingArgs = process.argv.filter(function (arg) {
+      if (passThrough) {
+        return true
+      } else if (arg === '--') {
+        passThrough = true
+      }
+    })
+    var pArgs = ['plugin'].concat(remainingArgs)
+    var name = options.name || plugin.split('@')[0]
+    async.series([
+      async.apply(exec, 'npm', ['install', plugin]),
+      async.apply(exec, name, pArgs)
+    ])
+  })
 argv.command('init [path]')
   .description('initialize yaktor app at [path] to current yaktor version')
   .option('-s, --safe', 'do not force initialization if files already exist')
@@ -282,12 +301,7 @@ argv.command('help [subCommand]')
     }
   })
 
-argv.command('version')
-  .description('show version')
-  .action(function () {
-    console.log(packageJson.version)
-    process.exit(0)
-  })
+argv.version(packageJson.version)
 
 argv.parse(process.argv)
 
