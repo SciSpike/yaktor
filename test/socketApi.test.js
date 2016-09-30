@@ -66,28 +66,50 @@ describe('socketApi', function () {
     var k = 0
     var sessionId = 'sessionId'
 
-    fakeWs.connect = function () {
+    fakeWs.connect = function (url, options) {
       var ws = new events.EventEmitter()
+      ws.url = url
+      ws.options = options
       ws.end = function () {
         k++
         ws.emit('close', ':)')
       }
-      ws.connected = true
-      ws.emit('connect')
+      ws._reconnect = function () {
+        var ws = this
+        if (ws.options.password) {
+          setTimeout(function () {
+            console.log('connect')
+            ws.connected = true
+            ws.emit('connect')
+          }, 0)
+        } else {
+          setTimeout(function () {
+            console.log('Not authorized')
+            ws.emit('error', new Error('Not authorized'))
+          }, 0)
+        }
+      }
+      if (!ws.connected) {
+        ws._reconnect()
+      }
       return ws
     }
-    async.times(j, function (n, cb) {
+    async.timesSeries(j, function (n, cb) {
       var prefix = 'http://localhost:3000'
       var client = socketApi.connectWithPrefix(prefix, sessionId, function (cb) {
-        cb()
+        cb('t', 's')
       }, false)
       client.on('close', function () {
-        cb()
+        if (!(n % 2)) {
+          cb()
+        }
       })
       var connected = function () {
         i++
         if (n % 2) {
           socketApi.disconnect(prefix)
+        } else {
+          cb()
         }
       }
       if (client.connected) {
@@ -96,7 +118,7 @@ describe('socketApi', function () {
       client.once('connect', connected)
     }, function (err) {
       assert.ifError(err)
-      assert.equal(j, i)
+      assert.equal(i, j)
       assert.equal(k, Math.floor(j / 2))
       done()
     })
