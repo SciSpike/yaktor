@@ -19,7 +19,9 @@ conversation demo {
    * A simple switch agent
    */
   infinite agent Switch concerns Circuit {
-    sends turnOn, turnOff
+    sends
+      turnOn
+      turnOff
 
     initially becomes off {
       on {
@@ -34,7 +36,7 @@ conversation demo {
   /*
    * A simple electrical outlet agent
    */
-  infinite agent Outlet concerning Circuit {
+  infinite agent Outlet concerns Circuit {
 
     initially becomes off {
       off {
