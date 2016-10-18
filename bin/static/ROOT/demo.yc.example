@@ -18,16 +18,15 @@ conversation demo {
   /*
    * A simple switch agent
    */
-  infinite agent Switch concerning Circuit {
-    sends turnOn
-    sends turnOff
+  infinite agent Switch concerns Circuit {
+    sends turnOn, turnOff
 
     initially becomes off {
       on {
-        flip -> off > turnOff
+        flip becomes off sends turnOff
       }
       off {
-        flip -> on > turnOn
+        flip becomes on sends turnOn
       }
     }
   }
@@ -39,13 +38,13 @@ conversation demo {
 
     initially becomes off {
       off {
-        Switch.turnOn -> flowing
+        Switch.turnOn becomes flowing
       }
       flowing {
-        Switch.turnOff -> off
+        Switch.turnOff becomes off
       }
     }
   }
-  resource /circuit for demo.Circuit offers anonymous ( create read update delete find ) interchanges ( json )
 
+  resource /circuit for demo.Circuit offers anonymous ( create read update delete find ) interchanges ( json )
 }
