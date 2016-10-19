@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 if [ ! -d node_modules ]; then
+  if [ -z "$APP_NAME" ]; then
+    APP_NAME=${PWD##*/}
+    export APP_NAME=${APP_NAME//-} # (basename of the current directory)
+  fi
+  if [ -z "$APP_TAG" ]; then
+    export APP_TAG=latest
+  fi
   docker-compose exec app npm install
 fi
 
