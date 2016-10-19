@@ -1,12 +1,12 @@
-[![Yakor Logo](http://docs.yaktor.io/images/logo-with-text.png)](https://github.com/Scispike/yaktor)
-
-  Event-driven, asynchronous, distributed, multi-party state-machine targeting the Node.js platform.
+Event-driven, asynchronous, distributed, multi-party state-machine targeting the Node.js platform.
 
 [![Travis status](https://img.shields.io/travis/SciSpike/yaktor/master.svg?maxAge=3600)](https://travis-ci.org/SciSpike/yaktor/builds)
 [![Coveralls status](https://img.shields.io/coveralls/SciSpike/yaktor/master.svg?maxAge=3600)](https://coveralls.io/github/SciSpike/yaktor?branch=master)
 [![license](https://img.shields.io/github/license/SciSpike/yaktor.svg?maxAge=3600)](https://github.com/SciSpike/yaktor/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/SciSpike/yaktor.svg?maxAge=3600)](https://gitter.im/SciSpike/yaktor)
 [![npm](https://img.shields.io/npm/v/yaktor.svg?maxAge=3600)](https://www.npmjs.com/package/yaktor)
+
+[![Yakor Logo](http://docs.yaktor.io/images/logo-with-text.png)](https://github.com/Scispike/yaktor)
 
 Leverages our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1).
 
