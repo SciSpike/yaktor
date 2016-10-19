@@ -7,6 +7,7 @@ if [ ! -d node_modules ]; then
   if [ -z "$APP_TAG" ]; then
     export APP_TAG=latest
   fi
+  docker-compose up -d app
   docker-compose exec app npm install
 fi
 
