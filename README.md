@@ -1,4 +1,4 @@
-[![Yakor Logo](http://yaktor.io/pics/yaktor-logo.png)](https://github.com/Scispike/yaktor)
+[![Yakor Logo](http://docs.yaktor.io/images/logo-with-text.png)](https://github.com/Scispike/yaktor)
 
   Event-driven, asynchronous, distributed, multi-party state-machine targeting the Node.js platform.
 
