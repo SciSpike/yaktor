@@ -1,7 +1,7 @@
 {
   "name": "yaktor",
   "description": "Event-driven, asynchronous, distributed, multi-party state-machine",
-  "version": "0.58.1",
+  "version": "0.58.2-pre.0",
   "license": "Apache-2.0",
   "main": "index.js",
   "dependencies": {
