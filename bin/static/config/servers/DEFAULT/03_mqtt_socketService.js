@@ -53,8 +53,8 @@ module.exports = function (ctx, done) {
       var sessionId = op.clientId
       socketService.onConnect(sessionId, authToken, serverEmitter, function () {
         conn.end()
-      }, function (err, session, user) {
-        if (err || !user) {
+      }, function (ignoreErr, session, user) {
+        if (!user) {
           conn.connack({
             // Connection Refused, not authorized
             returnCode: 0x05
