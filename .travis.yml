@@ -13,4 +13,5 @@ script:
   - ./run.sh npm run ci
 
 after_success:
+  - ./run.sh grunt coveralls:ci
   - ./run.sh ./travis-npm-publish.sh

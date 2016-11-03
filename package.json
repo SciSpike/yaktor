@@ -50,7 +50,7 @@
     "test": "mocha --color=true -R spec test/*.test.js && npm run lint",
     "test-cover": "istanbul cover _mocha -- --colors -R spec test/*.test.js && npm run lint",
     "pre-commit": "npm run clean && npm run gen-src && npm run test-cover",
-    "ci": "npm run test-cover && grunt coveralls:ci",
+    "ci": "npm run test-cover",
     "lint": "standard --verbose",
     "format": "standard --fix",
     "clean": "rm -rf actions config/initializers/10_routes.js conversations doc public routes servers simulator src-gen",
