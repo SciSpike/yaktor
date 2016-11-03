@@ -11,3 +11,6 @@ before_install:
 
 script:
   - ./run.sh npm run ci
+
+after_success:
+  - ./run.sh ./travis-npm-publish.sh
