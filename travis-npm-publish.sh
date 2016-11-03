@@ -18,4 +18,4 @@ fi
 VERSION=$(node -e 'console.log(require("./package.json").version)')
 echo "Publishing version $VERSION to npm"
 set +x
-echo npm publish
+echo "TODO: npm publish"
