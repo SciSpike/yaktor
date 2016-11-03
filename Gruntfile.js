@@ -134,6 +134,11 @@ module.exports = function (grunt) {
           ? 'echo "Skipping build because --skip-build=' + skipBuild + '"'
           : './run.sh npm run ci'
       }
+    },
+    coveralls: {
+      ci: {
+        src: 'coverage/lcov.info'
+      }
     }
   }
 
