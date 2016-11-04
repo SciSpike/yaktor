@@ -6,7 +6,7 @@ Event-driven, asynchronous, distributed, multi-party state-machine targeting the
 [![Gitter](https://img.shields.io/gitter/room/SciSpike/yaktor.svg?maxAge=3600)](https://gitter.im/SciSpike/yaktor)
 [![npm](https://img.shields.io/npm/v/yaktor.svg?maxAge=3600)](https://www.npmjs.com/package/yaktor)
 
-[![Yaktor Logo](http://docs.yaktor.io/images/logo-with-text.png)](http://github.com/SciSpike/yaktor)
+[![Yaktor Logo](http://docs.yaktor.io/images/logo-with-text.png)](http://yaktor.io)
 
 Leverages our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1).
 
@@ -17,22 +17,21 @@ Typically, you'll want to do something like
 ```
 $ mkdir myapp
 $ cd myapp
-$ docker run -it -v "$PWD":/app --rm --entrypoint bash yaktor/node:0.39.0 \
-    -c 'npm install yaktor && $(npm bin)/yaktor init'
+$ docker run -it -v "$PWD":/app --rm --entrypoint bash --user node yaktor/node:latest -c 'npm install yaktor && $(npm bin)/yaktor init'
 ```
 
-which will use Docker to pull the yaktor Node.js image and create a yaktor-based application in `myapp`.  Then, when the command completes,
+which will use Docker to pull the yaktor Node.js image and create a yaktor-based application in `myapp`.  Then, after the command completes,
 
 ```
 $ ./yak gen-src gen-views start
 ```
 
-After that, you can navigate to the `myapp`'s UI at http://www.myapp.yaktor.
-
-> Note: If you're on Mac with `docker-machine` installed, you'll have to use the IP address instead of `myapp.yaktor` that's echoed to the terminal when `yak start` runs.
+After that, you can navigate to the `myapp`'s UI:
+* If you're on Mac OS X/macOS, go to http://www.myapp.yaktor.
+* If you're on Linux or Windows, see the console output for the IP address of the `yaktor` server and use that (like http://12.34.56.78)
 
 ## Edit
 
 Once you're running, you can use any text editor you want to work on your application, but you might consider using our eclipse plugins, available at eclipse update site http://eclipse.yaktor.io.  They include a yaktor DSL-aware editor for `*.yc` and `*.ydm` files that provide syntax highlighting and completion.
 
-For more information, see the full yaktor documentation.
+For more information, see [the full yaktor documentation](http://docs.yaktor.io).
