@@ -39,7 +39,7 @@
     "standard": "8.0.0",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "0.53.x"
+    "yaktor-lang": "0.54.x"
   },
   "engines": {
     "node": ">=4.0.x"
