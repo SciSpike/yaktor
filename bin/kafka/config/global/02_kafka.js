@@ -3,7 +3,6 @@ logger.info(__filename)
 var kafka = require('kafka-node')
 var async = require('async')
 var auditLogger = require('yaktor/lib/auditLogger')
-var yaktor
 
 var logError = function (error) {
   if (error) {
@@ -15,31 +14,38 @@ var getUserName = function (user) {
   return user._id || user.email || 'anonymous'
 }
 
-var createPayload = function (msg) {
-  return {
-    topic: yaktor.kafka.topic,
-    messages: [ JSON.stringify(msg) ],
-    attributes: yaktor.kafka.attributes
-  }
-}
-
-module.exports = function (y, cb) {
-  yaktor = y
+module.exports = function (yaktor, cb) {
   if (!yaktor.kafka.enable) return cb()
+
+  var client
+  var producer
 
   async.series([
     function createProducer (next) {
       var opts = yaktor.kafka.client
-      kafka.client = new kafka.Client(opts.connectionString, opts.clientId, opts.zkOptions, opts.noAckBatchOptions, opts.sslOptions)
-      kafka.producer = new kafka.Producer(kafka.client, yaktor.kafka.producer)
-      kafka.producer.once('ready', next)
-      kafka.producer.once('error', next)
+      client = new kafka.Client(opts.connectionString, opts.clientId, opts.zkOptions, opts.noAckBatchOptions, opts.sslOptions)
+      producer = new kafka.Producer(client, yaktor.kafka.producer)
+      producer.once('ready', next)
+      producer.once('error', next)
+    },
+    function resetErrorListeners (next) {
+      producer.removeAllListeners('error')
+      producer.on('error', logError)
+      next()
     },
     function createTopic (next) {
       if (!yaktor.kafka.createTopic) return next()
-      kafka.producer.createTopics([ yaktor.kafka.topic ], true, next)
+      producer.createTopics([ yaktor.kafka.topic ], true, next)
     }
   ], cb)
+
+  var createPayload = function (msg) {
+    return {
+      topic: yaktor.kafka.topic,
+      messages: [ JSON.stringify(msg) ],
+      attributes: yaktor.kafka.attributes
+    }
+  }
 
   auditLogger.transition = function (originalAgentDataId, meta, agentName, agentConversation, transition, data) {
     var userName = getUserName(meta.user)
@@ -54,7 +60,7 @@ module.exports = function (y, cb) {
       eventName: transition.causeName,
       data: data
     }
-    kafka.producer.send([ createPayload(msg) ],
+    producer.send([ createPayload(msg) ],
       function (err) {
         if (err) {
           logger.error('transition', err.stack, meta.user)
@@ -76,7 +82,7 @@ module.exports = function (y, cb) {
       agentStateName: state,
       subEventName: subEventName || ''
     }
-    kafka.producer.send([ createPayload(msg) ],
+    producer.send([ createPayload(msg) ],
       function (err) {
         if (err) {
           logger.error('event', err.stack, JSON.stringify(meta))
@@ -96,7 +102,7 @@ module.exports = function (y, cb) {
       headers: headers,
       responseCode: responseCode
     }
-    kafka.producer.send([ createPayload(msg) ],
+    producer.send([ createPayload(msg) ],
       function (err) {
         if (err) {
           logError(err)
@@ -112,7 +118,7 @@ module.exports = function (y, cb) {
       query: query || '',
       doc: doc || ''
     }
-    kafka.producer.send([ createPayload(msg) ],
+    producer.send([ createPayload(msg) ],
       function (err) {
         cb(err)
       })
