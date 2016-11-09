@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "kafka-node": "1.0.5"
+  }
+}
