@@ -15,6 +15,7 @@
 /simulator
 /src-gen
 /node_modules
+/views
 *~
 *.swp
 conversation-*.tgz
