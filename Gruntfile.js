@@ -33,7 +33,7 @@ module.exports = function (grunt) {
     'gitfetch:tags',
     'gitpull:origin',
     'bump:minor',
-    'shell:ci',
+    'shell:test',
     'gitadd:all',
     'gitcommit:releaseMinor',
     'gittag:patch',
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
     'gitfetch:tags',
     'gitpull:origin',
     'bump:patch',
-    'shell:ci',
+    'shell:test',
     'gitadd:all',
     'gitcommit:releasePatch',
     'gittag:patch',
@@ -129,10 +129,10 @@ module.exports = function (grunt) {
       confirmNoModifiedFiles: {
         command: 'git diff --cached --exit-code --no-patch'
       },
-      ci: {
+      test: {
         command: skipBuild
           ? 'echo "Skipping build because --skip-build=' + skipBuild + '"'
-          : './run.sh npm run ci'
+          : './run.sh npm test'
       }
     },
     coveralls: {
