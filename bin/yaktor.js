@@ -146,6 +146,7 @@ function createRootFiles (name, appDir, options) {
     '*.log',
     '*.def.js',
     '*.gen.js',
+    'views',
     '/conversations/types',
     '/conversations/ejs',
     '/conversations/security',
@@ -159,7 +160,8 @@ function createRootFiles (name, appDir, options) {
     '/simulator',
     '/src-gen',
     'node_modules',
-    'bower_components'
+    'bower_components',
+    '.idea/'
   ].join(os.EOL)
 
   var dotProject = [
