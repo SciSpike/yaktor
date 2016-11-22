@@ -8,6 +8,8 @@ Event-driven, asynchronous, distributed, multi-party state-machine targeting the
 
 [![Yaktor Logo](http://docs.yaktor.io/images/logo-with-text.png)](http://yaktor.io)
 
+> NOTE: Please report issues at https://github.com/SciSpike/yaktor-issues/issues.
+
 Leverages our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1).
 
 ## Usage
