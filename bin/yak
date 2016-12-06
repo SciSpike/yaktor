@@ -26,13 +26,59 @@ else
   CMD="$@"
 fi
 
-if [[ ! "$CMD" =~ ^(bash|yaktor|npm|node) ]]; then
-  CMD="grunt $CMD"
-elif [ "$CMD" == 'bash' ]; then
-  CMD="bash -l"
+if [[ "$CMD" =~ ^help ]]; then
+  cat <<EOF
+
+yak: a management script for running a Yaktor stack
+
+Available commands:
+
+  yaktor subcommand              - execute "yaktor subcommand" in the "app" container
+  npm subcommand                 - execute "npm subcommand" in the "app" container
+  node subcommand                - execute "node subcommand" in the "app" container
+  grunt subcommand               - execute "grunt subcommand" in the "app" container
+  subcommand                     - execute "grunt subcommand" in the "app" container
+  shell [container [subcommand]] - start appropriate shell in container ("app" by default) and execute subcommand
+
+EOF
+  echo "Available grunt tasks:"
+fi
+
+CONTAINER=app
+SHELL="bash -c"
+
+APP_CMD_REGEX='^(yaktor|npm|node|grunt).*$'
+SHELL_CMD_REGEX='^(bash|shell)( +([a-zA-Z0-9]+)( +(.*))?)?$'
+if [[ "$CMD" =~ $APP_CMD_REGEX ]]; then
+  CMD=". ~/.profile && $CMD"
+elif [[ "$CMD" =~ $SHELL_CMD_REGEX ]]; then
+  PRECMD=${BASH_REMATCH[1]}
+  if [ "$PRECMD" == "bash" ]; then
+    echo "WARNING: yak subcommand 'bash' deprecated; use 'shell' from now on" >&2
+    PRECMD=shell
+  fi
+  CONTAINER=${BASH_REMATCH[3]}
+  if [ -z "$CONTAINER" ]; then
+    CONTAINER=app
+  fi
+  CMD=${BASH_REMATCH[5]}
+  case $CONTAINER in
+  app)
+    CMD=". ~/.profile && bash -l"
+    ;;
+  *)
+    if [ -z "$CMD" ]; then
+      CMD="bash -l"
+    fi
+    ;;
+  # TODO: if we add any container to docker-compose.yml that uses something other than bash, set SHELL in new case clause here for it
+  esac
+else
+  CMD=". ~/.profile && grunt $CMD"
 fi
 
 if [ "${INDEX:-1}" -gt "1" ]; then
   docker-compose scale app=${INDEX:-1}
 fi
-docker-compose exec --index ${INDEX-1} app bash -c ". ~/.profile && $CMD"
+
+docker-compose exec --index ${INDEX-1} $CONTAINER $SHELL "$CMD"

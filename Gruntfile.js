@@ -132,7 +132,7 @@ module.exports = function (grunt) {
       test: {
         command: skipBuild
           ? 'echo "Skipping build because --skip-build=' + skipBuild + '"'
-          : './run.sh npm test'
+          : 'npm test'
       }
     },
     coveralls: {
