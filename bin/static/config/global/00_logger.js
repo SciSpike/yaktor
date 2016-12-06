@@ -1,5 +1,5 @@
 var logger = require('yaktor/logger')
-
+require('colors')
 module.exports = function (yaktor, done) {
   logger.yaktorInit(yaktor)
   logger.info(__filename)
