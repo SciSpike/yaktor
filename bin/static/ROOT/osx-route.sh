@@ -25,7 +25,10 @@ if [ -z "$ROUTE" ] || [ -n "$(echo "$ROUTE" | grep 'destination: default')" ]; t
       curl -L https://github.com/SciSpike/soctun/releases/download/${SOCTUN_VERSION}/soctun.tar.gz > /tmp/soctun-${SOCTUN_VERSION}.tar.gz
     fi
     mkdir -p bin
-    echo 'soctun*' >> bin/.gitignore 
+    echo -n '' >> bin/.gitignore
+    if ! grep -q '^soctun*' bin/.gitignore; then
+      echo 'soctun*' >> bin/.gitignore
+    fi
     cd /tmp
     tar xf /tmp/soctun-${SOCTUN_VERSION}.tar.gz
     mv /tmp/soctun/soctun $LWD/bin/soctun-$SOCTUN_VERSION
