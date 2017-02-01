@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [ ! -d node_modules ]; then
+if [ ! -x node_modules/.bin/yak ]; then
   if [ -z "$APP_NAME" ]; then
     APP_NAME=${PWD##*/}
     export APP_NAME=${APP_NAME//-} # (basename of the current directory)
