@@ -51,7 +51,9 @@
     "swagger-ui": "2.1.4"
   },
   "scripts": {
-    "start": "sudo -E node app.js",
+    "start": "LOG_LEVEL=silly sudo -E node app.js",
+    "debug": "LOG_LEVEL=silly sudo -E --debug=5858 node app.js",
+    "debug-wait": "LOG_LEVEL=silly sudo -E --debug-brk=5858 node app.js",
     "format": "standard-format -w $(git diff --name-only HEAD | grep -e '\\.js$')",
     "lint": "standard $(git diff --name-only HEAD | grep -e '\\.js$')",
     "lint-staged": "standard $(git diff --name-only --cached | grep -e '\\.js$')",

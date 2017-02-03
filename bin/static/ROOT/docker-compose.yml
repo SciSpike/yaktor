@@ -35,6 +35,9 @@ services:
         aliases:
           - www.${APP_NAME}.yaktor
     working_dir: /app
+    ports:
+      - 5858:5858
+      - 8888:80
   mongo:
     command: --smallfiles
     image: mongo:3.0.4
