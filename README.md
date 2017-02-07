@@ -25,6 +25,7 @@ $ ./yak gen-src gen-views start
 ```
 ## The UI
 After that, you can navigate to `myapp`'s UI.
+
 ### macOS
 If you're on macOS, go to **http://www.myapp.yaktor** or http://localhost:8888
 
