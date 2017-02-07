@@ -1,4 +1,4 @@
-Event-driven, asynchronous, distributed, multi-party state-machine targeting the Node.js platform.
+Event-driven, asynchronous, distributed, scalable, multi-party state-machine targeting the Node.js platform.
 
 [![Travis status](https://img.shields.io/travis/SciSpike/yaktor/master.svg?maxAge=3600)](https://travis-ci.org/SciSpike/yaktor/builds)
 [![Coveralls status](https://img.shields.io/coveralls/SciSpike/yaktor/master.svg?maxAge=3600)](https://coveralls.io/github/SciSpike/yaktor?branch=master)
@@ -8,32 +8,34 @@ Event-driven, asynchronous, distributed, multi-party state-machine targeting the
 
 [![Yaktor Logo](http://docs.yaktor.io/images/logo-with-text.png)](http://yaktor.io)
 
-> NOTE: Please report issues at https://github.com/SciSpike/yaktor-issues/issues.
+## Initialize a new Yaktor application
 
-Leverages our npm modules [yaktor-lang](https://github.com/SciSpike/yaktor-dsl-xtext/tree/master/cli) and [yaktor-ui-angular1](https://github.com/Scispike/yaktor-ui-angular1).
-
-## Usage
-
-Typically, you'll want to do something like
+To initialize a new Yaktor project, you'll want to do something like
 
 ```
 $ mkdir myapp
 $ cd myapp
-$ docker run -it -v "$PWD":/app --rm --entrypoint bash --user node yaktor/node:latest -c 'npm install yaktor && $(npm bin)/yaktor init'
+$ curl init.yaktor.io | bash
 ```
+which will use Docker to pull the yaktor Node.js image and create a yaktor-based application in directory `myapp`.
 
-which will use Docker to pull the yaktor Node.js image and create a yaktor-based application in `myapp`.  Then, after the command completes,
-
+Then, after the command completes, execute
 ```
 $ ./yak gen-src gen-views start
 ```
+## The UI
+After that, you can navigate to `myapp`'s UI.
+### macOS
+If you're on macOS, go to **http://www.myapp.yaktor** or http://localhost:8888
 
-After that, you can navigate to the `myapp`'s UI:
-* If you're on Mac OS X/macOS, go to http://www.myapp.yaktor.
-* If you're on Linux or Windows, see the console output for the IP address of the `yaktor` server and use that (like http://12.34.56.78)
+### Linux or Windows
+* If you're on Linux or Windows, go to **http://localhost:8888** or see the console output for the IP address of the `yaktor` server and use that (like http://12.34.56.78)
 
 ## Edit
 
-Once you're running, you can use any text editor you want to work on your application, but you might consider using our eclipse plugins, available at eclipse update site http://eclipse.yaktor.io.  They include a yaktor DSL-aware editor for `*.yc` and `*.ydm` files that provide syntax highlighting and completion.
+Once you're running, you can use any text editor you want to work on your application, but you might consider using our eclipse plugins, available at **eclipse update site**, **http://eclipse.yaktor.io**.
+They include a yaktor DSL-aware editor for `*.yc` and `*.ydm` files that provide syntax highlighting and completion.
 
 For more information, see [the full yaktor documentation](http://docs.yaktor.io).
+
+> NOTE: Please report issues at https://github.com/SciSpike/yaktor-issues/issues.
