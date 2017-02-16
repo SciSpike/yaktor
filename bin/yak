@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 if [ ! -f ~/.npmrc ]; then
   echo -n '' >> ~/.npmrc
@@ -33,12 +34,12 @@ yak: a management script for running a Yaktor stack
 
 Available commands:
 
-  yaktor subcommand              - execute "yaktor subcommand" in the "app" container
-  npm subcommand                 - execute "npm subcommand" in the "app" container
-  node subcommand                - execute "node subcommand" in the "app" container
-  grunt subcommand               - execute "grunt subcommand" in the "app" container
-  subcommand                     - execute "grunt subcommand" in the "app" container
-  shell [container [subcommand]] - start appropriate shell in container ("app" by default) and execute subcommand
+  yaktor subcommand                 - execute "yaktor subcommand" in the "app" container
+  npm subcommand                    - execute "npm subcommand" in the "app" container
+  node subcommand                   - execute "node subcommand" in the "app" container
+  grunt subcommand                  - execute "grunt subcommand" in the "app" container
+  subcommand                        - execute "grunt subcommand" in the "app" container
+  shell [container] [-- subcommand] - start a shell in container ("app" by default) and execute subcommand
 
 EOF
   echo "Available grunt tasks:"
@@ -48,7 +49,7 @@ CONTAINER=app
 SHELL="bash -c"
 
 APP_CMD_REGEX='^(yaktor|npm|node|grunt).*$'
-SHELL_CMD_REGEX='^(bash|shell)( +(([a-zA-Z0-9]+))?( *(.*))?)?$'
+SHELL_CMD_REGEX='^(bash|shell)( +(([a-zA-Z0-9_]+)?( *\-\- +(.*))?))?$'
 if [[ "$CMD" =~ $APP_CMD_REGEX ]]; then
   CMD=". ~/.profile && $CMD"
 elif [[ "$CMD" =~ $SHELL_CMD_REGEX ]]; then
@@ -61,10 +62,19 @@ elif [[ "$CMD" =~ $SHELL_CMD_REGEX ]]; then
   if [ -z "$CONTAINER" ]; then
     CONTAINER=app
   fi
-  CMD=${BASH_REMATCH[5]}
+  CMD=${BASH_REMATCH[6]}
   case $CONTAINER in
   app)
-    CMD=". ~/.profile && bash -l"
+    PREFIX=". ~/.profile && bash -l"
+    if [ -n "$CMD" ]; then
+      FIRST="${CMD::1}"
+      if [ "$FIRST" != "'" ] && [ "$FIRST" != '"' ]; then
+        CMD="'$CMD'"
+      fi
+      CMD="$PREFIX -c $CMD"
+    else
+      CMD="$PREFIX"
+    fi
     ;;
   *)
     if [ -z "$CMD" ]; then
