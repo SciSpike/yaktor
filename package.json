@@ -40,10 +40,10 @@
     "shared-git-hooks": "1.2.1",
     "underscore": "1.7.0",
     "winston": "0.7.1",
-    "yaktor-lang": "0.54.x"
+    "yaktor-lang": "0.54.1"
   },
   "engines": {
-    "node": ">=4.0.x"
+    "node": ">=4.4.4"
   },
   "scripts": {
     "patch": "grunt release-patch",
