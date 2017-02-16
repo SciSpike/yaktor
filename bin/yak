@@ -48,7 +48,7 @@ CONTAINER=app
 SHELL="bash -c"
 
 APP_CMD_REGEX='^(yaktor|npm|node|grunt).*$'
-SHELL_CMD_REGEX='^(bash|shell)( +([a-zA-Z0-9]+)( +(.*))?)?$'
+SHELL_CMD_REGEX='^(bash|shell)( +(([a-zA-Z0-9]+))?( *(.*))?)?$'
 if [[ "$CMD" =~ $APP_CMD_REGEX ]]; then
   CMD=". ~/.profile && $CMD"
 elif [[ "$CMD" =~ $SHELL_CMD_REGEX ]]; then
@@ -57,7 +57,7 @@ elif [[ "$CMD" =~ $SHELL_CMD_REGEX ]]; then
     echo "WARNING: yak subcommand 'bash' deprecated; use 'shell' from now on" >&2
     PRECMD=shell
   fi
-  CONTAINER=${BASH_REMATCH[3]}
+  CONTAINER=${BASH_REMATCH[4]}
   if [ -z "$CONTAINER" ]; then
     CONTAINER=app
   fi
