@@ -19,6 +19,7 @@ services:
       MONGO_HOST: mongo
       SERVERS_DEFAULT_HOST_HOSTNAME: www.${APP_NAME}.yaktor
       SERVERS_DEFAULT_HOST_PORT: 80
+      DEBUG: yaktor:config
 #      CASSANDRA_ENABLE: 1
 #      CASSANDRA_HOSTS: cassandra
 #      KAFKA_ENABLE: 1
