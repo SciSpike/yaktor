@@ -70,10 +70,8 @@ var getConfigDefaults = function (opts) {
   return defaults
 }
 
-var getConfigEnvironmentVariables = function (object) {
-  var mappings = cev.generate(object || {}, {
-    noPrefix: true
-  })
+var getConfigEnvironmentVariables = function (object, opts) {
+  var mappings = cev.generate(object || {}, opts || { noPrefix: true })
   debug('environment variable mappings:')
   debug(JSON.stringify(mappings, 0, 2))
 
@@ -116,7 +114,15 @@ debug('configuration defaults:')
 debug(JSON.stringify(yaktor, 0, 2))
 
 // now override from environment variables
-_.merge(yaktor, getConfigEnvironmentVariables(yaktor))
+var opts = {}
+if (yaktor.env && yaktor.env.prefix) {
+  opts.prefix = yaktor.env.prefix
+  debug('using environment variable prefix "' + opts.prefix + '"')
+} else {
+  opts.noPrefix = true
+  debug('using no environment variable prefix')
+}
+_.merge(yaktor, getConfigEnvironmentVariables(yaktor, opts))
 debug('configuration after overriding from environment variables:')
 debug(JSON.stringify(yaktor, 0, 2))
 
