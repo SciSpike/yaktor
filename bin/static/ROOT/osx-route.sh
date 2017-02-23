@@ -15,6 +15,7 @@ ROUTE=$(route get $SUBNET 2> /dev/null | grep 'destination:')
 set -e
 if [ -z "$ROUTE" ] || [ -n "$(echo "$ROUTE" | grep 'destination: default')" ]; then
   DNS_CONTAINER_IP=$(docker inspect --format "{{ .NetworkSettings.Networks.${NETWORK}.IPAddress }}" $DNS_SERVICE)
+  echo 'If prompted, please authenticate in order to create a route to $SUB_DOMAIN'
   sudo -v
   sudo mkdir -p /etc/resolver && sudo rm -f /etc/resolver/$SUB_DOMAIN && sudo sh -c "echo 'nameserver ${DNS_CONTAINER_IP}' >/etc/resolver/$SUB_DOMAIN"
   echo "creating vpn connection to ${STACK}"
@@ -55,6 +56,7 @@ if [ -z "$ROUTE" ] || [ -n "$(echo "$ROUTE" | grep 'destination: default')" ]; t
   sudo ifconfig utun$NET inet ${SUBSUBNET}.1.1 $SSH_CONTAINER_IP mtu $MTU up
   docker exec -i $VPN_SERVICE sh -c "ip link set tun0 up && ip link set mtu $MTU tun0 && ip addr add $SSH_CONTAINER_IP/16 peer ${SUBSUBNET}.1.1 dev tun0 && arp -sD  ${SUBSUBNET}.1.1 eth0 pub"
   sudo route -n add $SUBNET -interface utun$NET #$SSH_CONTAINER_IP
+  echo route created
 else
  echo route exists
 fi
