@@ -10,11 +10,6 @@ try {
 }
 /* jshint eqnull:true */
 module.exports = function (yaktor, done) {
-  var host = yaktor.mongo.host
-  var port = yaktor.mongo.port
-  var db = yaktor.mongo.db
-  var options = yaktor.mongo.options
-
   require('mongoose-pagination')
   var f1nU = mongoose.Model.findOneAndUpdate
   // Monkey Patch for update existing doc.
@@ -22,7 +17,7 @@ module.exports = function (yaktor, done) {
     if (doc != null && doc.toObject != null) {
       var newDoc = doc.toObject()
       delete newDoc._id
-      arguments[ 1 ] = newDoc
+      arguments[1] = newDoc
       return f1nU.apply(this, arguments)
     } else {
       return f1nU.apply(this, arguments)
@@ -52,5 +47,43 @@ module.exports = function (yaktor, done) {
     done(err)
   })
 
-  mongoose.connect('mongodb://' + host + ':' + port + '/' + db, options)
+  var url = 'mongodb://'
+  if (yaktor.mongo.username) {
+    url += (encodeURIComponent(yaktor.mongo.username) + ':' + encodeURIComponent(yaktor.mongo.password) + '@')
+  }
+  var first = true
+  var hostports = yaktor.mongo.hosts || []
+  hostports.forEach(function (hostport) {
+    if (hostport.host) {
+      if (first) first = false
+      else url += ','
+      url += (hostport.host + ':' + Number(hostport.port || 27017))
+    }
+  })
+  if (first) {
+    return done(new Error('no mongo hosts configured'))
+  }
+  if (yaktor.mongo.db) {
+    url += ('/' + yaktor.mongo.db)
+  }
+  first = true
+  Object.keys(yaktor.mongo.options).forEach(function (key) {
+    if (yaktor.mongo.options[key] === null) return
+    if (first) {
+      url += '?'
+      first = false
+    } else {
+      url += '&'
+    }
+    url += (key + '=' + encodeURIComponent(yaktor.mongo.options[key]))
+  })
+  // redact password before logging
+  var loggedUrl = url
+  var matches = /^mongodb:\/\/(.*:)(.*@)(.*)$/.exec(loggedUrl)
+  if (matches) {
+    loggedUrl = 'mongodb://' + matches[1] + '<redacted>@' + matches[3]
+  }
+  logger.info('mongo connection url: ' + loggedUrl)
+
+  mongoose.connect(url)
 }

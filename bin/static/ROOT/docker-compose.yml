@@ -16,7 +16,8 @@ services:
     cap_add:
       - NET_ADMIN
     environment:
-      MONGO_HOST: mongo
+      LOG_LEVEL: silly
+      MONGO_HOSTS_0_HOST: mongo
       SERVERS_DEFAULT_HOST_HOSTNAME: www.${APP_NAME}.yaktor
       SERVERS_DEFAULT_HOST_PORT: 80
       DEBUG: yaktor:config
