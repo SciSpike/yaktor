@@ -15,7 +15,7 @@ ROUTE=$(route get $SUBNET 2> /dev/null | grep 'destination:')
 set -e
 if [ -z "$ROUTE" ] || [ -n "$(echo "$ROUTE" | grep 'destination: default')" ]; then
   DNS_CONTAINER_IP=$(docker inspect --format "{{ .NetworkSettings.Networks.${NETWORK}.IPAddress }}" $DNS_SERVICE)
-  echo 'If prompted, please authenticate in order to create a route to $SUB_DOMAIN'
+  echo "If prompted, please authenticate in order to create a route to $SUB_DOMAIN"
   sudo -v
   sudo mkdir -p /etc/resolver && sudo rm -f /etc/resolver/$SUB_DOMAIN && sudo sh -c "echo 'nameserver ${DNS_CONTAINER_IP}' >/etc/resolver/$SUB_DOMAIN"
   echo "creating vpn connection to ${STACK}"
