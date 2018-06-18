@@ -46,8 +46,8 @@ try {
     },
     page: function (req) {
       var pagination = {}
-      pagination.page = parseInt(req.param('page')) || 1
-      var parsedPageSize = parseInt(req.param('pageSize'))
+      pagination.page = parseInt(req.params.page) || 1
+      var parsedPageSize = parseInt(req.params.pageSize)
       pagination.pageSize = (!isNaN(parsedPageSize)) ? parsedPageSize : 10
       return pagination
     },
